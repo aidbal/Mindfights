@@ -1,0 +1,81 @@
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content">
+            <form #createEventForm="ngForm" id="frm_create_event" novalidate (ngSubmit)="save()">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span>Sukurti naują protmūšį</span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input class="form-control" type="text" name="Title" [(ngModel)]="event.title" required maxlength="64" minlength="2">
+                                    <label class="form-label">Pavadinimas</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <textarea name="Description" class="form-control" [(ngModel)]="event.description"></textarea>
+                                    <label class="form-label">Aprašymas</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <select class="form-control" [(ngModel)]="selectedMindfightType" name="mindfight_type">
+                                        <option value="" disabled selected hidden>Protmūšio tipas</option>
+                                        <option value="1">Nuo iki</option>
+                                        <option value="2">Tam tikru metu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" #eventDate name="Date" class="form-control">
+                                    <label class="form-label">Data nuo</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="text" #eventDate name="Date" class="form-control">
+                                    <label class="form-label">Data iki</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group form-float">
+                                <div class="form-line">
+                                    <input type="number" name="MaxRegistrationCount" class="form-control" [(ngModel)]="event.maxRegistrationCount">
+                                    <label class="form-label">Komandų kiekis (0: neribota)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button [disabled]="!createEventForm.form.valid || saving" type="submit" class="btn btn-primary blue">Sukurti</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

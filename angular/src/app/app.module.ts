@@ -32,6 +32,8 @@ import { SideBarNavComponent } from '@app/layout/sidebar-nav.component';
 import { SideBarFooterComponent } from '@app/layout/sidebar-footer.component';
 import { RightSideBarComponent } from '@app/layout/right-sidebar.component';
 import { MaterialInput } from '@shared/directives/material-input.directive';
+import { MindfightsComponent } from './mindfights/mindfights.component';
+import { CreateMindfightComponent } from './mindfights/create-mindfight/create-mindfight.component';
 
 @NgModule({
     declarations: [
@@ -52,7 +54,9 @@ import { MaterialInput } from '@shared/directives/material-input.directive';
         SideBarUserAreaComponent,
         SideBarNavComponent,
         SideBarFooterComponent,
-        RightSideBarComponent
+        RightSideBarComponent,
+        MindfightsComponent,
+        CreateMindfightComponent
     
     ],
     imports: [

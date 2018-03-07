@@ -7,6 +7,8 @@ import { AboutComponent } from './about/about.component';
 import { UsersComponent } from './users/users.component';
 import { TenantsComponent } from './tenants/tenants.component';
 import { RolesComponent } from "app/roles/roles.component";
+import { MindfightsComponent } from 'app/mindfights/mindfights.component';
+import { CreateMindfightComponent } from 'app/mindfights/create-mindfight/create-mindfight.component';
 
 @NgModule({
     imports: [
@@ -15,7 +17,9 @@ import { RolesComponent } from "app/roles/roles.component";
                 path: '',
                 component: AppComponent,
                 children: [
-                    { path: 'home', component: HomeComponent,  canActivate: [AppRouteGuard] },
+                    { path: 'home', component: HomeComponent, canActivate: [AppRouteGuard] },
+                    { path: 'mindfights/create', component: CreateMindfightComponent },
+                    { path: 'mindfights', component: MindfightsComponent },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },
                     { path: 'tenants', component: TenantsComponent, data: { permission: 'Pages.Tenants' }, canActivate: [AppRouteGuard] },
