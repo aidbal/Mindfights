@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.Auditing;
 using Abp.Authorization.Users;
@@ -30,6 +31,9 @@ namespace Skautatinklis.Authorization.Accounts.Dto
         [StringLength(AbpUserBase.MaxPlainPasswordLength)]
         [DisableAuditing]
         public string Password { get; set; }
+
+        [Required]
+        public DateTime Birthday { get; set; }
 
         [DisableAuditing]
         public string CaptchaResponse { get; set; }

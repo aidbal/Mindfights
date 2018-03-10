@@ -31,9 +31,11 @@ import { SideBarUserAreaComponent } from '@app/layout/sidebar-user-area.componen
 import { SideBarNavComponent } from '@app/layout/sidebar-nav.component';
 import { SideBarFooterComponent } from '@app/layout/sidebar-footer.component';
 import { RightSideBarComponent } from '@app/layout/right-sidebar.component';
-import { MaterialInput } from '@shared/directives/material-input.directive';
 import { MindfightsComponent } from './mindfights/mindfights.component';
 import { CreateMindfightComponent } from './mindfights/create-mindfight/create-mindfight.component';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @NgModule({
     declarations: [
@@ -69,7 +71,10 @@ import { CreateMindfightComponent } from './mindfights/create-mindfight/create-m
         AppRoutingModule,
         ServiceProxyModule,
         SharedModule,
-        NgxPaginationModule
+        NgxPaginationModule,
+        MatSelectModule,
+        MatInputModule,
+        MatDatepickerModule
     ],
     providers: [
 

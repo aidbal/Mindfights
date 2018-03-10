@@ -8,6 +8,16 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\20180310095942_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310100455_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310102821_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310165414_Added scout achievements model.cs" />
+    <Compile Remove="Migrations\20180310173102_Added mindfightQuestion model.cs" />
+    <Compile Remove="Migrations\20180310173508_Added mindfightQuestion model.cs" />
+    <Compile Remove="Migrations\20180310185727_Added QuestionListToMindfights.cs" />
+    <Compile Remove="Migrations\20180310192245_Added MindfightResult Model.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />

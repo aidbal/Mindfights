@@ -1,4 +1,4 @@
-﻿import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
@@ -20,6 +20,8 @@ import { RegisterComponent } from './register/register.component';
 import { AccountLanguagesComponent } from './layout/account-languages.component';
 
 import { LoginService } from './login/login.service';
+import { MatInputModule, MatDatepickerModule, MAT_DATE_LOCALE } from '@angular/material';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
     imports: [
@@ -31,7 +33,10 @@ import { LoginService } from './login/login.service';
         SharedModule,
         ServiceProxyModule,
         AccountRoutingModule,
-        ModalModule.forRoot()
+        ModalModule.forRoot(),
+        MatInputModule,
+        MatDatepickerModule,
+        MatMomentDateModule
     ],
     declarations: [
         AccountComponent,
@@ -42,7 +47,8 @@ import { LoginService } from './login/login.service';
         AccountLanguagesComponent
     ],
     providers: [
-        LoginService
+        LoginService,
+        { provide: MAT_DATE_LOCALE, useValue: 'lt' }
     ]
 })
 export class AccountModule {

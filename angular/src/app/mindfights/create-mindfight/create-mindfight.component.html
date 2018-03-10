@@ -32,31 +32,61 @@
                         <div class="col-sm-12">
                             <div class="form-group form-float">
                                 <div class="form-line">
-                                    <select class="form-control" [(ngModel)]="selectedMindfightType" name="mindfight_type">
-                                        <option value="" disabled selected hidden>Protmūšio tipas</option>
-                                        <option value="1">Nuo iki</option>
-                                        <option value="2">Tam tikru metu</option>
-                                    </select>
+                                    <mat-form-field>
+                                        <mat-select placeholder="Protmūšio tipas" class="form-control" [(ngModel)]="selectedMindfightType" name="mindfightType">
+                                            <mat-option value="1">Nuo iki</mat-option>
+                                            <mat-option value="2">Tam tikru metu</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row clearfix">
-                        <div class="col-sm-12">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input type="text" #eventDate name="Date" class="form-control">
-                                    <label class="form-label">Data nuo</label>
+                    <div *ngIf="selectedMindfightType == 1">
+                        <div class="row clearfix">
+                            <div class="col-sm-12">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" #eventDate name="Date" class="form-control">
+                                        <label class="form-label">Data nuo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-12">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" #eventDate name="Date" class="form-control">
+                                        <label class="form-label">Data iki</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row clearfix">
-                        <div class="col-sm-12">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input type="text" #eventDate name="Date" class="form-control">
-                                    <label class="form-label">Data iki</label>
+                    <div *ngIf="selectedMindfightType == 2">
+                        <div class="row clearfix">
+                            <div class="col-sm-12">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <input type="text" #eventDate name="Date" class="form-control">
+                                        <label class="form-label">Pradžia</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix">
+                            <div class="col-sm-12">
+                                <div class="form-group form-float">
+                                    <div class="form-line">
+                                        <mat-form-field>
+                                            <input matInput class="form-control" [(ngModel)]="event.maxRegistrationCount"
+                                                   placeholder="Kiek minučių nuo starto bus galima prisijungti"
+                                                   name="startTimeframe"
+                                                   type="number"
+                                                   min="5">
+                                        </mat-form-field>
+                                    </div>
                                 </div>
                             </div>
                         </div>

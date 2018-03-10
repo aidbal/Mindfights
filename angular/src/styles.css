@@ -1,0 +1,9 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+.mat-form-field, .mat-form-field-infix {
+    width: 100%;
+}
+
+.card {
+    border-radius: 5px;
+}

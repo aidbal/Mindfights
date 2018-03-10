@@ -139,6 +139,7 @@ namespace Skautatinklis.Controllers
                 externalUser.Name,
                 externalUser.Surname,
                 externalUser.EmailAddress,
+                externalUser.Birthday,
                 externalUser.EmailAddress,
                 Authorization.Users.User.CreateRandomPassword(),
                 true

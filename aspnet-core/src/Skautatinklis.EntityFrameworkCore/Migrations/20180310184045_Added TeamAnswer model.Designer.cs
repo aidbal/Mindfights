@@ -17,9 +17,10 @@ using Skautatinklis.Models;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    partial class SkautatinklisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180310184045_Added TeamAnswer model")]
+    partial class AddedTeamAnswermodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1089,54 +1090,6 @@ namespace Skautatinklis.Migrations
                     b.ToTable("MindfightQuestionMindfight");
                 });
 
-            modelBuilder.Entity("Skautatinklis.Models.MindfightRegistration", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<int>("MindfightId");
-
-                    b.Property<int>("TeamId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MindfightId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("MindfightRegistrations");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightResult", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsEvaluated");
-
-                    b.Property<int?>("MindfightId");
-
-                    b.Property<int>("Points");
-
-                    b.Property<int?>("TeamId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MindfightId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("MindfightResults");
-                });
-
             modelBuilder.Entity("Skautatinklis.Models.ScoutAchievements", b =>
                 {
                     b.Property<int>("Id")
@@ -1213,19 +1166,6 @@ namespace Skautatinklis.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("TeamAnswers");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.UserMindfightResult", b =>
-                {
-                    b.Property<long>("UserId");
-
-                    b.Property<int>("MindfightResultId");
-
-                    b.HasKey("UserId", "MindfightResultId");
-
-                    b.HasIndex("MindfightResultId");
-
-                    b.ToTable("UserMindfightResult");
                 });
 
             modelBuilder.Entity("Skautatinklis.MultiTenancy.Tenant", b =>
@@ -1461,30 +1401,6 @@ namespace Skautatinklis.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Skautatinklis.Models.MindfightRegistration", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany()
-                        .HasForeignKey("MindfightId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightResult", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany()
-                        .HasForeignKey("MindfightId");
-
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId");
-                });
-
             modelBuilder.Entity("Skautatinklis.Models.ScoutAchievements", b =>
                 {
                     b.HasOne("Skautatinklis.Authorization.Users.User", "User")
@@ -1508,19 +1424,6 @@ namespace Skautatinklis.Migrations
                     b.HasOne("Skautatinklis.Models.Team", "Team")
                         .WithMany()
                         .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.UserMindfightResult", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.MindfightResult", "MindfightResult")
-                        .WithMany("Players")
-                        .HasForeignKey("MindfightResultId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Authorization.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

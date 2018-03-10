@@ -17,9 +17,10 @@ using Skautatinklis.Models;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    partial class SkautatinklisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180310201309_Added MindfightResult Model")]
+    partial class AddedMindfightResultModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1089,28 +1090,6 @@ namespace Skautatinklis.Migrations
                     b.ToTable("MindfightQuestionMindfight");
                 });
 
-            modelBuilder.Entity("Skautatinklis.Models.MindfightRegistration", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<int>("MindfightId");
-
-                    b.Property<int>("TeamId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MindfightId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("MindfightRegistrations");
-                });
-
             modelBuilder.Entity("Skautatinklis.Models.MindfightResult", b =>
                 {
                     b.Property<int>("Id")
@@ -1458,19 +1437,6 @@ namespace Skautatinklis.Migrations
                     b.HasOne("Skautatinklis.Models.MindfightQuestion", "MindfightQuestion")
                         .WithMany()
                         .HasForeignKey("MindfightQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightRegistration", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany()
-                        .HasForeignKey("MindfightId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -1,9 +1,11 @@
-﻿import { Component, Injector, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, Injector, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountServiceProxy, RegisterInput, RegisterOutput } from '@shared/service-proxies/service-proxies'
 import { AppComponentBase } from '@shared/app-component-base';
 import { LoginService } from '../login/login.service';
 import { accountModuleAnimation } from '@shared/animations/routerTransition';
+
+import * as moment from 'moment';
 
 @Component({
     templateUrl: './register.component.html',
@@ -14,6 +16,10 @@ export class RegisterComponent extends AppComponentBase implements AfterViewInit
     @ViewChild('cardBody') cardBody: ElementRef;
 
     model: RegisterInput = new RegisterInput();
+
+    startDate = moment("1990 01 01", "YYYY MM DD");
+    minDate = moment("1900 01 01", "YYYY MM DD");
+    maxDate = moment();
 
     saving: boolean = false;
 
@@ -50,6 +56,7 @@ export class RegisterComponent extends AppComponentBase implements AfterViewInit
                 this._loginService.authenticateModel.userNameOrEmailAddress = this.model.userName;
                 this._loginService.authenticateModel.password = this.model.password;
                 this._loginService.authenticate(() => { this.saving = false; });
+                this.notify.success(this.l('SuccessfullyRegistered'));
             });
     }
 }

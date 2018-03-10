@@ -38,6 +38,7 @@ namespace Skautatinklis.Authorization.Accounts
                 input.Name,
                 input.Surname,
                 input.EmailAddress,
+                input.Birthday,
                 input.UserName,
                 input.Password,
                 true // Assumed email address is always confirmed. Change this if you want to implement email confirmation.

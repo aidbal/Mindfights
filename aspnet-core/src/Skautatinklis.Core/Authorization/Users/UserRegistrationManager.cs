@@ -37,7 +37,7 @@ namespace Skautatinklis.Authorization.Users
             AbpSession = NullAbpSession.Instance;
         }
 
-        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed)
+        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, DateTime birthday, string userName, string plainPassword, bool isEmailConfirmed)
         {
             CheckForTenant();
 
@@ -48,6 +48,7 @@ namespace Skautatinklis.Authorization.Users
                 TenantId = tenant.Id,
                 Name = name,
                 Surname = surname,
+                Birthday = birthday,
                 EmailAddress = emailAddress,
                 IsActive = true,
                 UserName = userName,
