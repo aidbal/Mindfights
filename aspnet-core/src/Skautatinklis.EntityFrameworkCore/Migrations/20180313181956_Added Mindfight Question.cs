@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skautatinklis.Migrations
 {
-    public partial class AddedmindfightQuestionmodel : Migration
+    public partial class AddedMindfightQuestion : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,56 +13,50 @@ namespace Skautatinklis.Migrations
                 name: "MindfightQuestions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AttachmentLocation = table.Column<string>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
+                    Description = table.Column<string>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
+                    MindfightId = table.Column<long>(nullable: false),
+                    OrderNumber = table.Column<int>(nullable: false),
                     Points = table.Column<int>(nullable: false),
-                    QuestionType = table.Column<int>(nullable: false),
-                    TimeToAnswerInSeconds = table.Column<int>(nullable: false)
+                    QuestionTypeId = table.Column<long>(nullable: true),
+                    TimeToAnswerInSeconds = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MindfightQuestions", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MindfightQuestionMindfight",
-                columns: table => new
-                {
-                    MindfightId = table.Column<int>(nullable: false),
-                    MindfightQuestionId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MindfightQuestionMindfight", x => new { x.MindfightId, x.MindfightQuestionId });
                     table.ForeignKey(
-                        name: "FK_MindfightQuestionMindfight_Mindfights_MindfightId",
+                        name: "FK_MindfightQuestions_Mindfights_MindfightId",
                         column: x => x.MindfightId,
                         principalTable: "Mindfights",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MindfightQuestionMindfight_MindfightQuestions_MindfightQuestionId",
-                        column: x => x.MindfightQuestionId,
-                        principalTable: "MindfightQuestions",
+                        name: "FK_MindfightQuestions_MindfightQuestionTypes_QuestionTypeId",
+                        column: x => x.QuestionTypeId,
+                        principalTable: "MindfightQuestionTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_MindfightQuestionMindfight_MindfightQuestionId",
-                table: "MindfightQuestionMindfight",
-                column: "MindfightQuestionId");
+                name: "IX_MindfightQuestions_MindfightId",
+                table: "MindfightQuestions",
+                column: "MindfightId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MindfightQuestions_QuestionTypeId",
+                table: "MindfightQuestions",
+                column: "QuestionTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "MindfightQuestionMindfight");
-
             migrationBuilder.DropTable(
                 name: "MindfightQuestions");
         }

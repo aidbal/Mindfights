@@ -1,49 +1,42 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
-using Skautatinklis.Authorization.Users;
+using Abp.Timing;
 using System;
 using System.Collections.Generic;
-using Abp.Timing;
 
 namespace Skautatinklis.Models
 {
-    public sealed class MindfightResult : Entity, IHasCreationTime, ISoftDelete
+    public sealed class MindfightResult : Entity<long>, IHasCreationTime, ISoftDelete
     {
-        public int Points { get; set; }
+        public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
-
-        public int? TeamId { get; set; }
+        public long TeamId { get; set; }
         public Team Team { get; set; }
-        public int? MindfightId { get; set; }
+        public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
-        public ICollection<UserMindfightResult> Players { get; set; }
-
         public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
+        public ICollection<UserMindfightResult> Users { get; set; }
 
-        public MindfightResult(int points, bool isEvaluated, Team team, Mindfight mindfight)
+        public MindfightResult(int earnedPoints, bool isEvaluated, Team team, Mindfight mindfight) : this()
         {
-            Points = points;
+            EarnedPoints = earnedPoints;
             IsEvaluated = isEvaluated;
             Team = team;
             TeamId = team.Id;
             Mindfight = mindfight;
             MindfightId = mindfight.Id;
-            Players = new List<UserMindfightResult>();
-            foreach(var player in team.Players)
-            {
-                var userMindfightResult = new UserMindfightResult
-                {
-                    User = player,
-                    UserId = player.Id,
-                    MindfightResult = this,
-                    MindfightResultId = Id
-                };
-                Players.Add(userMindfightResult);
-            }
+            //foreach (var user in team.Users)
+            //{
+            //    var userMindfightResult = new UserMindfightResult(user, this);
+            //    Users.Add(userMindfightResult);
+            //}
+        }
 
+        private MindfightResult()
+        {
+            Users = new List<UserMindfightResult>();
             CreationTime = Clock.Now;
-            IsDeleted = false;
         }
     }
 }

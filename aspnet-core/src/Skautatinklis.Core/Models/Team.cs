@@ -1,58 +1,22 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Abp.Timing;
 using Skautatinklis.Authorization.Users;
 
 namespace Skautatinklis.Models
 {
-    public class Team : Entity, IHasCreationTime, ISoftDelete, IPassivable
+    public class Team : ScoutGroup
     {
-        public const int MaxNameLength = 256;
-
-        public User LeaderUser { get; set; }
-        [Required]
-        [MaxLength(MaxNameLength)]
-        public string Name { get; set; }
-        public DateTime CreationTime { get; set; }
         public int GamePoints { get; set; }
-        public bool IsActive { get; set; }
-        public bool IsDeleted { get; set; }
-        public int PlayersCount { get; set; }
-        public ICollection<User> Players;
-        public ICollection<MindfightRegistration> MindfightRegistrations;
+        public ICollection<TeamAnswer> TeamAnswers { get; set; }
+        public ICollection<MindfightRegistration> MindfightRegistrations { get; set; }
 
-        public Team()
+        public Team(User leaderUser, string name, string description) : base(leaderUser, name, description)
         {
-            CreationTime = Clock.Now;
-            Players = new List<User>();
+            GamePoints = 0;
+            TeamAnswers = new List<TeamAnswer>();
             MindfightRegistrations = new List<MindfightRegistration>();
         }
 
-        public Team(User leaderUser, string name)
-            : this()
-        {
-            LeaderUser = leaderUser;
-            Name = name;
-            GamePoints = 0;
-            IsActive = true;
-            PlayersCount = 1;
-        }
-
-        public void AddPlayer(User player)
-        {
-            Players.Add(player);
-            PlayersCount += 1;
-        }
-
-        public void RemovePlayer(User player)
-        {
-            if (Players.Remove(player))
-            {
-                PlayersCount -= 1;
-            }
-        }
+        private Team() { }
     }
 }

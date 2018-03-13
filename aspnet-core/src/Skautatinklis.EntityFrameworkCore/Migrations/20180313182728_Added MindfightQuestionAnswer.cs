@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skautatinklis.Migrations
 {
-    public partial class Addedanswermodel : Migration
+    public partial class AddedMindfightQuestionAnswer : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,13 +13,13 @@ namespace Skautatinklis.Migrations
                 name: "MindfightQuestionAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Answer = table.Column<string>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     IsCorrect = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    QuestionId = table.Column<int>(nullable: false),
-                    Text = table.Column<string>(nullable: true)
+                    QuestionId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -2,41 +2,43 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Timing;
+using Skautatinklis.Authorization.Users;
 
 namespace Skautatinklis.Models
 {
-    public class TeamAnswer : Entity, IHasCreationTime, ISoftDelete
+    public class TeamAnswer : Entity<long>, IHasCreationTime, ISoftDelete
     {
         public string EnteredAnswer { get; set; }
         public int ElapsedTimeInSeconds { get; set; }
         public bool IsEvaluated { get; set; }
-
-        public int TeamId { get; set; }
-        public Team Team { get; set; }
-        public int QuestionId { get; set; }
-        public MindfightQuestion Question { get; set; }
-        public int MindfightId { get; set; }
-        public Mindfight Mindfight { get; set; }
-
-
+        public bool IsCurrentlyEvaluated { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
+        public long TeamId { get; set; }
+        public Team Team { get; set; }
+        public long QuestionId { get; set; }
+        public MindfightQuestion Question { get; set; }
+        public long UserId { get; set; }
+        public User User { get; set; }
 
-        public TeamAnswer(string enteredAnswer, int elapsedTimeInSeconds, Team team, MindfightQuestion question,
-            Mindfight mindfight)
+        public TeamAnswer(MindfightQuestion question, User user, Team team,
+            string enteredAnswer, int elapsedTimeInSeconds, bool isEvaluated) : this()
         {
-            IsEvaluated = question.QuestionType == MindfightQuestionTypes.Test;
+            IsEvaluated = isEvaluated;
             EnteredAnswer = enteredAnswer;
             ElapsedTimeInSeconds = elapsedTimeInSeconds;
             Team = team;
             TeamId = team.Id;
             Question = question;
             QuestionId = question.Id;
-            Mindfight = mindfight;
-            MindfightId = mindfight.Id;
+            User = user;
+            UserId = user.Id;
+        }
 
+        private TeamAnswer()
+        {
+            IsCurrentlyEvaluated = false;
             CreationTime = Clock.Now;
-            IsDeleted = false;
         }
     }
 }

@@ -1,40 +1,48 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Abp.Timing;
+using System;
+using System.Collections.Generic;
 
 namespace Skautatinklis.Models
 {
-    public class MindfightQuestion : Entity, IHasCreationTime, ISoftDelete, IPassivable
+    public class MindfightQuestion : Entity<long>, IHasCreationTime, ISoftDelete, IPassivable
     {
-        public MindfightQuestionTypes QuestionType { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
         public int Points { get; set; }
         public int TimeToAnswerInSeconds { get; set; }
         public string AttachmentLocation { get; set; }
-        public ICollection<MindfightQuestionMindfight> Mindfights;
-
+        public int OrderNumber { get; set; }
+        public MindfightQuestionType QuestionType { get; set; }
+        public long MindfightId { get; set; }
+        public Mindfight Mindfight { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
+        public ICollection<MindfightQuestionAnswer> MindfightQuestionAnswers { get; set; }
+        public ICollection<TeamAnswer> TeamAnswers { get; set; }
 
-        public MindfightQuestion(MindfightQuestionTypes questionType, int points, int timeToAnswerInSeconds)
+        public MindfightQuestion(Mindfight mindfight, MindfightQuestionType questionType, string title, string description,
+            int timeToAnswerInSeconds, int orderNumber, string attachmentLocation) : this()
         {
+            MindfightId = mindfight.Id;
+            Mindfight = mindfight;
             QuestionType = questionType;
-            Points = points;
+            Title = title;
+            Description = description;
             TimeToAnswerInSeconds = timeToAnswerInSeconds;
-            Mindfights = new List<MindfightQuestionMindfight>();
-
-            CreationTime = Clock.Now;
-            IsActive = true;
-            IsDeleted = false;
+            OrderNumber = orderNumber;
+            AttachmentLocation = attachmentLocation;
         }
 
-        public MindfightQuestion(MindfightQuestionTypes questionType, int points, int timeToAnswerInSeconds,
-            string attachmentLocation) : this(questionType, points, timeToAnswerInSeconds)
+        private MindfightQuestion()
         {
-            AttachmentLocation = attachmentLocation;
+            Points = 0;
+            MindfightQuestionAnswers = new List<MindfightQuestionAnswer>();
+            TeamAnswers = new List<TeamAnswer>();
+            CreationTime = Clock.Now;
+            IsActive = true;
         }
     }
 }

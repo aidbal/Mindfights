@@ -16,8 +16,8 @@ using Skautatinklis.EntityFrameworkCore;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    [Migration("20180310103442_Extended user model")]
-    partial class Extendedusermodel
+    [Migration("20180313174649_Added Teams")]
+    partial class AddedTeams
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -898,7 +898,9 @@ namespace Skautatinklis.Migrations
                     b.Property<string>("AuthenticationSource")
                         .HasMaxLength(64);
 
-                    b.Property<DateTime?>("Birthday");
+                    b.Property<DateTime?>("Birthdate");
+
+                    b.Property<long?>("CityId");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -919,8 +921,6 @@ namespace Skautatinklis.Migrations
                         .HasMaxLength(328);
 
                     b.Property<bool>("IsActive");
-
-                    b.Property<bool>("IsConfirmedByLeader");
 
                     b.Property<bool>("IsDeleted");
 
@@ -963,13 +963,13 @@ namespace Skautatinklis.Migrations
 
                     b.Property<int>("Points");
 
+                    b.Property<long?>("ScoutGroupId");
+
                     b.Property<string>("SecurityStamp");
 
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasMaxLength(32);
-
-                    b.Property<int?>("TeamId");
 
                     b.Property<int?>("TenantId");
 
@@ -977,9 +977,9 @@ namespace Skautatinklis.Migrations
                         .IsRequired()
                         .HasMaxLength(32);
 
-                    b.Property<int>("UserType");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CityId");
 
                     b.HasIndex("CreatorUserId");
 
@@ -987,9 +987,7 @@ namespace Skautatinklis.Migrations
 
                     b.HasIndex("LastModifierUserId");
 
-                    b.HasIndex("TeamId")
-                        .IsUnique()
-                        .HasFilter("[TeamId] IS NOT NULL");
+                    b.HasIndex("ScoutGroupId");
 
                     b.HasIndex("TenantId", "NormalizedEmailAddress");
 
@@ -998,28 +996,91 @@ namespace Skautatinklis.Migrations
                     b.ToTable("AbpUsers");
                 });
 
-            modelBuilder.Entity("Skautatinklis.Models.Team", b =>
+            modelBuilder.Entity("Skautatinklis.Models.City", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cities");
+                });
+
+            modelBuilder.Entity("Skautatinklis.Models.ScoutAchievements", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<long>("ConfirmedByUserId");
+
                     b.Property<DateTime>("CreationTime");
 
-                    b.Property<int>("GamePoints");
+                    b.Property<DateTime?>("DateAchieved");
+
+                    b.Property<string>("Description");
+
+                    b.Property<int?>("Hours");
+
+                    b.Property<bool>("IsConfirmed");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<long?>("TypeId");
+
+                    b.Property<long>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TypeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ScoutAchievements");
+                });
+
+            modelBuilder.Entity("Skautatinklis.Models.ScoutAchievementType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("DateType");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ScoutAchievementTypes");
+                });
+
+            modelBuilder.Entity("Skautatinklis.Models.ScoutGroup", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
 
                     b.Property<bool>("IsActive");
 
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256);
+                    b.Property<long>("LeaderId");
+
+                    b.Property<string>("Name");
 
                     b.Property<int>("PlayersCount");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Team");
+                    b.ToTable("ScoutGroups");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("ScoutGroup");
                 });
 
             modelBuilder.Entity("Skautatinklis.MultiTenancy.Tenant", b =>
@@ -1122,6 +1183,17 @@ namespace Skautatinklis.Migrations
                     b.HasDiscriminator().HasValue("UserPermissionSetting");
                 });
 
+            modelBuilder.Entity("Skautatinklis.Models.Team", b =>
+                {
+                    b.HasBaseType("Skautatinklis.Models.ScoutGroup");
+
+                    b.Property<int>("GamePoints");
+
+                    b.ToTable("Team");
+
+                    b.HasDiscriminator().HasValue("Team");
+                });
+
             modelBuilder.Entity("Abp.Authorization.Roles.RoleClaim", b =>
                 {
                     b.HasOne("Skautatinklis.Authorization.Roles.Role")
@@ -1209,6 +1281,10 @@ namespace Skautatinklis.Migrations
 
             modelBuilder.Entity("Skautatinklis.Authorization.Users.User", b =>
                 {
+                    b.HasOne("Skautatinklis.Models.City", "City")
+                        .WithMany()
+                        .HasForeignKey("CityId");
+
                     b.HasOne("Skautatinklis.Authorization.Users.User", "CreatorUser")
                         .WithMany()
                         .HasForeignKey("CreatorUserId");
@@ -1221,9 +1297,21 @@ namespace Skautatinklis.Migrations
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
 
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithOne("LeaderUser")
-                        .HasForeignKey("Skautatinklis.Authorization.Users.User", "TeamId");
+                    b.HasOne("Skautatinklis.Models.ScoutGroup")
+                        .WithMany("Users")
+                        .HasForeignKey("ScoutGroupId");
+                });
+
+            modelBuilder.Entity("Skautatinklis.Models.ScoutAchievements", b =>
+                {
+                    b.HasOne("Skautatinklis.Models.ScoutAchievementType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId");
+
+                    b.HasOne("Skautatinklis.Authorization.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Skautatinklis.MultiTenancy.Tenant", b =>

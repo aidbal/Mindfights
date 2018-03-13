@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skautatinklis.Migrations
 {
-    public partial class AddedMindfightRegistrationmodel : Migration
+    public partial class AddedMindfightRegistrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,12 +13,12 @@ namespace Skautatinklis.Migrations
                 name: "MindfightRegistrations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    MindfightId = table.Column<int>(nullable: false),
-                    TeamId = table.Column<int>(nullable: false)
+                    MindfightId = table.Column<long>(nullable: false),
+                    TeamId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -30,9 +30,9 @@ namespace Skautatinklis.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MindfightRegistrations_Team_TeamId",
+                        name: "FK_MindfightRegistrations_ScoutGroups_TeamId",
                         column: x => x.TeamId,
-                        principalTable: "Team",
+                        principalTable: "ScoutGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });

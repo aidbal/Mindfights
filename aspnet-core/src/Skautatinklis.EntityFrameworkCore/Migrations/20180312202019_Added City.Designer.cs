@@ -16,9 +16,10 @@ using Skautatinklis.EntityFrameworkCore;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    partial class SkautatinklisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180312202019_Added City")]
+    partial class AddedCity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -897,10 +898,6 @@ namespace Skautatinklis.Migrations
                     b.Property<string>("AuthenticationSource")
                         .HasMaxLength(64);
 
-                    b.Property<DateTime?>("Birthdate");
-
-                    b.Property<long?>("CityId");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -960,10 +957,6 @@ namespace Skautatinklis.Migrations
 
                     b.Property<string>("PhoneNumber");
 
-                    b.Property<int>("Points");
-
-                    b.Property<long?>("ScoutGroupId");
-
                     b.Property<string>("SecurityStamp");
 
                     b.Property<string>("Surname")
@@ -978,15 +971,11 @@ namespace Skautatinklis.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CityId");
-
                     b.HasIndex("CreatorUserId");
 
                     b.HasIndex("DeleterUserId");
 
                     b.HasIndex("LastModifierUserId");
-
-                    b.HasIndex("ScoutGroupId");
 
                     b.HasIndex("TenantId", "NormalizedEmailAddress");
 
@@ -1005,305 +994,6 @@ namespace Skautatinklis.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.Mindfight", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<long>("CreatorId");
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTime?>("EndTime");
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<bool>("IsConfirmed");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsFinished");
-
-                    b.Property<bool>("IsPrivate");
-
-                    b.Property<int>("PlayersLimit");
-
-                    b.Property<int?>("PrepareTime");
-
-                    b.Property<int>("QuestionsCount");
-
-                    b.Property<DateTime>("StartTime");
-
-                    b.Property<string>("Title");
-
-                    b.Property<int>("TotalPoints");
-
-                    b.Property<int>("TotalTimeLimitInMinutes");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Mindfights");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightEvaluators", b =>
-                {
-                    b.Property<long>("UserId");
-
-                    b.Property<long>("MindfightId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.HasKey("UserId", "MindfightId");
-
-                    b.HasIndex("MindfightId");
-
-                    b.ToTable("MindfightEvaluators");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightQuestion", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("AttachmentLocation");
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<long>("MindfightId");
-
-                    b.Property<int>("OrderNumber");
-
-                    b.Property<int>("Points");
-
-                    b.Property<long?>("QuestionTypeId");
-
-                    b.Property<int>("TimeToAnswerInSeconds");
-
-                    b.Property<string>("Title");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MindfightId");
-
-                    b.HasIndex("QuestionTypeId");
-
-                    b.ToTable("MindfightQuestions");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightQuestionAnswer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Answer");
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<bool>("IsCorrect");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<long>("QuestionId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.ToTable("MindfightQuestionAnswers");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightQuestionType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Type");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MindfightQuestionTypes");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightRegistration", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<long>("MindfightId");
-
-                    b.Property<long>("TeamId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MindfightId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("MindfightRegistrations");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightResult", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<int>("EarnedPoints");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsEvaluated");
-
-                    b.Property<long>("MindfightId");
-
-                    b.Property<long>("TeamId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MindfightId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("MindfightResults");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.ScoutAchievements", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<long>("ConfirmedByUserId");
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<DateTime?>("DateAchieved");
-
-                    b.Property<string>("Description");
-
-                    b.Property<int?>("Hours");
-
-                    b.Property<bool>("IsConfirmed");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<long?>("TypeId");
-
-                    b.Property<long>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ScoutAchievements");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.ScoutAchievementType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("DateType");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ScoutAchievementTypes");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.ScoutGroup", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<long>("LeaderId");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("PlayersCount");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ScoutGroups");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("ScoutGroup");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.TeamAnswer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("CreationTime");
-
-                    b.Property<int>("ElapsedTimeInSeconds");
-
-                    b.Property<string>("EnteredAnswer");
-
-                    b.Property<bool>("IsCurrentlyEvaluated");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("IsEvaluated");
-
-                    b.Property<long>("QuestionId");
-
-                    b.Property<long>("TeamId");
-
-                    b.Property<long>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuestionId");
-
-                    b.HasIndex("TeamId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TeamAnswers");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.UserMindfightResult", b =>
-                {
-                    b.Property<long>("UserId");
-
-                    b.Property<long>("MindfightResultId");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.HasKey("UserId", "MindfightResultId");
-
-                    b.HasIndex("MindfightResultId");
-
-                    b.ToTable("UserMindfightResults");
                 });
 
             modelBuilder.Entity("Skautatinklis.MultiTenancy.Tenant", b =>
@@ -1406,17 +1096,6 @@ namespace Skautatinklis.Migrations
                     b.HasDiscriminator().HasValue("UserPermissionSetting");
                 });
 
-            modelBuilder.Entity("Skautatinklis.Models.Team", b =>
-                {
-                    b.HasBaseType("Skautatinklis.Models.ScoutGroup");
-
-                    b.Property<int>("GamePoints");
-
-                    b.ToTable("Team");
-
-                    b.HasDiscriminator().HasValue("Team");
-                });
-
             modelBuilder.Entity("Abp.Authorization.Roles.RoleClaim", b =>
                 {
                     b.HasOne("Skautatinklis.Authorization.Roles.Role")
@@ -1504,10 +1183,6 @@ namespace Skautatinklis.Migrations
 
             modelBuilder.Entity("Skautatinklis.Authorization.Users.User", b =>
                 {
-                    b.HasOne("Skautatinklis.Models.City", "City")
-                        .WithMany()
-                        .HasForeignKey("CityId");
-
                     b.HasOne("Skautatinklis.Authorization.Users.User", "CreatorUser")
                         .WithMany()
                         .HasForeignKey("CreatorUserId");
@@ -1519,112 +1194,6 @@ namespace Skautatinklis.Migrations
                     b.HasOne("Skautatinklis.Authorization.Users.User", "LastModifierUser")
                         .WithMany()
                         .HasForeignKey("LastModifierUserId");
-
-                    b.HasOne("Skautatinklis.Models.ScoutGroup", "ScoutGroup")
-                        .WithMany("Users")
-                        .HasForeignKey("ScoutGroupId");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightEvaluators", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany("Evaluators")
-                        .HasForeignKey("MindfightId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Authorization.Users.User", "User")
-                        .WithMany("Mindfights")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightQuestion", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany("MindfightQuestions")
-                        .HasForeignKey("MindfightId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.MindfightQuestionType", "QuestionType")
-                        .WithMany()
-                        .HasForeignKey("QuestionTypeId");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightQuestionAnswer", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.MindfightQuestion", "Question")
-                        .WithMany("MindfightQuestionAnswers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightRegistration", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany("MindfightRegistrations")
-                        .HasForeignKey("MindfightId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany("MindfightRegistrations")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.MindfightResult", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.Mindfight", "Mindfight")
-                        .WithMany()
-                        .HasForeignKey("MindfightId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.ScoutAchievements", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.ScoutAchievementType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId");
-
-                    b.HasOne("Skautatinklis.Authorization.Users.User", "User")
-                        .WithMany("ScoutAchievements")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.TeamAnswer", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.MindfightQuestion", "Question")
-                        .WithMany("TeamAnswers")
-                        .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany("TeamAnswers")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Skautatinklis.Authorization.Users.User", "User")
-                        .WithMany("TeamAnswers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.UserMindfightResult", b =>
-                {
-                    b.HasOne("Skautatinklis.Models.MindfightResult", "MindfightResult")
-                        .WithMany("Users")
-                        .HasForeignKey("MindfightResultId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Authorization.Users.User", "User")
-                        .WithMany("MindfightResults")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Skautatinklis.MultiTenancy.Tenant", b =>

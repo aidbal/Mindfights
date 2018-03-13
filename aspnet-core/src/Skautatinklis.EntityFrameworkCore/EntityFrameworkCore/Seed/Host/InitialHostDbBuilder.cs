@@ -1,4 +1,6 @@
-﻿namespace Skautatinklis.EntityFrameworkCore.Seed.Host
+﻿using Skautatinklis.EntityFrameworkCore.Seed.Mindfights;
+
+namespace Skautatinklis.EntityFrameworkCore.Seed.Host
 {
     public class InitialHostDbBuilder
     {
@@ -15,6 +17,7 @@
             new DefaultLanguagesCreator(_context).Create();
             new HostRoleAndUserCreator(_context).Create();
             new DefaultSettingsCreator(_context).Create();
+            new MindfightCreator(_context).Create();
 
             _context.SaveChanges();
         }

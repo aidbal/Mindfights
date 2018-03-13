@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Skautatinklis.Migrations
 {
-    public partial class AddedTeamAnswermodel : Migration
+    public partial class AddedTeamAnswer : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,16 +13,17 @@ namespace Skautatinklis.Migrations
                 name: "TeamAnswers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     ElapsedTimeInSeconds = table.Column<int>(nullable: false),
                     EnteredAnswer = table.Column<string>(nullable: true),
+                    IsCurrentlyEvaluated = table.Column<bool>(nullable: false),
                     IsDeleted = table.Column<bool>(nullable: false),
                     IsEvaluated = table.Column<bool>(nullable: false),
-                    MindfightId = table.Column<int>(nullable: false),
-                    QuestionId = table.Column<int>(nullable: false),
-                    TeamId = table.Column<int>(nullable: false)
+                    MindfightId = table.Column<long>(nullable: false),
+                    QuestionId = table.Column<long>(nullable: false),
+                    TeamId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,11 +39,11 @@ namespace Skautatinklis.Migrations
                         column: x => x.QuestionId,
                         principalTable: "MindfightQuestions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_TeamAnswers_Team_TeamId",
+                        name: "FK_TeamAnswers_ScoutGroups_TeamId",
                         column: x => x.TeamId,
-                        principalTable: "Team",
+                        principalTable: "ScoutGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
