@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.EntityFrameworkCore;
-using Skautatinklis.Authorization.Roles;
-using System.Linq;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.Timing;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using Skautatinklis.Authorization.Roles;
 using Skautatinklis.Models;
+using System.IO;
+using System.Linq;
 
 namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
 {
@@ -241,7 +238,7 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
                 .FirstOrDefault(t => t.Mindfight == mindfight);
             var user = _context.Users.IgnoreQueryFilters().FirstOrDefault(u => u.TenantId == null && u.UserName == AbpUserBase.AdminUserName);
             var userMindfightResult = _context.UserMindfightResults.IgnoreQueryFilters()
-                .First(t => t.MindfightResult.Mindfight == mindfight);
+                .FirstOrDefault(t => t.MindfightResult.Mindfight == mindfight);
             if (user != null && mindfightResult != null && userMindfightResult == null)
             {
                 userMindfightResult = new UserMindfightResult(user, mindfightResult);

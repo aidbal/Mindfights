@@ -48,7 +48,7 @@ namespace Skautatinklis.Authorization.Users
                 TenantId = tenant.Id,
                 Name = name,
                 Surname = surname,
-                //Birthdate = birthdate,
+                Birthdate = birthdate,
                 EmailAddress = emailAddress,
                 IsActive = true,
                 UserName = userName,

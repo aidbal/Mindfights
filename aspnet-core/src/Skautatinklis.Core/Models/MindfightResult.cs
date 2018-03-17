@@ -26,11 +26,6 @@ namespace Skautatinklis.Models
             TeamId = team.Id;
             Mindfight = mindfight;
             MindfightId = mindfight.Id;
-            //foreach (var user in team.Users)
-            //{
-            //    var userMindfightResult = new UserMindfightResult(user, this);
-            //    Users.Add(userMindfightResult);
-            //}
         }
 
         private MindfightResult()

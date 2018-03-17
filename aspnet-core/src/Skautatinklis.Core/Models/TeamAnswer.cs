@@ -13,6 +13,7 @@ namespace Skautatinklis.Models
         public bool IsEvaluated { get; set; }
         public bool IsCurrentlyEvaluated { get; set; }
         public DateTime CreationTime { get; set; }
+        public string EvaluatorComment { get; set; }
         public bool IsDeleted { get; set; }
         public long TeamId { get; set; }
         public Team Team { get; set; }

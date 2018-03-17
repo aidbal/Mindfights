@@ -16,9 +16,10 @@ using Skautatinklis.EntityFrameworkCore;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    partial class SkautatinklisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180317161630_Added BaseTeam")]
+    partial class AddedBaseTeam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1225,8 +1226,6 @@ namespace Skautatinklis.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("UsersCount");
-
                     b.HasKey("Id");
 
                     b.ToTable("ScoutGroups");
@@ -1250,8 +1249,6 @@ namespace Skautatinklis.Migrations
                     b.Property<long>("LeaderId");
 
                     b.Property<string>("Name");
-
-                    b.Property<int>("UsersCount");
 
                     b.HasKey("Id");
 
@@ -1517,7 +1514,7 @@ namespace Skautatinklis.Migrations
                         .HasForeignKey("ScoutGroupId");
 
                     b.HasOne("Skautatinklis.Models.Team", "Team")
-                        .WithMany("Users")
+                        .WithMany("Players")
                         .HasForeignKey("TeamId");
                 });
 

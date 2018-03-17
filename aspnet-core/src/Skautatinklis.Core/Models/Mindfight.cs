@@ -28,6 +28,7 @@ namespace Skautatinklis.Models
         public ICollection<MindfightEvaluators> Evaluators { get; set; }
         public ICollection<MindfightRegistration> MindfightRegistrations { get; set; }
         public ICollection<MindfightQuestion> MindfightQuestions { get; set; }
+        public ICollection<MindfightAllowedTeam> AllowedTeams { get; set; }
 
         public Mindfight(User creator, string title, string description, int playersLimit, DateTime startTime,
             DateTime? endTime, int? prepareTime, int totalTimeLimitInMinutes, bool isPrivate) : this()

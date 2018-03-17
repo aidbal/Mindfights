@@ -14,16 +14,16 @@ namespace Skautatinklis.Authorization.Users
         public long? CityId { get; set; }
         public City City { get; set; }
         public int Points { get; set; }
+        public long? TeamId { get; set; }
+        public Team Team { get; set; }
         public long? ScoutGroupId { get; set; }
         public ScoutGroup ScoutGroup { get; set; }
-        public ICollection<ScoutAchievements> ScoutAchievements { get; set; }
         public ICollection<MindfightEvaluators> Mindfights { get; set; }
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
         public ICollection<UserMindfightResult> MindfightResults { get; set; }
 
         public User()
         {
-            ScoutAchievements = new List<ScoutAchievements>();
             Mindfights = new List<MindfightEvaluators>();
             MindfightResults = new List<UserMindfightResult>();
             TeamAnswers = new List<TeamAnswer>();

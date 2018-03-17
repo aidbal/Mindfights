@@ -11,7 +11,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Abp.AspNetCore;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Extensions;
-using Skautatinklis.Authentication.JwtBearer;
+using Newtonsoft.Json;
 using Skautatinklis.Configuration;
 using Skautatinklis.Identity;
 
@@ -40,6 +40,10 @@ namespace Skautatinklis.Web.Host.Startup
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddMvc().AddJsonOptions(options => {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
             // MVC
             services.AddMvc(
                 options => options.Filters.Add(new CorsAuthorizationFilterFactory(_defaultCorsPolicyName))

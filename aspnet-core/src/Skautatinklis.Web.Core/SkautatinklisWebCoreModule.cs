@@ -5,13 +5,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
+using Abp.Configuration.Startup;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
 using Skautatinklis.Authentication.JwtBearer;
 using Skautatinklis.Configuration;
 using Skautatinklis.EntityFrameworkCore;
-
+using Skautatinklis.Services;
 #if FEATURE_SIGNALR
 using Abp.Web.SignalR;
 #elif FEATURE_SIGNALR_ASPNETCORE
@@ -56,6 +57,9 @@ namespace Skautatinklis
                  );
 
             ConfigureTokenAuth();
+
+            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IPlayerService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
+            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(ITeamService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
         }
 
         private void ConfigureTokenAuth()
