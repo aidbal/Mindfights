@@ -16,9 +16,10 @@ using Skautatinklis.EntityFrameworkCore;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    partial class SkautatinklisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180324155652_Extended TeamAnswer")]
+    partial class ExtendedTeamAnswer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1055,13 +1056,7 @@ namespace Skautatinklis.Migrations
 
                     b.Property<int>("TotalTimeLimitInMinutes");
 
-                    b.Property<long?>("WinnersId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
-
-                    b.HasIndex("WinnersId");
 
                     b.ToTable("Mindfights");
                 });
@@ -1252,8 +1247,6 @@ namespace Skautatinklis.Migrations
                     b.Property<string>("Name");
 
                     b.Property<int>("UsersCount");
-
-                    b.Property<int>("WonMindfightsCount");
 
                     b.HasKey("Id");
 
@@ -1525,18 +1518,6 @@ namespace Skautatinklis.Migrations
                     b.HasOne("Skautatinklis.Models.Team", "Team")
                         .WithMany("Users")
                         .HasForeignKey("TeamId");
-                });
-
-            modelBuilder.Entity("Skautatinklis.Models.Mindfight", b =>
-                {
-                    b.HasOne("Skautatinklis.Authorization.Users.User", "Creator")
-                        .WithMany()
-                        .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Winners")
-                        .WithMany("WonMindfights")
-                        .HasForeignKey("WinnersId");
                 });
 
             modelBuilder.Entity("Skautatinklis.Models.MindfightAllowedTeam", b =>
