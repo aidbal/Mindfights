@@ -1,17 +1,21 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
-using Abp.Domain.Entities;
+﻿using Abp.AutoMapper;
 using Skautatinklis.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Skautatinklis.DTOs
 {
     [AutoMapFrom(typeof(Team))]
-    public class TeamDto : EntityDto<long>
+    public class TeamDto
     {
+        public long? Id { get; set; }
+        [Required]
+        [MaxLength(255)]
         public string Name { get; set; }
+        [Required]
+        [MaxLength(255)]
         public string Description { get; set; }
         public string LeaderName { get; set; }
-        public int? PlayersCount { get; set; }
+        public int? UsersCount { get; set; }
         public int? GamePoints { get; set; }
     }
 }
