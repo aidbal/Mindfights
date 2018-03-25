@@ -10,15 +10,19 @@ namespace Skautatinklis.Models
     {
         public string EnteredAnswer { get; set; }
         public int ElapsedTimeInSeconds { get; set; }
+        public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
         public bool IsCurrentlyEvaluated { get; set; }
-        public DateTime CreationTime { get; set; }
         public string EvaluatorComment { get; set; }
+
+        public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
         public long TeamId { get; set; }
         public Team Team { get; set; }
         public long QuestionId { get; set; }
         public MindfightQuestion Question { get; set; }
+        public long? EvaluatorId { get; set; }
+        public User Evaluator { get; set; }
         public long UserId { get; set; }
         public User User { get; set; }
 
@@ -40,6 +44,7 @@ namespace Skautatinklis.Models
         {
             IsCurrentlyEvaluated = false;
             CreationTime = Clock.Now;
+            EarnedPoints = 0;
         }
     }
 }

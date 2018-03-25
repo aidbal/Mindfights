@@ -24,7 +24,7 @@ namespace Skautatinklis.Models
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
 
         public MindfightQuestion(Mindfight mindfight, MindfightQuestionType questionType, string title, string description,
-            int timeToAnswerInSeconds, int orderNumber, string attachmentLocation) : this()
+            int timeToAnswerInSeconds, int points, int orderNumber, string attachmentLocation) : this()
         {
             MindfightId = mindfight.Id;
             Mindfight = mindfight;
@@ -32,13 +32,13 @@ namespace Skautatinklis.Models
             Title = title;
             Description = description;
             TimeToAnswerInSeconds = timeToAnswerInSeconds;
+            Points = points;
             OrderNumber = orderNumber;
             AttachmentLocation = attachmentLocation;
         }
 
         private MindfightQuestion()
         {
-            Points = 0;
             MindfightQuestionAnswers = new List<MindfightQuestionAnswer>();
             TeamAnswers = new List<TeamAnswer>();
             CreationTime = Clock.Now;

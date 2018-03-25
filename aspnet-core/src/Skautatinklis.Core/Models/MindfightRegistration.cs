@@ -5,14 +5,13 @@ using System;
 
 namespace Skautatinklis.Models
 {
-    public class MindfightRegistration : Entity<long>, IHasCreationTime, ISoftDelete
+    public class MindfightRegistration : Entity<long>, IHasCreationTime
     {
         public long TeamId { get; set; }
         public Team Team { get; set; }
         public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
         public DateTime CreationTime { get; set; }
-        public bool IsDeleted { get; set; }
 
         public MindfightRegistration(Mindfight mindfight, Team team) : this()
         {

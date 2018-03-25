@@ -1,9 +1,5 @@
-﻿using System;
+﻿using Skautatinklis.Authorization.Users;
 using System.Collections.Generic;
-using Abp.Domain.Entities;
-using Abp.Domain.Entities.Auditing;
-using Abp.Timing;
-using Skautatinklis.Authorization.Users;
 
 namespace Skautatinklis.Models
 {
@@ -18,15 +14,5 @@ namespace Skautatinklis.Models
         }
 
         private ScoutGroup(){ }
-
-        public void AddPlayer(User user)
-        {
-            Users.Add(user);
-        }
-
-        public void RemovePlayer(User user)
-        {
-            Users.Remove(user);
-        }
     }
 }

@@ -25,6 +25,9 @@ namespace Skautatinklis.Models
         public bool IsFinished { get; set; }
         public int TotalTimeLimitInMinutes { get; set; }
         public long CreatorId { get; set; }
+        public User Creator { get; set; }
+        public long? WinnersId { get; set; }
+        public Team Winners { get; set; }
         public ICollection<MindfightEvaluators> Evaluators { get; set; }
         public ICollection<MindfightRegistration> MindfightRegistrations { get; set; }
         public ICollection<MindfightQuestion> MindfightQuestions { get; set; }
