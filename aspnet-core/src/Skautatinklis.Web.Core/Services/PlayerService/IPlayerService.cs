@@ -7,7 +7,9 @@ namespace Skautatinklis.Services.PlayerService
 {
     public interface IPlayerService : IApplicationService
     {
-        //Task<int> GetPlayerPoints(long userId);
+        Task<int> GetPlayerPoints(long? userId);
+
+        Task<string> GetTeam(long userId);
         //void ConfirmUser(long userId);
         //Task<string> GetTeam(long userId);
         //void RemoveFromTeam(long userId);

@@ -14,30 +14,32 @@ namespace Skautatinklis.Services.TeamAnswerService
 {
     public class TeamAnswerService : ITeamAnswerService
     {
-        private readonly IRepository<MindfightQuestion, long> _questionRepository;
+        private readonly IRepository<Question, long> _questionRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
+        private readonly IRepository<Tour, long> _tourRepository;
         private readonly UserManager _userManager;
 
         public TeamAnswerService(
-            IRepository<MindfightQuestion, long> questionRepository,
+            IRepository<Question, long> questionRepository,
             IRepository<TeamAnswer, long> teamAnswerRepository,
             IRepository<Mindfight, long> mindfightRepository,
             IRepository<Team, long> teamRepository,
+            IRepository<Tour, long> tourRepository,
             UserManager userManager)
         {
             _questionRepository = questionRepository;
             _teamAnswerRepository = teamAnswerRepository;
             _mindfightRepository = mindfightRepository;
             _teamRepository = teamRepository;
+            _tourRepository = tourRepository;
             _userManager = userManager;
         }
 
         public async Task<long> CreateTeamAnswer(string enteredAnswer, long questionId, long userId)
         {
             var currentQuestion = await _questionRepository
-                .GetAllIncluding(x => x.QuestionType)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)
@@ -52,8 +54,9 @@ namespace Skautatinklis.Services.TeamAnswerService
                 throw new UserFriendlyException("Team has already entered an answer to this question!");
 
             var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.AllowedTeams)
-                .FirstOrDefaultAsync(x => x.Id == currentQuestion.MindfightId);
+                .GetAll()
+                .Include(x => x.Registrations).ThenInclude(x => x.Team)
+                .FirstOrDefaultAsync(x => x.Id == currentQuestion.TourId);
 
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
@@ -69,17 +72,16 @@ namespace Skautatinklis.Services.TeamAnswerService
             if (user.Team == null)
                 throw new UserFriendlyException("User does not have a team!");
 
-            if (currentMindfight.AllowedTeams.Any(x => x.TeamId != user.Team.Id))
+            if (currentMindfight.Registrations.Any(x => x.TeamId != user.Team.Id && x.IsConfirmed))
                 throw new UserFriendlyException("User's team is not allowed to play this mindfight!");
 
-            var teamAnswerToInsert = new TeamAnswer(currentQuestion, user, user.Team, enteredAnswer, 0, false);
+            var teamAnswerToInsert = new TeamAnswer(currentQuestion, user.Team, enteredAnswer, false);
             return await _teamAnswerRepository.InsertAndGetIdAsync(teamAnswerToInsert);
         }
 
         public async Task<TeamAnswerDto> GetTeamAnswer(long questionId, long teamId, long userId)
         {
             var currentQuestion = await _questionRepository
-                .GetAllIncluding(x => x.QuestionType)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)
@@ -111,7 +113,7 @@ namespace Skautatinklis.Services.TeamAnswerService
             return teamAnswerDto;
         }
 
-        public async Task<List<TeamAnswerDto>> GetAllTeamAnswers(long mindfightId, long teamId, long userId)
+        public async Task<List<TeamAnswerDto>> GetAllTeamAnswers(long tourId, long teamId, long userId)
         {
             var currentTeam = await _teamRepository
                 .GetAll()
@@ -120,12 +122,11 @@ namespace Skautatinklis.Services.TeamAnswerService
             if (currentTeam == null)
                 throw new UserFriendlyException("Team with specified id does not exist!");
 
-            var currentMindfight = await _mindfightRepository
-                .GetAll()
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+            var currentTour = await _tourRepository
+                .FirstOrDefaultAsync(x => x.Id == tourId);
 
-            if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            if (currentTour == null)
+                throw new UserFriendlyException("Tour with specified id does not exist!");
 
             var user = await _userManager.Users
                 .IgnoreQueryFilters()
@@ -136,8 +137,8 @@ namespace Skautatinklis.Services.TeamAnswerService
                 throw new UserFriendlyException("User does not exist!");
 
             var currentQuestions = await _questionRepository
-                .GetAllIncluding(x => x.QuestionType)
-                .Where(x => x.MindfightId == mindfightId)
+                .GetAll()
+                .Where(x => x.TourId == tourId)
                 .ToListAsync();
 
             var teamAnswers = await _teamAnswerRepository.GetAll()
@@ -157,7 +158,6 @@ namespace Skautatinklis.Services.TeamAnswerService
         public async Task UpdateIsCurrentlyEvaluated(long questionId, long teamId, long userId, bool isCurrentlyEvaluated)
         {
             var currentQuestion = await _questionRepository
-                .GetAllIncluding(x => x.QuestionType)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
             if (currentQuestion == null)
                 throw new UserFriendlyException("Question with specified id does not exist!");
@@ -191,7 +191,6 @@ namespace Skautatinklis.Services.TeamAnswerService
             string evaluatorComment, int earnedPoints, bool isEvaluated)
         {
             var currentQuestion = await _questionRepository
-                .GetAllIncluding(x => x.QuestionType)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)

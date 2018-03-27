@@ -20,9 +20,8 @@ namespace Skautatinklis.Services.PlayerService
             var currentUserId = userId ?? NullAbpSession.Instance.UserId;
             var player = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentUserId);
             if (player == null)
-            {
                 throw new UserFriendlyException("The player with specified id does not exist!");
-            }
+
             return player.Points;
         }
 
@@ -30,31 +29,27 @@ namespace Skautatinklis.Services.PlayerService
         {
             var player = await _userManager.Users.IgnoreQueryFilters().Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == userId);
             if (player == null)
-            {
                 throw new UserFriendlyException("The player with specified id does not exist!");
-            }
+
             var team = player.Team;
             if (team == null)
-            {
                 throw new UserFriendlyException("The player does not have any team!");
-            }
+
             return team.Name;
         }
 
-        public async Task<string> GetScoutGroup(long userId)
-        {
-            var player = await _userManager.Users.IgnoreQueryFilters().Include(x => x.ScoutGroup).FirstOrDefaultAsync(x => x.Id == userId);
-            if (player == null)
-            {
-                throw new UserFriendlyException("The player with specified id does not exist!");
-            }
-            var scoutGroup = player.ScoutGroup;
-            if (scoutGroup == null)
-            {
-                throw new UserFriendlyException("The player does not have any team!");
-            }
-            return scoutGroup.Name;
-        }
+        //public async Task<string> GetScoutGroup(long userId)
+        //{
+        //    var player = await _userManager.Users.IgnoreQueryFilters().Include(x => x.ScoutGroup).FirstOrDefaultAsync(x => x.Id == userId);
+        //    if (player == null)
+        //        throw new UserFriendlyException("The player with specified id does not exist!");
+
+        //    var scoutGroup = player.ScoutGroup;
+        //    if (scoutGroup == null)
+        //        throw new UserFriendlyException("The player does not have any team!");
+
+        //    return scoutGroup.Name;
+        //}
 
         //public async Task<List<Mindfight>> GetAllowedEvaluateMindfights(long userId)
         //{

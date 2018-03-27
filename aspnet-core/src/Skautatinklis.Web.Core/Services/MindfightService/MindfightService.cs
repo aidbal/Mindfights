@@ -18,34 +18,30 @@ namespace Skautatinklis.Services.MindfightService
     public class MindfightService : IMindfightService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
-        private readonly IRepository<Team, long> _teamRepository;
         private readonly UserManager _userManager;
 
-        public MindfightService(IRepository<Mindfight, long> mindfightRepository, UserManager userManager,
-            IRepository<Team, long> teamRepository)
+        public MindfightService(IRepository<Mindfight, long> mindfightRepository, UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
             _userManager = userManager;
-            _teamRepository = teamRepository;
         }
 
-        public async Task<MindfightDto> Get(long mindfightId, long userId)
+        public async Task<MindfightDto> GetMindfight(long mindfightId, long userId)
         {
             //TODO check for permission (_userManager.AbpSession.UserId)
             var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.MindfightRegistrations)
-                .Include(x => x.AllowedTeams).ThenInclude(x => x.Team)
+                .GetAll()
+                .Include(x => x.Registrations).ThenInclude(x => x.Team)
                 .Include(x => x.Evaluators).ThenInclude(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId && !x.IsPrivate && x.IsActive);
+                .FirstOrDefaultAsync(x => x.Id == mindfightId && x.IsActive);
+
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             var mindfight = new MindfightDto
             {
                 Id = currentMindfight.Id,
@@ -55,6 +51,7 @@ namespace Skautatinklis.Services.MindfightService
                 EndTime = currentMindfight.EndTime,
                 PlayersLimit = currentMindfight.PlayersLimit
             };
+
             var getPrivateInfo = currentMindfight.CreatorId == userId;
             var getPrivateInfoForEvaluator = getPrivateInfo;
             if (!getPrivateInfo)
@@ -62,13 +59,9 @@ namespace Skautatinklis.Services.MindfightService
                 if (user.Team != null && currentMindfight.StartTime >= Clock.Now)
                 {
                     var userTeamAllowedToParticipate =
-                        currentMindfight.MindfightRegistrations.Any(x => x.Team == user.Team);
+                        currentMindfight.Registrations.Any(x => x.Team == user.Team);
 
-                    if (!currentMindfight.IsPrivate)
-                    {
-                        getPrivateInfo = true;
-                    }
-                    else if (userTeamAllowedToParticipate)
+                    if (userTeamAllowedToParticipate)
                     {
                         getPrivateInfo = true;
                     }
@@ -89,7 +82,7 @@ namespace Skautatinklis.Services.MindfightService
                 {
                     mindfight.TeamsAllowedToParticipate = new List<string>();
                     mindfight.UsersAllowedToEvaluate = new List<string>();
-                    foreach (var team in currentMindfight.AllowedTeams)
+                    foreach (var team in currentMindfight.Registrations.Where(x => x.IsConfirmed))
                     {
                         mindfight.TeamsAllowedToParticipate.Add(team.Team.Name);
                     }
@@ -102,46 +95,40 @@ namespace Skautatinklis.Services.MindfightService
             return mindfight;
         }
 
-        public async Task<long> Create(MindfightCreateUpdateDto mindfight, long creatorId)
+        public async Task<long> CreateMindfight(MindfightCreateUpdateDto mindfight, long creatorId)
         {
             //TODO check for permission (_userManager.AbpSession.UserId)
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == creatorId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User with creator id does not exist!");
-            }
+
             var mindfightWithSameName = await _mindfightRepository.FirstOrDefaultAsync(x => x.Title == mindfight.Title);
             if (mindfightWithSameName != null)
-            {
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
-            }
+
             var newMindfight = new Mindfight(user, mindfight.Title, mindfight.Description, mindfight.PlayersLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes, mindfight.IsPrivate);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
 
-        public async Task Update(MindfightDto mindfight, long mindfightId, long userId)
+        public async Task UpdateMindfight(MindfightDto mindfight, long mindfightId, long userId)
         {
             //TODO check for permission (_userManager.AbpSession.UserId)
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             if (currentMindfight.CreatorId != userId)
-            {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
+
             var mindfightWithSameName = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Title == mindfight.Title && x.Id != mindfightId);
             if (mindfightWithSameName != null)
-            {
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
-            }
+
             mindfight.MapTo(currentMindfight);
             currentMindfight.Id = mindfightId;
             currentMindfight.Evaluators = await GetEvaluatorsFromEmails(mindfight.UsersAllowedToEvaluate, currentMindfight);
@@ -149,78 +136,72 @@ namespace Skautatinklis.Services.MindfightService
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        public async Task Delete(long userId, long mindfightId)
+        public async Task DeleteMindfight(long userId, long mindfightId)
         {
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             if (currentMindfight.CreatorId != userId)
-            {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
+
             await _mindfightRepository.DeleteAsync(currentMindfight);
         }
 
-        public async Task<List<MindfightPublicDto>> GetUpcomingPublic()
+        public async Task<List<MindfightPublicDto>> GetUpcomingPublicMindfights()
         {
             var publicMindfights = await _mindfightRepository.GetAll()
-                .Where(x => !x.IsPrivate && x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();
+                .Where(x => x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();
             var publicMindfightsDto = new List<MindfightPublicDto>();
             publicMindfights.MapTo(publicMindfightsDto);
             return publicMindfightsDto;
         }
 
-        public async Task<List<MindfightPrivateDto>> GetUpcomingPrivateMindfights(long userId)
-        {
-            //TODO check for permission (_userManager.AbpSession.UserId)
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-            {
-                throw new UserFriendlyException("User with creator id does not exist!");
-            }
+        //public async Task<List<MindfightPrivateDto>> GetUpcomingPrivateMindfights(long userId)
+        //{
+        //    //TODO check for permission (_userManager.AbpSession.UserId)
+        //    var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+        //    if (user == null)
+        //        throw new UserFriendlyException("User with creator id does not exist!");
 
-            var privateMindfightsDto = new List<MindfightPrivateDto>();
-            var privateMindfights = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams).
-                Where(x => x.IsPrivate && x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();
+        //    var privateMindfightsDto = new List<MindfightPrivateDto>();
+        //    var privateMindfights = await _mindfightRepository
+        //        .GetAll()
+        //        .Include(x => x.Registrations).ThenInclude(x => x.Team)
+        //        .Where(x => x.IsPrivate && x.IsActive && x.IsConfirmed && !x.IsFinished).ToListAsync();
 
-            foreach (var mindfight in privateMindfights)
-            {
-                foreach (var allowed in mindfight.AllowedTeams)
-                {
-                    if (allowed.Team != user.Team && mindfight.CreatorId != user.Id)
-                        continue;
-                    var temp = new MindfightPrivateDto();
-                    allowed.Mindfight.MapTo(temp);
-                    privateMindfightsDto.Add(temp);
-                }
-            }
-            return privateMindfightsDto;
-        }
+        //    foreach (var mindfight in privateMindfights)
+        //    {
+        //        foreach (var allowed in mindfight.AllowedTeams)
+        //        {
+        //            if (allowed.Team != user.Team && mindfight.CreatorId != user.Id)
+        //                continue;
+        //            var temp = new MindfightPrivateDto();
+        //            allowed.Mindfight.MapTo(temp);
+        //            privateMindfightsDto.Add(temp);
+        //        }
+        //    }
+        //    return privateMindfightsDto;
+        //}
 
         public async Task UpdateEvaluators(long userId, long mindfightId, List<string> evaluatorEmails)
         {
             var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             if (currentMindfight.CreatorId != userId)
-            {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
+
             var evaluators = await _userManager.Users.IgnoreQueryFilters()
                 .Where(p => evaluatorEmails.Any(p2 => p2.ToUpper() == p.NormalizedEmailAddress))
                 .ToListAsync();
@@ -240,71 +221,66 @@ namespace Skautatinklis.Services.MindfightService
             //Add non-existant evaluators to mindfight
             foreach (var evaluator in evaluators)
             {
-                var mindfightEvaluators = new MindfightEvaluators(currentMindfight, evaluator);
+                var mindfightEvaluators = new MindfightEvaluator(currentMindfight, evaluator);
                 currentMindfight.Evaluators.Add(mindfightEvaluators);
             }
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        public async Task UpdateAllowedTeams(long userId, long mindfightId, List<string> allowedTeamNames)
-        {
-            var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
-            {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null)
-            {
-                throw new UserFriendlyException("User does not exist!");
-            }
-            if (currentMindfight.CreatorId != userId)
-            {
-                throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
-            var teams = await _teamRepository.GetAll()
-                .Where(team => allowedTeamNames.Any(name => string.Equals(name, team.Name, StringComparison.CurrentCultureIgnoreCase)))
-                .ToListAsync();
-            for (var i = currentMindfight.AllowedTeams.Count - 1; i >= 0; i--)
-            {
-                var currentTeam = currentMindfight.AllowedTeams.ElementAt(i);
-                if (teams.Contains(currentTeam.Team))
-                {
-                    teams.Remove(currentTeam.Team);
-                }
-                else
-                {
-                    currentMindfight.AllowedTeams.Remove(currentTeam);
-                }
-            }
-            //Add non-existant teams to mindfight
-            foreach (var team in teams)
-            {
-                var allowedTeams = new MindfightAllowedTeam(currentMindfight, team);
-                currentMindfight.AllowedTeams.Add(allowedTeams);
-            }
-            await _mindfightRepository.UpdateAsync(currentMindfight);
-        }
+        //public async Task UpdateAllowedTeams(long userId, long mindfightId, List<string> allowedTeamNames)
+        //{
+        //    var currentMindfight = await _mindfightRepository
+        //        .GetAllIncluding(x => x.AllowedTeams)
+        //        .FirstOrDefaultAsync(x => x.Id == mindfightId);
+        //    if (currentMindfight == null)
+        //        throw new UserFriendlyException("Mindfight with specified id does not exist!");
+
+        //    var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+        //    if (user == null)
+        //        throw new UserFriendlyException("User does not exist!");
+
+        //    if (currentMindfight.CreatorId != userId)
+        //        throw new UserFriendlyException("You are not creator of this mindfight!");
+
+        //    var teams = await _teamRepository.GetAll()
+        //        .Where(team => allowedTeamNames.Any(name => string.Equals(name, team.Name, StringComparison.CurrentCultureIgnoreCase)))
+        //        .ToListAsync();
+        //    for (var i = currentMindfight.AllowedTeams.Count - 1; i >= 0; i--)
+        //    {
+        //        var currentTeam = currentMindfight.AllowedTeams.ElementAt(i);
+        //        if (teams.Contains(currentTeam.Team))
+        //        {
+        //            teams.Remove(currentTeam.Team);
+        //        }
+        //        else
+        //        {
+        //            currentMindfight.AllowedTeams.Remove(currentTeam);
+        //        }
+        //    }
+        //    //Add non-existant teams to mindfight
+        //    foreach (var team in teams)
+        //    {
+        //        var allowedTeams = new MindfightConfirmedTeam(currentMindfight, team);
+        //        currentMindfight.AllowedTeams.Add(allowedTeams);
+        //    }
+        //    await _mindfightRepository.UpdateAsync(currentMindfight);
+        //}
 
         public async Task UpdateActiveStatus(long userId, long mindfightId, bool isActive)
         {
             //TODO check for admin or creator permission
-            var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams)
+            var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             if (currentMindfight.CreatorId != userId)
-            {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
+
             currentMindfight.IsActive = isActive;
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
@@ -312,21 +288,18 @@ namespace Skautatinklis.Services.MindfightService
         public async Task UpdateConfirmedStatus(long userId, long mindfightId, bool isConfirmed)
         {
             //TODO check for admin permission
-            var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams)
+            var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             if (currentMindfight.CreatorId != userId)
-            {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
+ 
             currentMindfight.IsConfirmed = isConfirmed;
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
@@ -334,80 +307,28 @@ namespace Skautatinklis.Services.MindfightService
         public async Task UpdateFinishedStatus(long userId, long mindfightId, bool isFinished)
         {
             //TODO check for admin or creator permission
-            var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams)
+            var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
+
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-            {
                 throw new UserFriendlyException("User does not exist!");
-            }
+
             if (currentMindfight.CreatorId != userId)
-            {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
-            }
+
             currentMindfight.IsFinished = isFinished;
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        private async Task<List<MindfightEvaluators>> GetEvaluatorsFromEmails(IReadOnlyCollection<string> evaluatorEmails, Mindfight mindfight)
+        private async Task<List<MindfightEvaluator>> GetEvaluatorsFromEmails(IReadOnlyCollection<string> evaluatorEmails, Mindfight mindfight)
         {
             var users = await _userManager.Users.IgnoreQueryFilters()
                 .Where(p => evaluatorEmails.All(p2 => p2.ToUpper() == p.NormalizedEmailAddress)).ToListAsync();
-            var evaluators = users.Select(user => new MindfightEvaluators(mindfight, user)).ToList();
+            var evaluators = users.Select(user => new MindfightEvaluator(mindfight, user)).ToList();
             return evaluators;
         }
-
-        //private void getTeamsFromName ()
-        //{
-        //    var evaluators = new List<MindfightAllowedTeam>();
-        //}
-
-
-        // Move to mindfight result
-        //public async Task<List<MindfightPublicDto>> GetPublicFinishedMindfights()
-        //{
-        //    var publicMindfights = await _mindfightRepository.GetAll().Where(x => !x.IsPrivate && !x.IsDeleted && x.IsConfirmed && x.IsFinished).ToListAsync();
-        //    var publicMindfightsDto = new List<MindfightPublicDto>();
-        //    publicMindfights.MapTo(publicMindfightsDto);
-        //    return publicMindfightsDto;
-        //}
-
-
-
-        //public async Task<MindfightCreateUpdateDto> GetMindfightEdit()
-        //{
-        //    //TODO check for permission (_userManager.AbpSession.UserId)
-        //}
-
-        //public async Task<MindfightPrivateDto> GetMindfightPlay(long mindfightId, long userId)
-        //{
-        //    //TODO check for permission (_userManager.AbpSession.UserId)
-        //    var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams).FirstOrDefaultAsync(x => x.Id == mindfightId && x.IsPrivate && !x.IsDeleted && x.IsConfirmed);
-        //    //var privateMindfights = await _mindfightRepository.GetAllIncluding(x => x.AllowedTeams).Where(x => x.IsPrivate && x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();
-        //    if (currentMindfight == null)
-        //    {
-        //        throw new UserFriendlyException("Mindfight with specified id does not exist!");
-        //    }
-        //    var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
-        //    if (user == null)
-        //    {
-        //        throw new UserFriendlyException("User does not exist!");
-        //    }
-        //    if (user.Team == null)
-        //    {
-        //        throw new UserFriendlyException("User does not have a team!");
-        //    }
-        //    if (currentMindfight.AllowedTeams.Any(x => x.TeamId != user.Team.Id))
-        //    {
-        //        throw new UserFriendlyException("User's team is not allowed to play this mindfight!");
-        //    }
-        //    var mindfight = new MindfightPrivateDto();
-        //    currentMindfight.MapTo(mindfight);
-        //    return mindfight;
-        //}
     }
 }

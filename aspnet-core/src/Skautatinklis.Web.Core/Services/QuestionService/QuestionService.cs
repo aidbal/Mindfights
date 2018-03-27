@@ -14,91 +14,95 @@ namespace Skautatinklis.Services.QuestionService
 {
     public class QuestionService : IQuestionService
     {
-        private readonly IRepository<Mindfight, long> _mindfightRepository;
-        private readonly IRepository<MindfightQuestion, long> _mindfightQuestionRepository;
-        private readonly IRepository<MindfightQuestionType, long> _mindfightQuestionTypeRepository;
+        private readonly IRepository<Question, long> _questionRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
+        private readonly IRepository<Tour, long> _tourRepository;
         private readonly UserManager _userManager;
 
         public QuestionService(
-            IRepository<Mindfight, long> mindfightRepository, 
-            IRepository<MindfightQuestion, long> mindfightQuestionRepository, 
-            IRepository<MindfightQuestionType, long> mindfightQuestionTypeRepository, 
+            IRepository<Question, long> questionRepository, 
             IRepository<Team, long> teamRepository, 
             IRepository<TeamAnswer, long> teamAnswerRepository, 
+            IRepository<Tour, long> tourRepository, 
             UserManager userManager)
         {
-            _mindfightRepository = mindfightRepository;
-            _mindfightQuestionRepository = mindfightQuestionRepository;
-            _mindfightQuestionTypeRepository = mindfightQuestionTypeRepository;
+            _questionRepository = questionRepository;
             _teamRepository = teamRepository;
             _teamAnswerRepository = teamAnswerRepository;
+            _tourRepository = tourRepository;
             _userManager = userManager;
         }
 
-        public async Task<List<MindfightQuestionDto>> GetAllQuestions(long mindfightId, long userId)
+        public async Task<List<QuestionDto>> GetAllTourQuestions(long tourId, long userId)
         {
-            var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.Evaluators)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
+            var currentTour = await _tourRepository
+                .GetAll()
+                .Include(x => x.Mindfight)
+                .ThenInclude(x => x.Evaluators)
+                .FirstOrDefaultAsync(x => x.Id == tourId);
+
+            if (currentTour == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
             
-            if (currentMindfight.CreatorId != userId || currentMindfight.Evaluators.All(x => x.UserId != userId))
+            if (currentTour.Mindfight.CreatorId != userId || currentTour.Mindfight.Evaluators.All(x => x.UserId != userId))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
-            var questionsDto = new List<MindfightQuestionDto>();
-            var questions = await _mindfightQuestionRepository
+            var questionsDto = new List<QuestionDto>();
+            var questions = await _questionRepository
                 .GetAll()
-                .Where(x => x.MindfightId == currentMindfight.Id)
+                .Where(x => x.TourId == currentTour.Id)
                 .ToListAsync();
+
             foreach (var question in questions)
             {
-                var questionDto = new MindfightQuestionDto();
+                var questionDto = new QuestionDto();
                 question.MapTo(questionDto);
                 questionsDto.Add(questionDto);
             }
             return questionsDto;
         }
 
-        public async Task<MindfightQuestionDto> GetQuestion(long mindfightId, long userId, int orderNumber)
+        public async Task<QuestionDto> GetQuestion(long tourId, long userId, int orderNumber)
         {
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
             
-            var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.Evaluators)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            var currentTour = await _tourRepository
+                .GetAll()
+                .Include(x => x.Mindfight)
+                .ThenInclude(x => x.Evaluators)
+                .FirstOrDefaultAsync(x => x.Id == tourId);
 
-            if (currentMindfight.CreatorId != userId || currentMindfight.Evaluators.All(x => x.UserId != userId))
+            if (currentTour == null)
+                throw new UserFriendlyException("Tour with specified id does not exist!");
+
+            if (currentTour.Mindfight.CreatorId != userId || currentTour.Mindfight.Evaluators.All(x => x.UserId != userId))
                 throw new UserFriendlyException("Insufficient permissions to get this question!");
 
-            var currentQuestion = await _mindfightQuestionRepository.FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
+            var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
             if (currentQuestion == null)
                 throw new UserFriendlyException("Question with specified order number does not exist!");
 
-            var question = new MindfightQuestionDto();
+            var question = new QuestionDto();
             currentQuestion.MapTo(question);
             return question;
         }
 
-        public async Task<MindfightQuestionDto> GetNextQuestion(long mindfightId, long teamId, long userId)
+        public async Task<QuestionDto> GetNextQuestion(long tourId, long teamId, long userId)
         {
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            var currentTour = await _tourRepository.FirstOrDefaultAsync(x => x.Id == tourId);
+            if (currentTour == null)
+                throw new UserFriendlyException("Tour with specified id does not exist!");
 
             //if (currentMindfight.StartTime.AddMinutes(currentMindfight.PrepareTime ?? 0) > Clock.Now.AddMinutes(-1))
             //    throw new UserFriendlyException("Mindfight has not yet started!");
@@ -115,17 +119,17 @@ namespace Skautatinklis.Services.QuestionService
             var lastTeamAnswer = await _teamAnswerRepository
                 .GetAllIncluding(x => x.Question)
                 .OrderByDescending(x => x.Question.OrderNumber)
-                .FirstOrDefaultAsync(x => x.TeamId == teamId && x.Question.MindfightId == mindfightId);
+                .FirstOrDefaultAsync(x => x.TeamId == teamId && x.Question.TourId == tourId);
 
             var nextQuestionOrderNumber = 1;
 
             if (lastTeamAnswer != null)
                 nextQuestionOrderNumber = lastTeamAnswer.Question.OrderNumber + 1;
 
-            var mindfightQuestions = await _mindfightQuestionRepository
+            var mindfightQuestions = await _questionRepository
                 .GetAll()
                 .OrderBy(x => x.OrderNumber)
-                .Where(x => x.MindfightId == mindfightId && x.OrderNumber >= nextQuestionOrderNumber)
+                .Where(x => x.TourId == tourId && x.OrderNumber >= nextQuestionOrderNumber)
                 .ToListAsync();
 
             if (mindfightQuestions.Count == 0)
@@ -133,7 +137,7 @@ namespace Skautatinklis.Services.QuestionService
 
             var currentQuestion = mindfightQuestions.First();
 
-            var questionDto = new MindfightQuestionDto();
+            var questionDto = new QuestionDto();
             currentQuestion.MapTo(questionDto);
 
             if (mindfightQuestions.Count == 1)
@@ -142,66 +146,63 @@ namespace Skautatinklis.Services.QuestionService
             return questionDto;
         }
 
-        public async Task<long> CreateQuestion(MindfightQuestionDto question, long mindfightId, long userId)
+        public async Task<long> CreateQuestion(QuestionDto question, long tourId, long userId)
         {
-            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            var currentTour = await _tourRepository
+                .GetAll()
+                .Include(x => x.Mindfight)
+                .FirstOrDefaultAsync(x => x.Id == tourId);
+            if (currentTour == null)
+                throw new UserFriendlyException("Tour with specified id does not exist!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentTour.Mindfight.CreatorId != userId)
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
-            var questionType = await _mindfightQuestionTypeRepository.FirstOrDefaultAsync(x => x.Id == question.QuestionTypeId);
-            if (questionType == null)
-                throw new UserFriendlyException("There was a problem getting question type from database!");
-
-            question.OrderNumber = await GetLastOrderNumber(mindfightId);
+            question.OrderNumber = await GetLastOrderNumber(tourId);
             question.OrderNumber = question.OrderNumber == 0 ? 1 : question.OrderNumber;
-            currentMindfight.QuestionsCount += 1;
+            currentTour.QuestionsCount += 1;
             var points = question.Points > 0 ? question.Points : 0;
-            currentMindfight.TotalPoints += points;
+            currentTour.TotalPoints += points;
 
-            var questionToCreate = new MindfightQuestion(
-                currentMindfight,
-                questionType,
+            var questionToCreate = new Question(
+                currentTour,
                 question.Title,
                 question.Description,
                 question.TimeToAnswerInSeconds,
                 points,
                 question.OrderNumber, 
                 question.AttachmentLocation);
-            return await _mindfightQuestionRepository.InsertAndGetIdAsync(questionToCreate);
+            return await _questionRepository.InsertAndGetIdAsync(questionToCreate);
         }
 
-        public async Task UpdateQuestion(MindfightQuestionDto question, long questionId, long mindfightId, long userId)
+        public async Task UpdateQuestion(QuestionDto question, long questionId, long mindfightId, long userId)
         {
-            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
+            var currentTour = await _tourRepository
+                .GetAll()
+                .Include(x => x.Mindfight)
+                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+            if (currentTour == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentTour.Mindfight.CreatorId != userId)
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
-            var questionToUpdate = await _mindfightQuestionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
+            var questionToUpdate = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
             if (questionToUpdate == null)
                 throw new UserFriendlyException("Question with specified id does not exist!");
-
-            var questionType = await _mindfightQuestionTypeRepository.FirstOrDefaultAsync(x => x.Id == question.QuestionTypeId);
-            if (questionType == null)
-                throw new UserFriendlyException("There was a problem getting question type from database!");
-
+            
             question.OrderNumber = questionToUpdate.OrderNumber;
             question.MapTo(questionToUpdate);
             questionToUpdate.Id = questionId;
-            await _mindfightQuestionRepository.UpdateAsync(questionToUpdate);
+            await _questionRepository.UpdateAsync(questionToUpdate);
         }
 
         public async Task DeleteQuestion(long questionId, long userId)
@@ -210,45 +211,50 @@ namespace Skautatinklis.Services.QuestionService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            var questionToDelete = await _mindfightQuestionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
+            var questionToDelete = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
             if (questionToDelete == null)
                 throw new UserFriendlyException("Question with specified id does not exist!");
 
-            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == questionToDelete.MindfightId);
-            if (currentMindfight == null)
+            var currentTour = await _tourRepository
+                .GetAll()
+                .Include(x => x.Mindfight)
+                .FirstOrDefaultAsync(x => x.Id == questionToDelete.TourId);
+
+            if (currentTour == null)
                 throw new UserFriendlyException("Error getting question's mindfight!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentTour.Mindfight.CreatorId != userId)
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
-            currentMindfight.QuestionsCount -= 1;
+            currentTour.QuestionsCount -= 1;
             var orderNumber = questionToDelete.OrderNumber;
-            await UpdateOrderNumbers(orderNumber, questionToDelete.Id, currentMindfight.Id);
-            await _mindfightQuestionRepository.DeleteAsync(questionToDelete);
+            await UpdateOrderNumbers(orderNumber, questionToDelete.Id, currentTour.Id);
+            await _questionRepository.DeleteAsync(questionToDelete);
         }
 
         public async Task UpdateOrderNumber(long questionId, long userId, int newOrderNumber)
         {
-            var currentQuestion = await _mindfightQuestionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
+            var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
             if (currentQuestion == null)
                 throw new UserFriendlyException("Question with specified id does not exist!");
 
-            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.MindfightQuestions.Any(y => y.Id == questionId));
-            if (currentMindfight == null)
+            var currentTour = await _tourRepository.FirstOrDefaultAsync(x => x.Questions.Any(y => y.Id == questionId));
+            if (currentTour == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            var questionWithNewOrderNumber = await _mindfightQuestionRepository.GetAll()
-                .Where(x => x.MindfightId == currentQuestion.MindfightId && x.OrderNumber == newOrderNumber)
+            var questionWithNewOrderNumber = await _questionRepository
+                .GetAll()
+                .Where(x => x.TourId == currentQuestion.TourId && x.OrderNumber == newOrderNumber)
                 .FirstOrDefaultAsync();
             if (questionWithNewOrderNumber == null)
             {
-                var lastOrderNumber = await GetLastOrderNumber(currentQuestion.MindfightId);
-                var lastQuestion = await _mindfightQuestionRepository.GetAll()
-                    .Where(x => x.MindfightId == currentQuestion.MindfightId && x.OrderNumber == lastOrderNumber)
+                var lastOrderNumber = await GetLastOrderNumber(currentQuestion.TourId);
+                var lastQuestion = await _questionRepository.GetAll()
+                    .Where(x => x.TourId == currentQuestion.TourId && x.OrderNumber == lastOrderNumber)
                     .FirstOrDefaultAsync();
                 if (lastQuestion != null)
                 {
@@ -263,10 +269,10 @@ namespace Skautatinklis.Services.QuestionService
             }
         }
 
-        private async Task UpdateOrderNumbers(int deletedOrderNumber, long deletedQuestionId, long mindfightId)
+        private async Task UpdateOrderNumbers(int deletedOrderNumber, long deletedQuestionId, long tourId)
         {
-            var questions = await _mindfightQuestionRepository.GetAll()
-                .Where(x => x.MindfightId == mindfightId && x.Id != deletedQuestionId)
+            var questions = await _questionRepository.GetAll()
+                .Where(x => x.TourId == tourId && x.Id != deletedQuestionId)
                 .OrderBy(x => x.OrderNumber)
                 .ToListAsync();
             var nextOrderNumber = deletedOrderNumber;
@@ -278,11 +284,14 @@ namespace Skautatinklis.Services.QuestionService
             }
         }
 
-        private async Task<int> GetLastOrderNumber(long mindfightId)
+        private async Task<int> GetLastOrderNumber(long tourId)
         {
             var lastOrderNumber = 0;
-            var lastQuestion = await _mindfightQuestionRepository.GetAll().Where(x => x.MindfightId == mindfightId)
-                .OrderByDescending(x => x.OrderNumber).FirstOrDefaultAsync();
+            var lastQuestion = await _questionRepository
+                .GetAll()
+                .Where(x => x.TourId == tourId)
+                .OrderByDescending(x => x.OrderNumber)
+                .FirstOrDefaultAsync();
 
             if (lastQuestion != null)
             {

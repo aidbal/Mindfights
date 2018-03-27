@@ -15,12 +15,12 @@ namespace Skautatinklis.Services.RegistrationService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
-        private readonly IRepository<MindfightRegistration, long> _registrationRepository;
+        private readonly IRepository<Registration, long> _registrationRepository;
         private readonly UserManager _userManager;
 
         public RegistrationService(
             IRepository<Mindfight, long> mindfightRepository,
-            IRepository<MindfightRegistration, long> registrationRepository,
+            IRepository<Registration, long> registrationRepository,
             IRepository<Team, long> teamRepository,
             UserManager userManager)
         {
@@ -41,7 +41,6 @@ namespace Skautatinklis.Services.RegistrationService
                 throw new UserFriendlyException("User does not exist!");
 
             var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.AllowedTeams)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
@@ -57,12 +56,9 @@ namespace Skautatinklis.Services.RegistrationService
             if (currentTeam == null)
                 throw new UserFriendlyException("Team with specified id does not exist!");
 
-            if (currentMindfight.IsPrivate && currentMindfight.AllowedTeams.All(x => x.TeamId != teamId))
-                throw new UserFriendlyException("Team is not allowed to register to this private mindfight!");
-
             var currentRegistration = await _registrationRepository
                                           .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId) ??
-                                      new MindfightRegistration(currentMindfight, currentTeam);
+                                      new Registration(currentMindfight, currentTeam);
 
             currentRegistration.CreationTime = Clock.Now;
             return await _registrationRepository.InsertOrUpdateAndGetIdAsync(currentRegistration);
@@ -78,7 +74,6 @@ namespace Skautatinklis.Services.RegistrationService
                 throw new UserFriendlyException("User does not exist!");
 
             var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.AllowedTeams)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
@@ -118,10 +113,8 @@ namespace Skautatinklis.Services.RegistrationService
                 throw new UserFriendlyException("Team with specified id does not exist!");
 
             var currentMindfights = await _mindfightRepository
-                .GetAllIncluding(x => x.AllowedTeams)
-                .Where(x => x.IsActive && !x.IsFinished && x.IsConfirmed 
-                    && (!x.IsPrivate || x.AllowedTeams.Any(t => t.TeamId == teamId))
-                    && x.StartTime > Clock.Now)
+                .GetAllIncluding(x => x.Registrations)
+                .Where(x => x.IsActive && !x.IsFinished && x.IsConfirmed && x.StartTime > Clock.Now)
                 .ToListAsync();
 
             var currentRegistrations = await _registrationRepository
@@ -133,7 +126,6 @@ namespace Skautatinklis.Services.RegistrationService
                 {
                     MindfightId = registration.MindfightId,
                     CreationTime = registration.CreationTime,
-                    IsMindfightPrivate = registration.Mindfight.IsPrivate,
                     MindfightName = registration.Mindfight.Title,
                     MindfightStartTime = registration.Mindfight.StartTime,
                     TeamId = registration.TeamId,
@@ -167,7 +159,6 @@ namespace Skautatinklis.Services.RegistrationService
                 {
                     MindfightId = registration.MindfightId,
                     CreationTime = registration.CreationTime,
-                    IsMindfightPrivate = registration.Mindfight.IsPrivate,
                     MindfightName = registration.Mindfight.Title,
                     MindfightStartTime = registration.Mindfight.StartTime,
                     TeamId = registration.TeamId,
