@@ -2,7 +2,7 @@
 
 namespace Skautatinklis.Services.QuestionAnswerService
 {
-    public interface IQuestionAnswerService : IApplicationService
+    public interface IAnswerService : IApplicationService
     {
     }
 }

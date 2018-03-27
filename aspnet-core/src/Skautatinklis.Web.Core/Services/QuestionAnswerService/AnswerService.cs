@@ -11,26 +11,28 @@ using Skautatinklis.Models;
 
 namespace Skautatinklis.Services.QuestionAnswerService
 {
-    public class QuestionAnswerService : IQuestionAnswerService
+    public class AnswerService : IAnswerService
     {
-        private readonly IRepository<MindfightQuestion, long> _mindfightQuestionRepository;
-        private readonly IRepository<MindfightQuestionAnswer, long> _questionAnswerRepository;
+        private readonly IRepository<Question, long> _questionRepository;
+        private readonly IRepository<Answer, long> _answerRepository;
         private readonly UserManager _userManager;
 
-        public QuestionAnswerService(
-            IRepository<MindfightQuestion, long> mindfightQuestionRepository, 
-            IRepository<MindfightQuestionAnswer, long> questionAnswerRepository,
+        public AnswerService(
+            IRepository<Question, long> questionRepository, 
+            IRepository<Answer, long> answerRepository,
             UserManager userManager)
         {
-            _mindfightQuestionRepository = mindfightQuestionRepository;
+            _questionRepository = questionRepository;
             _userManager = userManager;
-            _questionAnswerRepository = questionAnswerRepository;
+            _answerRepository = answerRepository;
         }
 
         public async Task<List<MindfightQuestionAnswerDto>> GetQuestionAllAnswers(long questionId, long userId)
         {
-            var currentQuestion = await _mindfightQuestionRepository
-                .GetAllIncluding(x => x.Mindfight)
+            var currentQuestion = await _questionRepository
+                .GetAll()
+                .Include(x => x.Tour)
+                .ThenInclude(x => x.Mindfight)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
             if (currentQuestion == null)
             {
@@ -45,13 +47,13 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("User does not exist!");
             }
 
-            if (currentQuestion.Mindfight.CreatorId != userId)
+            if (currentQuestion.Tour.Mindfight.CreatorId != userId)
             {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
             }
 
             var questionAnswers = new List<MindfightQuestionAnswerDto>();
-            var answers = await _questionAnswerRepository.GetAll()
+            var answers = await _answerRepository.GetAll()
                 .Where(x => x.QuestionId == questionId)
                 .ToListAsync();
 
@@ -66,7 +68,7 @@ namespace Skautatinklis.Services.QuestionAnswerService
 
         public async Task<MindfightQuestionAnswerDto> GetQuestionAnswer(long answerId, long userId)
         {
-            var currentAnswer = await _questionAnswerRepository
+            var currentAnswer = await _answerRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == answerId);
             if (currentAnswer == null)
@@ -74,8 +76,10 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("Answer with specified id does not exist!");
             }
 
-            var currentQuestion = await _mindfightQuestionRepository
-                .GetAllIncluding(x => x.Mindfight)
+            var currentQuestion = await _questionRepository
+                .GetAll()
+                .Include(x => x.Tour)
+                .ThenInclude(x => x.Mindfight)
                 .FirstOrDefaultAsync(x => x.Id == currentAnswer.QuestionId);
             if (currentQuestion == null)
             {
@@ -90,7 +94,7 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("User does not exist!");
             }
 
-            if (currentQuestion.Mindfight.CreatorId != userId)
+            if (currentQuestion.Tour.Mindfight.CreatorId != userId)
             {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
             }
@@ -101,7 +105,11 @@ namespace Skautatinklis.Services.QuestionAnswerService
 
         public async Task<long> CreateQuestionAnswer(MindfightQuestionAnswerDto answer, long questionId, long userId)
         {
-            var currentQuestion = await _mindfightQuestionRepository.GetAllIncluding(x => x.Mindfight).FirstOrDefaultAsync(x => x.Id == questionId);
+            var currentQuestion = await _questionRepository
+                .GetAll()
+                .Include(x => x.Tour)
+                .ThenInclude(x => x.Mindfight)
+                .FirstOrDefaultAsync(x => x.Id == questionId);
             if (currentQuestion == null)
             {
                 throw new UserFriendlyException("Question with specified id does not exist!");
@@ -113,18 +121,18 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("User does not exist!");
             }
 
-            if (currentQuestion.Mindfight.CreatorId != userId)
+            if (currentQuestion.Tour.Mindfight.CreatorId != userId)
             {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
             }
 
-            var answerToCreate = new MindfightQuestionAnswer(currentQuestion, answer.Answer, answer.IsCorrect);
-            return await _questionAnswerRepository.InsertAndGetIdAsync(answerToCreate);
+            var answerToCreate = new Answer(currentQuestion, answer.Description, answer.IsCorrect);
+            return await _answerRepository.InsertAndGetIdAsync(answerToCreate);
         }
 
         public async Task UpdateQuestionAnswer(MindfightQuestionAnswerDto answer, long answerId, long userId)
         {
-            var currentAnswer = await _questionAnswerRepository
+            var currentAnswer = await _answerRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == answerId);
             if (currentAnswer == null)
@@ -132,8 +140,10 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("Answer with specified id does not exist!");
             }
 
-            var currentQuestion = await _mindfightQuestionRepository
-                .GetAllIncluding(x => x.Mindfight)
+            var currentQuestion = await _questionRepository
+                .GetAll()
+                .Include(x => x.Tour)
+                .ThenInclude(x => x.Mindfight)
                 .FirstOrDefaultAsync(x => x.Id == currentAnswer.QuestionId);
             if (currentQuestion == null)
             {
@@ -148,19 +158,19 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("User does not exist!");
             }
 
-            if (currentQuestion.Mindfight.CreatorId != userId)
+            if (currentQuestion.Tour.Mindfight.CreatorId != userId)
             {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
             }
 
-            currentAnswer.Answer = answer.Answer;
+            currentAnswer.Description = answer.Description;
             currentAnswer.IsCorrect = answer.IsCorrect;
-            await _questionAnswerRepository.UpdateAsync(currentAnswer);
+            await _answerRepository.UpdateAsync(currentAnswer);
         }
 
         public async Task DeleteQuestionAnswer(long answerId, long userId)
         {
-            var currentAnswer = await _questionAnswerRepository
+            var currentAnswer = await _answerRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == answerId);
             if (currentAnswer == null)
@@ -168,8 +178,10 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("Answer with specified id does not exist!");
             }
 
-            var currentQuestion = await _mindfightQuestionRepository
-                .GetAllIncluding(x => x.Mindfight)
+            var currentQuestion = await _questionRepository
+                .GetAll()
+                .Include(x => x.Tour)
+                .ThenInclude(x => x.Mindfight)
                 .FirstOrDefaultAsync(x => x.Id == currentAnswer.QuestionId);
             if (currentQuestion == null)
             {
@@ -184,12 +196,12 @@ namespace Skautatinklis.Services.QuestionAnswerService
                 throw new UserFriendlyException("User does not exist!");
             }
 
-            if (currentQuestion.Mindfight.CreatorId != userId)
+            if (currentQuestion.Tour.Mindfight.CreatorId != userId)
             {
                 throw new UserFriendlyException("You are not creator of this mindfight!");
             }
             
-            await _questionAnswerRepository.DeleteAsync(currentAnswer);
+            await _answerRepository.DeleteAsync(currentAnswer);
         }
     }
 }
