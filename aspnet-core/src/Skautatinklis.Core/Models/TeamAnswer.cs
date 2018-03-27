@@ -9,7 +9,6 @@ namespace Skautatinklis.Models
     public class TeamAnswer : Entity<long>, IHasCreationTime, ISoftDelete
     {
         public string EnteredAnswer { get; set; }
-        public int ElapsedTimeInSeconds { get; set; }
         public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
         public bool IsCurrentlyEvaluated { get; set; }
@@ -20,24 +19,19 @@ namespace Skautatinklis.Models
         public long TeamId { get; set; }
         public Team Team { get; set; }
         public long QuestionId { get; set; }
-        public MindfightQuestion Question { get; set; }
+        public Question Question { get; set; }
         public long? EvaluatorId { get; set; }
         public User Evaluator { get; set; }
-        public long UserId { get; set; }
-        public User User { get; set; }
 
-        public TeamAnswer(MindfightQuestion question, User user, Team team,
-            string enteredAnswer, int elapsedTimeInSeconds, bool isEvaluated) : this()
+        public TeamAnswer(Question question, Team team,
+            string enteredAnswer, bool isEvaluated) : this()
         {
             IsEvaluated = isEvaluated;
             EnteredAnswer = enteredAnswer;
-            ElapsedTimeInSeconds = elapsedTimeInSeconds;
             Team = team;
             TeamId = team.Id;
             Question = question;
             QuestionId = question.Id;
-            User = user;
-            UserId = user.Id;
         }
 
         private TeamAnswer()

@@ -16,12 +16,14 @@ namespace Skautatinklis.Models
         public Mindfight Mindfight { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
+        public bool IsWinner { get; set; }
         public ICollection<UserMindfightResult> Users { get; set; }
 
-        public MindfightResult(int earnedPoints, bool isEvaluated, Team team, Mindfight mindfight) : this()
+        public MindfightResult(int earnedPoints, bool isEvaluated, bool isWinner, Team team, Mindfight mindfight) : this()
         {
             EarnedPoints = earnedPoints;
             IsEvaluated = isEvaluated;
+            IsWinner = isWinner;
             Team = team;
             TeamId = team.Id;
             Mindfight = mindfight;

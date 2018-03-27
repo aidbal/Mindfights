@@ -20,7 +20,6 @@ namespace Skautatinklis.Models
         public DateTime CreationTime { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-        public bool IsPrivate { get; set; }
         public bool IsConfirmed { get; set; }
         public bool IsFinished { get; set; }
         public int TotalTimeLimitInMinutes { get; set; }
@@ -28,30 +27,28 @@ namespace Skautatinklis.Models
         public User Creator { get; set; }
         public long? WinnersId { get; set; }
         public Team Winners { get; set; }
-        public ICollection<MindfightEvaluators> Evaluators { get; set; }
-        public ICollection<MindfightRegistration> MindfightRegistrations { get; set; }
-        public ICollection<MindfightQuestion> MindfightQuestions { get; set; }
-        public ICollection<MindfightAllowedTeam> AllowedTeams { get; set; }
+        public ICollection<MindfightEvaluator> Evaluators { get; set; }
+        public ICollection<Registration> Registrations { get; set; }
+        public ICollection<Tour> Tours { get; set; }
 
         public Mindfight(User creator, string title, string description, int playersLimit, DateTime startTime,
             DateTime? endTime, int? prepareTime, int totalTimeLimitInMinutes, bool isPrivate) : this()
         {
             Title = title;
             Description = description;
-            Evaluators = new List<MindfightEvaluators> { new MindfightEvaluators(this, creator) };
+            Evaluators = new List<MindfightEvaluator> { new MindfightEvaluator(this, creator) };
             CreatorId = creator.Id;
             PlayersLimit = playersLimit;
             StartTime = startTime;
             EndTime = endTime;
             PrepareTime = prepareTime;
             TotalTimeLimitInMinutes = totalTimeLimitInMinutes;
-            IsPrivate = isPrivate;
         }
 
         private Mindfight()
         {
-            MindfightQuestions = new List<MindfightQuestion>();
-            MindfightRegistrations = new List<MindfightRegistration>();
+            Tours = new List<Tour>();
+            Registrations = new List<Registration>();
             CreationTime = Clock.Now;
             TotalPoints = 0;
             QuestionsCount = 0;
