@@ -6,7 +6,7 @@ namespace Skautatinklis.DTOs
     {
         public long Id { get; set; }
         [Required]
-        public string Answer { get; set; }
+        public string Description { get; set; }
         [Required]
         public bool IsCorrect { get; set; }
     }

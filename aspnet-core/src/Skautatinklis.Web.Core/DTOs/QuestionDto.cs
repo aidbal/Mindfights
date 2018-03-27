@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Skautatinklis.DTOs
 {
-    [AutoMapTo(typeof(MindfightQuestion))]
-    [AutoMapFrom(typeof(MindfightQuestion))]
-    public class MindfightQuestionDto
+    [AutoMapTo(typeof(Question))]
+    [AutoMapFrom(typeof(Question))]
+    public class QuestionDto
     {
         public long Id { get; set; }
 
@@ -29,8 +29,7 @@ namespace Skautatinklis.DTOs
         [Required]
         public int OrderNumber { get; set; }
 
-        [Required]
-        public long QuestionTypeId { get; set; }
+        public long TourId { get; set; }
 
         public bool IsLastQuestion { get; set; } = false;
     }
