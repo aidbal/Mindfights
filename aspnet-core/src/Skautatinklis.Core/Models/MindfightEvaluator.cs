@@ -2,14 +2,14 @@
 
 namespace Skautatinklis.Models
 {
-    public class MindfightEvaluators
+    public class MindfightEvaluator
     {
         public long UserId { get; set; }
         public User User { get; set; }
         public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
 
-        public MindfightEvaluators(Mindfight mindfight, User user)
+        public MindfightEvaluator(Mindfight mindfight, User user)
         {
             Mindfight = mindfight;
             MindfightId = mindfight.Id;
@@ -17,6 +17,6 @@ namespace Skautatinklis.Models
             UserId = user.Id;
         }
 
-        private MindfightEvaluators() {}
+        private MindfightEvaluator() {}
     }
 }

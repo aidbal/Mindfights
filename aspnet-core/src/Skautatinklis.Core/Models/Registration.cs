@@ -5,15 +5,16 @@ using System;
 
 namespace Skautatinklis.Models
 {
-    public class MindfightRegistration : Entity<long>, IHasCreationTime
+    public class Registration : Entity<long>, IHasCreationTime
     {
         public long TeamId { get; set; }
         public Team Team { get; set; }
         public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
         public DateTime CreationTime { get; set; }
+        public bool IsConfirmed { get; set; }
 
-        public MindfightRegistration(Mindfight mindfight, Team team) : this()
+        public Registration(Mindfight mindfight, Team team) : this()
         {
             Team = team;
             TeamId = team.Id;
@@ -21,8 +22,9 @@ namespace Skautatinklis.Models
             MindfightId = mindfight.Id;
         }
 
-        private MindfightRegistration()
+        private Registration()
         {
+            IsConfirmed = false;
             CreationTime = Clock.Now;
         }
     }

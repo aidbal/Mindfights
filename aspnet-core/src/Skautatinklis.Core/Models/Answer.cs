@@ -5,25 +5,25 @@ using Abp.Timing;
 
 namespace Skautatinklis.Models
 {
-    public class MindfightQuestionAnswer : Entity<long>, IHasCreationTime, ISoftDelete
+    public class Answer : Entity<long>, IHasCreationTime, ISoftDelete
     {
-        public string Answer { get; set; }
+        public string Description { get; set; }
         public bool IsCorrect { get; set; }
         public long QuestionId { get; set; }
-        public MindfightQuestion Question { get; set; }
+        public Question Question { get; set; }
 
         public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
 
 
-        private MindfightQuestionAnswer()
+        private Answer()
         {
             CreationTime = Clock.Now;
         }
 
-        public MindfightQuestionAnswer(MindfightQuestion question, string answer, bool isCorrect) : this()
+        public Answer(Question question, string description, bool isCorrect) : this()
         {
-            Answer = answer;
+            Description = description;
             IsCorrect = isCorrect;
             Question = question;
             QuestionId = question.Id;
