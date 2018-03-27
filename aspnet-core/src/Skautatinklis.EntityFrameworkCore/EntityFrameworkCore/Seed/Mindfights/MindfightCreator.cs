@@ -24,10 +24,9 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
             AddDefaultCities();
             //TODO add cities seed
             CreateMindfight();
-            CreateQuestionType();
+            CreateTour();
             CreateQuestion();
             CreateAnswers();
-            CreateScoutGroup();
             CreateTeam();
             CreateRegistration();
             CreateTeamAnswers();
@@ -119,28 +118,28 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
             }
         }
 
-        private void CreateQuestionType()
+        private void CreateTour()
         {
-            var questionType = _context.MindfightQuestionTypes.IgnoreQueryFilters().FirstOrDefault(t => t.Type == "Test");
-            if (questionType == null)
+            var mindfight = _context.Mindfights.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "Demo");
+            var tour = _context.Tours.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoTour");
+            if (tour == null && mindfight != null)
             {
-                questionType = new MindfightQuestionType { Type = "Test" };
+                tour = new Tour(mindfight, "DemoTour", "DemoDescription", 120, 1);
 
-                _context.MindfightQuestionTypes.Add(questionType);
+                _context.Tours.Add(tour);
                 _context.SaveChanges();
             }
         }
 
         private void CreateQuestion()
         {
-            var mindfight = _context.Mindfights.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "Demo");
-            var questionType = _context.MindfightQuestionTypes.IgnoreQueryFilters().FirstOrDefault(t => t.Type == "Test");
-            var question = _context.MindfightQuestions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
-            if (question == null && mindfight != null && questionType != null)
+            var tour = _context.Tours.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoTour");
+            var question = _context.Questions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
+            if (tour != null && question == null)
             {
-                question = new MindfightQuestion(mindfight, questionType, "DemoQuestion", "DemoDescription", 10, 1, null);
+                question = new Question(tour, "DemoQuestion", "DemoDescription", 10, 10, 1, null);
 
-                _context.MindfightQuestions.Add(question);
+                _context.Questions.Add(question);
                 _context.SaveChanges();
             }
         }
@@ -148,29 +147,16 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
         private void CreateAnswers()
         {
             var mindfight = _context.Mindfights.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "Demo");
-            var question = _context.MindfightQuestions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
-            var answer1 = _context.MindfightQuestionAnswers.IgnoreQueryFilters().FirstOrDefault(t => t.Answer == "DemoAnswer1");
-            var answer2 = _context.MindfightQuestionAnswers.IgnoreQueryFilters().FirstOrDefault(t => t.Answer == "DemoAnswer2");
+            var question = _context.Questions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
+            var answer1 = _context.Answers.IgnoreQueryFilters().FirstOrDefault(t => t.Description == "DemoAnswer1");
+            var answer2 = _context.Answers.IgnoreQueryFilters().FirstOrDefault(t => t.Description == "DemoAnswer2");
             if (mindfight != null && question != null && answer1 == null && answer2 == null)
             {
-                answer1 = new MindfightQuestionAnswer(question, "DemoAnswer1", false);
-                answer2 = new MindfightQuestionAnswer(question, "DemoAnswer2", false);
+                answer1 = new Answer(question, "DemoAnswer1", false);
+                answer2 = new Answer(question, "DemoAnswer2", false);
 
-                _context.MindfightQuestionAnswers.Add(answer1);
-                _context.MindfightQuestionAnswers.Add(answer2);
-                _context.SaveChanges();
-            }
-        }
-
-        private void CreateScoutGroup()
-        {
-            var scoutGroup = _context.ScoutGroups.IgnoreQueryFilters().FirstOrDefault(t => t.Name == "Demo");
-            var user = _context.Users.IgnoreQueryFilters().FirstOrDefault(u => u.TenantId == null && u.UserName == AbpUserBase.AdminUserName);
-            if (scoutGroup == null && user != null)
-            {
-                scoutGroup = new ScoutGroup(user, "Demo", "Best Demo Team!");
-
-                _context.ScoutGroups.Add(scoutGroup);
+                _context.Answers.Add(answer1);
+                _context.Answers.Add(answer2);
                 _context.SaveChanges();
             }
         }
@@ -192,11 +178,11 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
         {
             var team = _context.Teams.IgnoreQueryFilters().FirstOrDefault(t => t.Name == "Demo");
             var mindfight = _context.Mindfights.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "Demo");
-            var registration = _context.MindfightRegistrations.IgnoreQueryFilters().FirstOrDefault(t => t.Mindfight == mindfight);
+            var registration = _context.Registrations.IgnoreQueryFilters().FirstOrDefault(t => t.Mindfight == mindfight);
             if (team != null && mindfight != null && registration == null)
             {
-                registration = new MindfightRegistration(mindfight, team);
-                _context.MindfightRegistrations.Add(registration);
+                registration = new Registration(mindfight, team);
+                _context.Registrations.Add(registration);
                 _context.SaveChanges();
             }
         }
@@ -204,15 +190,17 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
         private void CreateTeamAnswers()
         {
             var team = _context.Teams.IgnoreQueryFilters().FirstOrDefault(t => t.Name == "Demo");
-            var question = _context.MindfightQuestions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
+            var question = _context.Questions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
             var user = _context.Users.IgnoreQueryFilters().FirstOrDefault(u => u.TenantId == null && u.UserName == AbpUserBase.AdminUserName);
-            var teamAnswer = _context.TeamAnswers.IgnoreQueryFilters().FirstOrDefault(t => t.Question == question);
-            if (team != null && question != null && user != null && teamAnswer == null)
-            {
-                teamAnswer = new TeamAnswer(question, user, team, "Team entered this demo answer", 20, false);
+            if(question != null) {
+                var teamAnswer = _context.TeamAnswers.IgnoreQueryFilters().FirstOrDefault(t => t.Question == question);
+                if (team != null && user != null && teamAnswer == null)
+                {
+                    teamAnswer = new TeamAnswer(question, team, "Team entered this demo answer", false);
 
-                _context.TeamAnswers.Add(teamAnswer);
-                _context.SaveChanges();
+                    _context.TeamAnswers.Add(teamAnswer);
+                    _context.SaveChanges();
+                }
             }
         }
 
@@ -224,7 +212,7 @@ namespace Skautatinklis.EntityFrameworkCore.Seed.Mindfights
                 .FirstOrDefault(t => t.Mindfight == mindfight);
             if (team != null && mindfight != null && mindfightResult == null)
             {
-                mindfightResult = new MindfightResult(30, false, team, mindfight);
+                mindfightResult = new MindfightResult(30, false, true, team, mindfight);
 
                 _context.MindfightResults.Add(mindfightResult);
                 _context.SaveChanges();

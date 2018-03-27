@@ -16,9 +16,10 @@ using Skautatinklis.EntityFrameworkCore;
 namespace Skautatinklis.Migrations
 {
     [DbContext(typeof(SkautatinklisDbContext))]
-    partial class SkautatinklisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180327182347_Added Tours")]
+    partial class AddedTours
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
