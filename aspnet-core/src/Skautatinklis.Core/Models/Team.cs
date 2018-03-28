@@ -19,7 +19,6 @@ namespace Skautatinklis.Models
         public bool IsActive { get; set; }
         public int GamePoints { get; set; }
         public int WonMindfightsCount { get; set; }
-        public ICollection<Mindfight> MindfightsWon { get; set; }
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
         public ICollection<Registration> Registrations { get; set; }
         public ICollection<User> Users { get; set; }
@@ -34,12 +33,10 @@ namespace Skautatinklis.Models
             Users = new List<User> { leaderUser };
             TeamAnswers = new List<TeamAnswer>();
             Registrations = new List<Registration>();
-            MindfightsWon = new List<Mindfight>();
         }
 
         private Team()
         {
-
             CreationTime = Clock.Now;
             IsActive = true;
         }

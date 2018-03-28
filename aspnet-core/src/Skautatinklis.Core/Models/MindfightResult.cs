@@ -10,20 +10,19 @@ namespace Skautatinklis.Models
     {
         public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
+        public int Place { get; set; }
         public long TeamId { get; set; }
         public Team Team { get; set; }
         public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
-        public bool IsWinner { get; set; }
         public ICollection<UserMindfightResult> Users { get; set; }
 
-        public MindfightResult(int earnedPoints, bool isEvaluated, bool isWinner, Team team, Mindfight mindfight) : this()
+        public MindfightResult(int earnedPoints, bool isEvaluated, Team team, Mindfight mindfight) : this()
         {
             EarnedPoints = earnedPoints;
             IsEvaluated = isEvaluated;
-            IsWinner = isWinner;
             Team = team;
             TeamId = team.Id;
             Mindfight = mindfight;
@@ -32,6 +31,7 @@ namespace Skautatinklis.Models
 
         private MindfightResult()
         {
+            Place = 0;
             Users = new List<UserMindfightResult>();
             CreationTime = Clock.Now;
         }

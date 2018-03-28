@@ -14,7 +14,7 @@ namespace Skautatinklis.Models
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public int? PrepareTime { get; set; }
-        public int QuestionsCount { get; set; }
+        public int ToursCount { get; set; }
         public int TotalPoints { get; set; }
         public int PlayersLimit { get; set; }
         public DateTime CreationTime { get; set; }
@@ -25,8 +25,6 @@ namespace Skautatinklis.Models
         public int TotalTimeLimitInMinutes { get; set; }
         public long CreatorId { get; set; }
         public User Creator { get; set; }
-        public long? WinnersId { get; set; }
-        public Team Winners { get; set; }
         public ICollection<MindfightEvaluator> Evaluators { get; set; }
         public ICollection<Registration> Registrations { get; set; }
         public ICollection<Tour> Tours { get; set; }
@@ -51,7 +49,7 @@ namespace Skautatinklis.Models
             Registrations = new List<Registration>();
             CreationTime = Clock.Now;
             TotalPoints = 0;
-            QuestionsCount = 0;
+            ToursCount = 0;
             IsActive = true;
             IsConfirmed = false;
             IsFinished = false;
