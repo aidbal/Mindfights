@@ -19,7 +19,7 @@ namespace Skautatinklis.DTOs
         public DateTime? EndTime { get; set; }
         public bool IsPrivate { get; set; }
         public int? PrepareTime { get; set; }
-        public int QuestionsCount { get; set; }
+        public int ToursCount { get; set; }
         public int TimeLimitInMinutes { get; set; }
         public int PlayersLimit { get; set; }
     }

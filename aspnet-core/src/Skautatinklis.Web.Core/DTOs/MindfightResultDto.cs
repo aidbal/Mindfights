@@ -13,7 +13,7 @@ namespace Skautatinklis.DTOs
         public string TeamName { get; set; }
         public DateTime MindfightStartTime { get; set; }
         public DateTime? MindfightEndTime { get; set; }
-        public int QuestionsCount { get; set; }
+        public int ToursCount { get; set; }
         public int TotalPoints { get; set; }
         public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }

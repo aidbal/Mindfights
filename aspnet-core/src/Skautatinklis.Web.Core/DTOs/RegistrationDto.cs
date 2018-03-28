@@ -10,6 +10,6 @@ namespace Skautatinklis.DTOs
         public DateTime CreationTime;
         public long TeamId;
         public string TeamName;
-        public bool IsMindfightPrivate;
+        public bool IsConfirmed;
     }
 }

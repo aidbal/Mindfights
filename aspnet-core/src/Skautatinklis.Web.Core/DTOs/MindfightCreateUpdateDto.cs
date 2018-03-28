@@ -24,7 +24,7 @@ namespace Skautatinklis.DTOs
         [Required]
         public bool IsPrivate { get; set; }
         public int? PrepareTime { get; set; }
-        public int? QuestionsCount { get; set; }
+        public int? ToursCount { get; set; }
         [Required]
         public int TotalTimeLimitInMinutes { get; set; }
         [Required]
