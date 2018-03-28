@@ -23,6 +23,7 @@ using Skautatinklis.Services.RegistrationService;
 using Skautatinklis.Services.ResultService;
 using Skautatinklis.Services.TeamAnswerService;
 using Skautatinklis.Services.TeamService;
+using Skautatinklis.Services.TourService;
 #if FEATURE_SIGNALR
 using Abp.Web.SignalR;
 #elif FEATURE_SIGNALR_ASPNETCORE
@@ -83,6 +84,7 @@ namespace Skautatinklis
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(ITeamAnswerService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IRegistrationService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IResultService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
+            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(ITourService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
         }
 
         private void ConfigureTokenAuth()

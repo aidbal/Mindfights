@@ -41,6 +41,9 @@
     <Compile Remove="Migrations\20180313202137_Added Mindfight Delete Restriction.cs" />
     <Compile Remove="Migrations\20180325111013_test.cs" />
     <Compile Remove="Migrations\20180327171652_test.cs" />
+    <Compile Remove="Migrations\20180327193602_test.cs" />
+    <Compile Remove="Migrations\20180327193857_test.cs" />
+    <Compile Remove="Migrations\20180328194323_Renamed QuestionsCount To TourCount.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />

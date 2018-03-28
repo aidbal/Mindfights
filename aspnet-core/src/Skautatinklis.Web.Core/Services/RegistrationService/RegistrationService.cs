@@ -46,8 +46,8 @@ namespace Skautatinklis.Services.RegistrationService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (currentMindfight.StartTime < Clock.Now)
-                throw new UserFriendlyException("Mindfight has already started!");
+            //if (currentMindfight.StartTime < Clock.Now)
+                //throw new UserFriendlyException("Mindfight has already started!");
 
             var currentTeam = await _teamRepository
                 .GetAll()
@@ -92,7 +92,7 @@ namespace Skautatinklis.Services.RegistrationService
             if (currentRegistration == null)
                 throw new UserFriendlyException("Team is not registered to this mindfight!");
 
-            if (currentMindfight.StartTime.AddDays(-1) < Clock.Now)
+            //if (currentMindfight.StartTime.AddDays(-1) < Clock.Now)
                 await _registrationRepository.DeleteAsync(currentRegistration);
         }
 
@@ -114,7 +114,7 @@ namespace Skautatinklis.Services.RegistrationService
 
             var currentMindfights = await _mindfightRepository
                 .GetAllIncluding(x => x.Registrations)
-                .Where(x => x.IsActive && !x.IsFinished && x.IsConfirmed && x.StartTime > Clock.Now)
+                .Where(x => x.IsActive && !x.IsFinished)
                 .ToListAsync();
 
             var currentRegistrations = await _registrationRepository
@@ -129,7 +129,8 @@ namespace Skautatinklis.Services.RegistrationService
                     MindfightName = registration.Mindfight.Title,
                     MindfightStartTime = registration.Mindfight.StartTime,
                     TeamId = registration.TeamId,
-                    TeamName = registration.Team.Name
+                    TeamName = registration.Team.Name,
+                    IsConfirmed = registration.IsConfirmed
                 })
                 .ToList();
         }
@@ -165,6 +166,42 @@ namespace Skautatinklis.Services.RegistrationService
                     TeamName = registration.Team.Name
                 })
                 .ToList();
+        }
+
+        public async Task UpdateConfirmation(long mindfightId, long teamId, bool isConfirmed, long userId)
+        {
+
+            var currentMindfight = await _mindfightRepository
+                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+
+            if (currentMindfight == null)
+                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+
+            var user = await _userManager.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                throw new UserFriendlyException("User does not exist!");
+
+            if (currentMindfight.CreatorId != userId)
+                throw new UserFriendlyException("You are not creator of this mindfight!");
+
+            var currentTeam = await _teamRepository
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.Id == teamId);
+
+            if (currentTeam == null)
+                throw new UserFriendlyException("Team with specified id does not exist!");
+
+            var currentRegistration = await _registrationRepository
+                .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
+
+            if (currentRegistration == null)
+                throw new UserFriendlyException("Team is not registered to this mindfight!");
+
+            currentRegistration.IsConfirmed = isConfirmed;
+            await _registrationRepository.UpdateAsync(currentRegistration);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Skautatinklis.Services.MindfightService
             {
                 mindfight.PlayersLimit = currentMindfight.PlayersLimit;
                 mindfight.PrepareTime = currentMindfight.PrepareTime;
-                mindfight.QuestionsCount = currentMindfight.QuestionsCount;
+                mindfight.ToursCount = currentMindfight.ToursCount;
                 mindfight.TotalTimeLimitInMinutes = currentMindfight.TotalTimeLimitInMinutes;
                 if (getPrivateInfoForEvaluator)
                 {

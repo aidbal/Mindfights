@@ -101,10 +101,13 @@ namespace Skautatinklis.Services.ResultService
                 .Where(u => u.TeamId == teamId)
                 .ToListAsync();
 
+            var mindfightResult = new MindfightResult(earnedPoints, true, currentTeam, currentMindfight);
+            _resultRepository.InsertOrUpdate(mindfightResult);
+
+            await UpdateMindfightPlaces(mindfightId);
+
             foreach (var member in teamMembers)
             {
-                var isWinner = await GetAndUpdateWinnerStatus(mindfightId, earnedPoints);
-                var mindfightResult = new MindfightResult(earnedPoints, true, isWinner, currentTeam, currentMindfight);
                 var userMindfightResult = new UserMindfightResult(member, mindfightResult);
                 member.MindfightResults.Add(userMindfightResult);
             }
@@ -139,7 +142,7 @@ namespace Skautatinklis.Services.ResultService
             resultDto.MindfightName = currentMindfight.Title;
             resultDto.MindfightId = mindfightId;
             resultDto.TeamId = teamId;
-            resultDto.QuestionsCount = currentMindfight.QuestionsCount;
+            resultDto.ToursCount = currentMindfight.ToursCount;
             resultDto.TeamName = currentTeam.Name;
             resultDto.TotalPoints = currentMindfight.TotalPoints;
 
@@ -175,7 +178,7 @@ namespace Skautatinklis.Services.ResultService
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = mindfightId;
                 resultDto.TeamId = teamResult.TeamId;
-                resultDto.QuestionsCount = currentMindfight.QuestionsCount;
+                resultDto.ToursCount = currentMindfight.ToursCount;
                 resultDto.TeamName = teamResult.Team.Name;
                 resultDto.TotalPoints = currentMindfight.TotalPoints;
                 teamResultsDto.Add(resultDto);
@@ -214,7 +217,7 @@ namespace Skautatinklis.Services.ResultService
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = currentMindfight.Id;
                 resultDto.TeamId = teamResult.TeamId;
-                resultDto.QuestionsCount = currentMindfight.QuestionsCount;
+                resultDto.ToursCount = currentMindfight.ToursCount;
                 resultDto.TeamName = teamResult.Team.Name;
                 resultDto.TotalPoints = currentMindfight.TotalPoints;
                 teamResultsDto.Add(resultDto);
@@ -243,7 +246,7 @@ namespace Skautatinklis.Services.ResultService
                         EarnedPoints = teamResult.EarnedPoints,
                         PlayedMindfightsCount = 1,
                         WonMindfightsCount = mindfightResults.Where(x => x.TeamId == teamResult.TeamId)
-                            .Count(x => x.IsWinner)
+                            .Count(x => x.Place == 1)
                     };
                     leaderBoardDtos.Add(leaderBoardDto);
                 }
@@ -256,62 +259,49 @@ namespace Skautatinklis.Services.ResultService
             return leaderBoardDtos.OrderByDescending(x => x.EarnedPoints).Take(10).ToList();
         }
 
-        public async Task<LeaderBoardDto> GetMindfightWinner(long mindfightId)
-        {
-            var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.Evaluators)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
-            if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+        //public async Task<LeaderBoardDto> GetMindfightWinner(long mindfightId)
+        //{
+        //    var currentMindfight = await _mindfightRepository
+        //        .GetAllIncluding(x => x.Evaluators)
+        //        .FirstOrDefaultAsync(x => x.Id == mindfightId);
+        //    if (currentMindfight == null)
+        //        throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (!currentMindfight.IsFinished)
-                throw new UserFriendlyException("Mindfight is not yet over!");
+        //    if (!currentMindfight.IsFinished)
+        //        throw new UserFriendlyException("Mindfight is not yet over!");
 
-            var mindfightResult = await _resultRepository
-                .GetAllIncluding(x => x.Team)
-                .OrderByDescending(x => x.EarnedPoints)
-                .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.IsWinner);
+        //    var mindfightResult = await _resultRepository
+        //        .GetAllIncluding(x => x.Team)
+        //        .OrderByDescending(x => x.EarnedPoints)
+        //        .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.IsWinner);
 
-            if (mindfightResult == null)
-                throw new UserFriendlyException("Mindfight has no winner yet!");
+        //    if (mindfightResult == null)
+        //        throw new UserFriendlyException("Mindfight has no winner yet!");
 
-            var leaderBoardDto = new LeaderBoardDto
-            {
-                TeamId = mindfightResult.TeamId,
-                TeamName = mindfightResult.Team.Name
-            };
+        //    var leaderBoardDto = new LeaderBoardDto
+        //    {
+        //        TeamId = mindfightResult.TeamId,
+        //        TeamName = mindfightResult.Team.Name
+        //    };
 
-            return leaderBoardDto;
-        }
+        //    return leaderBoardDto;
+        //}
 
-        private async Task<bool> GetAndUpdateWinnerStatus(long mindfightId, int earnedPoints)
+        private async Task UpdateMindfightPlaces(long mindfightId)
         {
             var results = await _resultRepository
                 .GetAll()
                 .Where(x => x.MindfightId == mindfightId)
+                .OrderBy(x => x.EarnedPoints)
                 .ToListAsync();
+            
+            const int currentPlacePoints = -1;
 
-            var newWinner = false;
-
-            foreach (var result in results)
+            for (var i = 0; i < results.Count; i++)
             {
-                if (earnedPoints > result.EarnedPoints)
-                {
-                    newWinner = true;
-                }
+                if (results[i].EarnedPoints >= currentPlacePoints)
+                    results[i].Place = i + 1;
             }
-            if (newWinner)
-            {
-                foreach (var result in results)
-                {
-                    if (result.IsWinner)
-                    {
-                        result.IsWinner = false;
-                    }
-                }
-            }
-
-            return newWinner;
         }
     }
 }
