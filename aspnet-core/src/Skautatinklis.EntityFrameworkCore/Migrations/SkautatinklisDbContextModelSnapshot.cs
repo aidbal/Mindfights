@@ -1061,8 +1061,6 @@ namespace Skautatinklis.Migrations
 
                     b.Property<int?>("PrepareTime");
 
-                    b.Property<int>("QuestionsCount");
-
                     b.Property<DateTime>("StartTime");
 
                     b.Property<string>("Title");
@@ -1071,13 +1069,11 @@ namespace Skautatinklis.Migrations
 
                     b.Property<int>("TotalTimeLimitInMinutes");
 
-                    b.Property<long?>("WinnersId");
+                    b.Property<int>("ToursCount");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("WinnersId");
 
                     b.ToTable("Mindfights");
                 });
@@ -1108,9 +1104,9 @@ namespace Skautatinklis.Migrations
 
                     b.Property<bool>("IsEvaluated");
 
-                    b.Property<bool>("IsWinner");
-
                     b.Property<long>("MindfightId");
+
+                    b.Property<int>("Place");
 
                     b.Property<long>("TeamId");
 
@@ -1512,10 +1508,6 @@ namespace Skautatinklis.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Skautatinklis.Models.Team", "Winners")
-                        .WithMany("MindfightsWon")
-                        .HasForeignKey("WinnersId");
                 });
 
             modelBuilder.Entity("Skautatinklis.Models.MindfightEvaluator", b =>
