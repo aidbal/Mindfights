@@ -17,7 +17,7 @@ using Mindfights.EntityFrameworkCore;
 using Mindfights.Models;
 using Mindfights.Services.MindfightService;
 using Mindfights.Services.PlayerService;
-using Mindfights.Services.QuestionAnswerService;
+using Mindfights.Services.AnswerService;
 using Mindfights.Services.QuestionService;
 using Mindfights.Services.RegistrationService;
 using Mindfights.Services.ResultService;
