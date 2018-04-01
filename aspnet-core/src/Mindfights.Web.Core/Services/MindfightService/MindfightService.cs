@@ -1,4 +1,5 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
+using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using Abp.Timing;
@@ -10,7 +11,6 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Authorization;
 
 namespace Mindfights.Services.MindfightService
 {
@@ -109,7 +109,7 @@ namespace Mindfights.Services.MindfightService
             if (mindfightWithSameName != null)
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
 
-            var newMindfight = new Mindfight(user, mindfight.Title, mindfight.Description, mindfight.PlayersLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes, mindfight.IsPrivate);
+            var newMindfight = new Mindfight(user, mindfight.Title, mindfight.Description, mindfight.PlayersLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
 
@@ -157,7 +157,7 @@ namespace Mindfights.Services.MindfightService
             await _mindfightRepository.DeleteAsync(currentMindfight);
         }
 
-        public async Task<List<MindfightPublicDto>> GetUpcomingPublicMindfights()
+        public async Task<List<MindfightPublicDto>> GetUpcomingMindfights()
         {
             var publicMindfights = await _mindfightRepository.GetAll()
                 .Where(x => x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();

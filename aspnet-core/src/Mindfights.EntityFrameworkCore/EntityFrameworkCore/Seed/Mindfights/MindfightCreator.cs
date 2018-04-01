@@ -23,7 +23,6 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
         {
             AddDefaultRoles();
             AddDefaultCities();
-            //TODO add cities seed
             CreateMindfight();
             CreateTour();
             CreateQuestion();
@@ -37,8 +36,6 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
 
         private void AddDefaultRoles()
         {
-            //TODO Add permissions to roles
-            
             var creatorRole = _context.Roles.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Creator");
             var moderatorRole = _context.Roles.IgnoreQueryFilters().FirstOrDefault(r => r.Name == "Moderator");
             if (creatorRole == null)
@@ -101,8 +98,7 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
                         Clock.Now,
                         null,
                         null,
-                        20,
-                        false
+                        20
                     );
 
                     _context.Mindfights.Add(mindfight);

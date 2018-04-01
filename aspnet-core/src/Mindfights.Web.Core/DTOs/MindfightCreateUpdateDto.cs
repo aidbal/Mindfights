@@ -21,8 +21,6 @@ namespace Mindfights.DTOs
         [Required]
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        [Required]
-        public bool IsPrivate { get; set; }
         public int? PrepareTime { get; set; }
         public int? ToursCount { get; set; }
         [Required]

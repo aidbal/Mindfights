@@ -17,6 +17,5 @@ namespace Mindfights.DTOs
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public int PlayersLimit { get; set; }
-        public bool IsPrivate { get; set; }
     }
 }

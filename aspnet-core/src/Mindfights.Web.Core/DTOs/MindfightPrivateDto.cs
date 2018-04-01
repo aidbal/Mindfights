@@ -17,7 +17,6 @@ namespace Mindfights.DTOs
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
-        public bool IsPrivate { get; set; }
         public int? PrepareTime { get; set; }
         public int ToursCount { get; set; }
         public int TimeLimitInMinutes { get; set; }

@@ -30,7 +30,7 @@ namespace Mindfights.Models
         public ICollection<Tour> Tours { get; set; }
 
         public Mindfight(User creator, string title, string description, int playersLimit, DateTime startTime,
-            DateTime? endTime, int? prepareTime, int totalTimeLimitInMinutes, bool isPrivate) : this()
+            DateTime? endTime, int? prepareTime, int totalTimeLimitInMinutes) : this()
         {
             Title = title;
             Description = description;
