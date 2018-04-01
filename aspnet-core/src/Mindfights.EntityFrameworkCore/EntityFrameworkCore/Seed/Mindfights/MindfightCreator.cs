@@ -26,7 +26,6 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
             CreateMindfight();
             CreateTour();
             CreateQuestion();
-            CreateAnswers();
             CreateTeam();
             CreateRegistration();
             CreateTeamAnswers();
@@ -126,26 +125,9 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
             var question = _context.Questions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
             if (tour != null && question == null)
             {
-                question = new Question(tour, "DemoQuestion", "DemoDescription", 10, 10, 1, null);
+                question = new Question(tour, "DemoQuestion", "DemoDescription", "DemoAnswer", 10, 10, 1, null);
 
                 _context.Questions.Add(question);
-                _context.SaveChanges();
-            }
-        }
-
-        private void CreateAnswers()
-        {
-            var mindfight = _context.Mindfights.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "Demo");
-            var question = _context.Questions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
-            var answer1 = _context.Answers.IgnoreQueryFilters().FirstOrDefault(t => t.Description == "DemoAnswer1");
-            var answer2 = _context.Answers.IgnoreQueryFilters().FirstOrDefault(t => t.Description == "DemoAnswer2");
-            if (mindfight != null && question != null && answer1 == null && answer2 == null)
-            {
-                answer1 = new Answer(question, "DemoAnswer1", false);
-                answer2 = new Answer(question, "DemoAnswer2", false);
-
-                _context.Answers.Add(answer1);
-                _context.Answers.Add(answer2);
                 _context.SaveChanges();
             }
         }

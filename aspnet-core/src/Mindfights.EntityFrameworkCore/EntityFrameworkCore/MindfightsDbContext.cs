@@ -14,7 +14,6 @@ namespace Mindfights.EntityFrameworkCore
         public DbSet<Team> Teams { get; set; }
         public DbSet<Mindfight> Mindfights { get; set; }
         public DbSet<Question> Questions { get; set; }
-        public DbSet<Answer> Answers { get; set; }
         public DbSet<Tour> Tours { get; set; }
         public DbSet<TeamAnswer> TeamAnswers { get; set; }
         public DbSet<Registration> Registrations { get; set; }

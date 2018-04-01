@@ -10,14 +10,12 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
 using Mindfights.Authentication.JwtBearer;
-using Mindfights.Authorization.Users;
 using Mindfights.Configuration;
 using Mindfights.DTOs;
 using Mindfights.EntityFrameworkCore;
 using Mindfights.Models;
 using Mindfights.Services.MindfightService;
 using Mindfights.Services.PlayerService;
-using Mindfights.Services.AnswerService;
 using Mindfights.Services.QuestionService;
 using Mindfights.Services.RegistrationService;
 using Mindfights.Services.ResultService;
@@ -77,10 +75,8 @@ namespace Mindfights
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IPlayerService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(ITeamService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
-            //Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IScoutGroupService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IMindfightService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IQuestionService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
-            Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IAnswerService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(ITeamAnswerService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IRegistrationService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(typeof(IResultService).Assembly, moduleName: "mindfights", useConventionalHttpVerbs: true);

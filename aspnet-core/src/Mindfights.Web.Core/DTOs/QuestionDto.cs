@@ -29,6 +29,10 @@ namespace Mindfights.DTOs
         [Required]
         public int OrderNumber { get; set; }
 
+        [Required]
+        [MaxLength(2550)]
+        public string Answer { get; set; }
+
         public long TourId { get; set; }
 
         public bool IsLastQuestion { get; set; } = false;
