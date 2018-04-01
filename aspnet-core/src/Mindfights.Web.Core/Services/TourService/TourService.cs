@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
+﻿using Abp.AspNetCore.Mvc.Authorization;
+using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using Abp.UI;
@@ -9,16 +7,20 @@ using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
 using Mindfights.DTOs;
 using Mindfights.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mindfights.Services.TourService
 {
+    [AbpMvcAuthorize]
     public class TourService : ITourService
     {
-
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Tour, long> _tourRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
+        private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
         public TourService(
@@ -26,18 +28,20 @@ namespace Mindfights.Services.TourService
             IRepository<Tour, long> tourRepository,
             IRepository<Team, long> teamRepository,
             IRepository<TeamAnswer, long> teamAnswerRepository,
+            IPermissionChecker permissionChecker,
             UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
             _tourRepository = tourRepository;
             _teamRepository = teamRepository;
             _teamAnswerRepository = teamAnswerRepository;
+            _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
 
-        public async Task<List<TourDto>> GetAllMindfightTours(long mindfightId, long userId)
+        public async Task<List<TourDto>> GetAllMindfightTours(long mindfightId)
         {
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
@@ -48,7 +52,9 @@ namespace Mindfights.Services.TourService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (currentMindfight.CreatorId != userId || currentMindfight.Evaluators.All(x => x.UserId != userId))
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights")
+                || currentMindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             var toursDto = new List<TourDto>();
@@ -66,9 +72,9 @@ namespace Mindfights.Services.TourService
             return toursDto;
         }
 
-        public async Task<TourDto> GetTour(long tourId, long userId)
+        public async Task<TourDto> GetTour(long tourId)
         {
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
@@ -81,7 +87,9 @@ namespace Mindfights.Services.TourService
             if (currentTour == null)
                 throw new UserFriendlyException("Tour with specified id does not exist!");
 
-            if (currentTour.Mindfight.CreatorId != userId || currentTour.Mindfight.Evaluators.All(x => x.UserId != userId))
+            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights")
+                || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
                 throw new UserFriendlyException("Insufficient permissions to get this tour!");
 
             var tour = new TourDto();
@@ -89,9 +97,9 @@ namespace Mindfights.Services.TourService
             return tour;
         }
 
-        public async Task<TourDto> GetNextTour(long mindfightId, long teamId, long userId)
+        public async Task<TourDto> GetNextTour(long mindfightId, long teamId)
         {
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
@@ -110,6 +118,13 @@ namespace Mindfights.Services.TourService
                 .FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Team with specified id does not exist!");
+
+            var currentMindfight = await _mindfightRepository
+                .GetAllIncluding(x => x.Registrations)
+                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+
+            if (currentMindfight.Registrations.Any(x => x.TeamId != user.Team.Id && x.IsConfirmed))
+                throw new UserFriendlyException("User's team is not confirmed to play this mindfight!");
 
             var teamMindfightAnswers = await _teamAnswerRepository
                 .GetAll()
@@ -156,8 +171,9 @@ namespace Mindfights.Services.TourService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new UserFriendlyException("Insufficient permissions to create tour!");
 
             tour.OrderNumber = await GetLastOrderNumber(mindfightId);
             tour.OrderNumber = tour.OrderNumber == 0 ? 1 : tour.OrderNumber + 1;
@@ -185,8 +201,9 @@ namespace Mindfights.Services.TourService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentTour.Mindfight.CreatorId != userId)
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new UserFriendlyException("Insufficient permissions to update tour!");
 
             tour.OrderNumber = currentTour.OrderNumber;
             tour.MapTo(currentTour);
@@ -210,8 +227,9 @@ namespace Mindfights.Services.TourService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with id specified in tour does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new UserFriendlyException("Insufficient permissions to delete tour!");
 
             currentMindfight.ToursCount -= 1;
             var orderNumber = tourToDelete.OrderNumber;
@@ -231,8 +249,9 @@ namespace Mindfights.Services.TourService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with id specified in tour does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new UserFriendlyException("Insufficient permissions!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)

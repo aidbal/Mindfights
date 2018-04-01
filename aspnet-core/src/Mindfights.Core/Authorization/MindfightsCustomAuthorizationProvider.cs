@@ -9,7 +9,6 @@ namespace Mindfights.Authorization
         {
             context.CreatePermission("CreateMindfights", L("Create mindfights"));
             context.CreatePermission("ManageMindfights", L("Manage mindfights"));
-            context.CreatePermission("ConfirmLeaders", L("Confirm leaders"));
         }
 
         private static ILocalizableString L(string name)

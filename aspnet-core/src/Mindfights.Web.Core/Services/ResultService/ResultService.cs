@@ -1,18 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
 using Mindfights.DTOs;
 using Mindfights.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Authorization;
 
 namespace Mindfights.Services.ResultService
 {
+    [AbpMvcAuthorize]
     public class ResultService : IResultService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
@@ -21,6 +23,7 @@ namespace Mindfights.Services.ResultService
         private readonly IRepository<Question, long> _questionRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
         private readonly IRepository<Registration, long> _registrationRepository;
+        private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
         public ResultService(
@@ -30,6 +33,7 @@ namespace Mindfights.Services.ResultService
             IRepository<Question, long> questionRepository,
             IRepository<TeamAnswer, long> teamAnswerRepository,
             IRepository<Registration, long> registrationRepository,
+            IPermissionChecker permissionChecker,
             UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
@@ -38,10 +42,11 @@ namespace Mindfights.Services.ResultService
             _questionRepository = questionRepository;
             _teamAnswerRepository = teamAnswerRepository;
             _registrationRepository = registrationRepository;
+            _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
 
-        public async Task CreateResult(long mindfightId, long tourId, long teamId, long userId)
+        public async Task CreateResult(long mindfightId, long tourId, long teamId)
         {
             var currentMindfight = await _mindfightRepository
                 .GetAll()
@@ -51,6 +56,10 @@ namespace Mindfights.Services.ResultService
 
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
+
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
+                || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new UserFriendlyException("Insufficient permissions to create result!");
 
             var currentTeam = await _teamRepository
                 .GetAll()
@@ -113,7 +122,7 @@ namespace Mindfights.Services.ResultService
             }
         }
 
-        public async Task<MindfightResultDto> GetMindfightTeamResult(long mindfightId, long teamId, long userId)
+        public async Task<MindfightResultDto> GetMindfightTeamResult(long mindfightId, long teamId)
         {
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
@@ -149,7 +158,7 @@ namespace Mindfights.Services.ResultService
             return resultDto;
         }
 
-        public async Task<List<MindfightResultDto>> GetMindfightResults(long mindfightId, long userId)
+        public async Task<List<MindfightResultDto>> GetMindfightResults(long mindfightId)
         {
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
@@ -187,7 +196,7 @@ namespace Mindfights.Services.ResultService
             return teamResultsDto;
         }
 
-        public async Task<List<MindfightResultDto>> GetTeamResults(long teamId, long userId)
+        public async Task<List<MindfightResultDto>> GetTeamResults(long teamId)
         {
             var currentTeam = await _teamRepository
                 .GetAll()
@@ -258,34 +267,6 @@ namespace Mindfights.Services.ResultService
             }
             return leaderBoardDtos.OrderByDescending(x => x.EarnedPoints).Take(10).ToList();
         }
-
-        //public async Task<LeaderBoardDto> GetMindfightWinner(long mindfightId)
-        //{
-        //    var currentMindfight = await _mindfightRepository
-        //        .GetAllIncluding(x => x.Evaluators)
-        //        .FirstOrDefaultAsync(x => x.Id == mindfightId);
-        //    if (currentMindfight == null)
-        //        throw new UserFriendlyException("Mindfight with specified id does not exist!");
-
-        //    if (!currentMindfight.IsFinished)
-        //        throw new UserFriendlyException("Mindfight is not yet over!");
-
-        //    var mindfightResult = await _resultRepository
-        //        .GetAllIncluding(x => x.Team)
-        //        .OrderByDescending(x => x.EarnedPoints)
-        //        .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.IsWinner);
-
-        //    if (mindfightResult == null)
-        //        throw new UserFriendlyException("Mindfight has no winner yet!");
-
-        //    var leaderBoardDto = new LeaderBoardDto
-        //    {
-        //        TeamId = mindfightResult.TeamId,
-        //        TeamName = mindfightResult.Team.Name
-        //    };
-
-        //    return leaderBoardDto;
-        //}
 
         private async Task UpdateMindfightPlaces(long mindfightId)
         {

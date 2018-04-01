@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Timing;
 using Abp.UI;
@@ -8,38 +6,38 @@ using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
 using Mindfights.DTOs;
 using Mindfights.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Authorization;
 
 namespace Mindfights.Services.RegistrationService
 {
+    [AbpMvcAuthorize]
     public class RegistrationService : IRegistrationService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<Registration, long> _registrationRepository;
+        private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
         public RegistrationService(
             IRepository<Mindfight, long> mindfightRepository,
-            IRepository<Registration, long> registrationRepository,
             IRepository<Team, long> teamRepository,
+            IRepository<Registration, long> registrationRepository,
+            IPermissionChecker permissionChecker,
             UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
-            _registrationRepository = registrationRepository;
             _teamRepository = teamRepository;
+            _registrationRepository = registrationRepository;
+            _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
 
-        public async Task<long> CreateRegistration(long mindfightId, long teamId, long userId)
+        public async Task<long> CreateRegistration(long mindfightId, long teamId)
         {
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .Include(x => x.Team)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
@@ -56,6 +54,9 @@ namespace Mindfights.Services.RegistrationService
             if (currentTeam == null)
                 throw new UserFriendlyException("Team with specified id does not exist!");
 
+            if(_userManager.AbpSession.UserId != currentTeam.LeaderId)
+                throw new UserFriendlyException("You are not team leader!");
+
             var currentRegistration = await _registrationRepository
                                           .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId) ??
                                       new Registration(currentMindfight, currentTeam);
@@ -64,15 +65,8 @@ namespace Mindfights.Services.RegistrationService
             return await _registrationRepository.InsertOrUpdateAndGetIdAsync(currentRegistration);
         }
 
-        public async Task DeleteRegistration(long mindfightId, long teamId, long userId)
+        public async Task DeleteRegistration(long mindfightId, long teamId)
         {
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
@@ -86,6 +80,9 @@ namespace Mindfights.Services.RegistrationService
             if (currentTeam == null)
                 throw new UserFriendlyException("Team with specified id does not exist!");
 
+            if (_userManager.AbpSession.UserId != currentTeam.LeaderId)
+                throw new UserFriendlyException("You are not team leader!");
+
             var currentRegistration = await _registrationRepository
                 .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
 
@@ -96,15 +93,8 @@ namespace Mindfights.Services.RegistrationService
                 await _registrationRepository.DeleteAsync(currentRegistration);
         }
 
-        public async Task<List<RegistrationDto>> GetTeamRegistrations(long teamId, long userId)
+        public async Task<List<RegistrationDto>> GetTeamRegistrations(long teamId)
         {
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
@@ -135,15 +125,8 @@ namespace Mindfights.Services.RegistrationService
                 .ToList();
         }
 
-        public async Task<List<RegistrationDto>> GetMindfightRegistrations(long mindfightId, long userId)
+        public async Task<List<RegistrationDto>> GetMindfightRegistrations(long mindfightId)
         {
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
             var currentMindfight = await _mindfightRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
@@ -168,7 +151,7 @@ namespace Mindfights.Services.RegistrationService
                 .ToList();
         }
 
-        public async Task UpdateConfirmation(long mindfightId, long teamId, bool isConfirmed, long userId)
+        public async Task UpdateConfirmation(long mindfightId, long teamId, bool isConfirmed)
         {
 
             var currentMindfight = await _mindfightRepository
@@ -177,14 +160,8 @@ namespace Mindfights.Services.RegistrationService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId 
+                || !_permissionChecker.IsGranted("ManageMindfights"))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             var currentTeam = await _teamRepository

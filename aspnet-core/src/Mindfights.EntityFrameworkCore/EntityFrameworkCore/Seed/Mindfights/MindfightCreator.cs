@@ -52,10 +52,8 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
                 moderatorRole = _context.Roles.Add(new Role(1, "Moderator", "Moderator") { IsStatic = false }).Entity;
                 var rolePermissionCreateModerator = new RolePermissionSetting { TenantId = 1, Name = "CreateMindfights", IsGranted = true, RoleId = moderatorRole.Id };
                 var rolePermissionManageModerator = new RolePermissionSetting { TenantId = 1, Name = "ManageMindfights", IsGranted = true, RoleId = moderatorRole.Id };
-                var rolePermissionConfirmModerator = new RolePermissionSetting { TenantId = 1, Name = "ConfirmLeaders", IsGranted = true, RoleId = moderatorRole.Id };
                 _context.Permissions.Add(rolePermissionCreateModerator);
                 _context.Permissions.Add(rolePermissionManageModerator);
-                _context.Permissions.Add(rolePermissionConfirmModerator);
             }
             _context.SaveChanges();
 

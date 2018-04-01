@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Abp.AspNetCore.Mvc.Authorization;
+using Abp.AutoMapper;
 using Abp.Domain.Repositories;
-using Abp.ObjectMapping;
+using Abp.Timing;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
@@ -9,26 +10,26 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.AutoMapper;
-using Abp.Domain.Entities;
-using Abp.Timing;
+using Abp.Authorization;
 
 namespace Mindfights.Services.MindfightService
 {
+    [AbpMvcAuthorize]
     public class MindfightService : IMindfightService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
+        private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public MindfightService(IRepository<Mindfight, long> mindfightRepository, UserManager userManager)
+        public MindfightService(IRepository<Mindfight, long> mindfightRepository, IPermissionChecker permissionChecker, UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
+            _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
 
-        public async Task<MindfightDto> GetMindfight(long mindfightId, long userId)
+        public async Task<MindfightDto> GetMindfight(long mindfightId)
         {
-            //TODO check for permission (_userManager.AbpSession.UserId)
             var currentMindfight = await _mindfightRepository
                 .GetAll()
                 .Include(x => x.Registrations).ThenInclude(x => x.Team)
@@ -37,8 +38,8 @@ namespace Mindfights.Services.MindfightService
 
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            
+            var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
@@ -52,7 +53,7 @@ namespace Mindfights.Services.MindfightService
                 PlayersLimit = currentMindfight.PlayersLimit
             };
 
-            var getPrivateInfo = currentMindfight.CreatorId == userId;
+            var getPrivateInfo = currentMindfight.CreatorId == _userManager.AbpSession.UserId;
             var getPrivateInfoForEvaluator = getPrivateInfo;
             if (!getPrivateInfo)
             {
@@ -66,7 +67,7 @@ namespace Mindfights.Services.MindfightService
                         getPrivateInfo = true;
                     }
                 }
-                if (currentMindfight.Evaluators.Any(x => x.UserId == userId))
+                if (currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId))
                 {
                     getPrivateInfo = true;
                     getPrivateInfoForEvaluator = true;
@@ -95,12 +96,14 @@ namespace Mindfights.Services.MindfightService
             return mindfight;
         }
 
-        public async Task<long> CreateMindfight(MindfightCreateUpdateDto mindfight, long creatorId)
+        public async Task<long> CreateMindfight(MindfightCreateUpdateDto mindfight)
         {
-            //TODO check for permission (_userManager.AbpSession.UserId)
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == creatorId);
+            if (!_permissionChecker.IsGranted("CreateMindfights") || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new AbpAuthorizationException("You are not authorized to create a mindfight!");
+            
+            var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
-                throw new UserFriendlyException("User with creator id does not exist!");
+                throw new UserFriendlyException("User does not exist!");
 
             var mindfightWithSameName = await _mindfightRepository.FirstOrDefaultAsync(x => x.Title == mindfight.Title);
             if (mindfightWithSameName != null)
@@ -110,18 +113,20 @@ namespace Mindfights.Services.MindfightService
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
 
-        public async Task UpdateMindfight(MindfightDto mindfight, long mindfightId, long userId)
+        public async Task UpdateMindfight(MindfightDto mindfight, long mindfightId)
         {
-            //TODO check for permission (_userManager.AbpSession.UserId)
+            if (!_permissionChecker.IsGranted("CreateMindfights") || !_permissionChecker.IsGranted("ManageMindfights"))
+                throw new AbpAuthorizationException("You are not authorized to create a mindfight!");
+
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             var mindfightWithSameName = await _mindfightRepository
@@ -136,17 +141,17 @@ namespace Mindfights.Services.MindfightService
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        public async Task DeleteMindfight(long userId, long mindfightId)
+        public async Task DeleteMindfight(long mindfightId)
         {
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             await _mindfightRepository.DeleteAsync(currentMindfight);
@@ -161,45 +166,18 @@ namespace Mindfights.Services.MindfightService
             return publicMindfightsDto;
         }
 
-        //public async Task<List<MindfightPrivateDto>> GetUpcomingPrivateMindfights(long userId)
-        //{
-        //    //TODO check for permission (_userManager.AbpSession.UserId)
-        //    var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
-        //    if (user == null)
-        //        throw new UserFriendlyException("User with creator id does not exist!");
-
-        //    var privateMindfightsDto = new List<MindfightPrivateDto>();
-        //    var privateMindfights = await _mindfightRepository
-        //        .GetAll()
-        //        .Include(x => x.Registrations).ThenInclude(x => x.Team)
-        //        .Where(x => x.IsPrivate && x.IsActive && x.IsConfirmed && !x.IsFinished).ToListAsync();
-
-        //    foreach (var mindfight in privateMindfights)
-        //    {
-        //        foreach (var allowed in mindfight.AllowedTeams)
-        //        {
-        //            if (allowed.Team != user.Team && mindfight.CreatorId != user.Id)
-        //                continue;
-        //            var temp = new MindfightPrivateDto();
-        //            allowed.Mindfight.MapTo(temp);
-        //            privateMindfightsDto.Add(temp);
-        //        }
-        //    }
-        //    return privateMindfightsDto;
-        //}
-
-        public async Task UpdateEvaluators(long userId, long mindfightId, List<string> evaluatorEmails)
+        public async Task UpdateEvaluators(long mindfightId, List<string> evaluatorEmails)
         {
             var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             var evaluators = await _userManager.Users.IgnoreQueryFilters()
@@ -227,96 +205,54 @@ namespace Mindfights.Services.MindfightService
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        //public async Task UpdateAllowedTeams(long userId, long mindfightId, List<string> allowedTeamNames)
-        //{
-        //    var currentMindfight = await _mindfightRepository
-        //        .GetAllIncluding(x => x.AllowedTeams)
-        //        .FirstOrDefaultAsync(x => x.Id == mindfightId);
-        //    if (currentMindfight == null)
-        //        throw new UserFriendlyException("Mindfight with specified id does not exist!");
-
-        //    var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
-        //    if (user == null)
-        //        throw new UserFriendlyException("User does not exist!");
-
-        //    if (currentMindfight.CreatorId != userId)
-        //        throw new UserFriendlyException("You are not creator of this mindfight!");
-
-        //    var teams = await _teamRepository.GetAll()
-        //        .Where(team => allowedTeamNames.Any(name => string.Equals(name, team.Name, StringComparison.CurrentCultureIgnoreCase)))
-        //        .ToListAsync();
-        //    for (var i = currentMindfight.AllowedTeams.Count - 1; i >= 0; i--)
-        //    {
-        //        var currentTeam = currentMindfight.AllowedTeams.ElementAt(i);
-        //        if (teams.Contains(currentTeam.Team))
-        //        {
-        //            teams.Remove(currentTeam.Team);
-        //        }
-        //        else
-        //        {
-        //            currentMindfight.AllowedTeams.Remove(currentTeam);
-        //        }
-        //    }
-        //    //Add non-existant teams to mindfight
-        //    foreach (var team in teams)
-        //    {
-        //        var allowedTeams = new MindfightConfirmedTeam(currentMindfight, team);
-        //        currentMindfight.AllowedTeams.Add(allowedTeams);
-        //    }
-        //    await _mindfightRepository.UpdateAsync(currentMindfight);
-        //}
-
-        public async Task UpdateActiveStatus(long userId, long mindfightId, bool isActive)
+        public async Task UpdateActiveStatus(long mindfightId, bool isActive)
         {
-            //TODO check for admin or creator permission
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             currentMindfight.IsActive = isActive;
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        public async Task UpdateConfirmedStatus(long userId, long mindfightId, bool isConfirmed)
+        public async Task UpdateConfirmedStatus(long mindfightId, bool isConfirmed)
         {
-            //TODO check for admin permission
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
  
             currentMindfight.IsConfirmed = isConfirmed;
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        public async Task UpdateFinishedStatus(long userId, long mindfightId, bool isFinished)
+        public async Task UpdateFinishedStatus(long mindfightId, bool isFinished)
         {
-            //TODO check for admin or creator permission
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != userId)
+            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId)
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             currentMindfight.IsFinished = isFinished;
