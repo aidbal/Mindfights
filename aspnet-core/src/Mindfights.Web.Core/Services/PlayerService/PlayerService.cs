@@ -25,7 +25,7 @@ namespace Mindfights.Services.PlayerService
             return player.Points;
         }
 
-        public async Task<string> GetTeam(long userId)
+        public async Task<string> GetPlayerTeam(long userId)
         {
             var player = await _userManager.Users.IgnoreQueryFilters().Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == userId);
             if (player == null)

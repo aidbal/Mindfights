@@ -53,7 +53,7 @@ namespace Mindfights.Services.QuestionService
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("Insufficient permissions to get this question!");
+                throw new AbpAuthorizationException("Insufficient permissions to get this question!");
 
             var questionsDto = new List<QuestionDto>();
             var questions = await _questionRepository
@@ -84,7 +84,7 @@ namespace Mindfights.Services.QuestionService
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("Insufficient permissions to get this question!");
+                throw new AbpAuthorizationException("Insufficient permissions to get this question!");
 
             var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
             if (currentQuestion == null)
@@ -154,7 +154,7 @@ namespace Mindfights.Services.QuestionService
 
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to create question!");
+                throw new AbpAuthorizationException("Insufficient permissions to create question!");
 
             question.OrderNumber = await GetLastOrderNumber(tourId);
             question.OrderNumber = question.OrderNumber == 0 ? 1 : question.OrderNumber;
@@ -184,7 +184,7 @@ namespace Mindfights.Services.QuestionService
 
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to update question!");
+                throw new AbpAuthorizationException("Insufficient permissions to update question!");
 
             var questionToUpdate = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
             if (questionToUpdate == null)
@@ -212,7 +212,7 @@ namespace Mindfights.Services.QuestionService
             
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to delete question!");
+                throw new AbpAuthorizationException("Insufficient permissions to delete question!");
 
             currentTour.QuestionsCount -= 1;
             var orderNumber = questionToDelete.OrderNumber;
@@ -232,12 +232,13 @@ namespace Mindfights.Services.QuestionService
 
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to update order number!");
+                throw new AbpAuthorizationException("Insufficient permissions to update order number!");
 
             var questionWithNewOrderNumber = await _questionRepository
                 .GetAll()
                 .Where(x => x.TourId == currentQuestion.TourId && x.OrderNumber == newOrderNumber)
                 .FirstOrDefaultAsync();
+
             if (questionWithNewOrderNumber == null)
             {
                 var lastOrderNumber = await GetLastOrderNumber(currentQuestion.TourId);

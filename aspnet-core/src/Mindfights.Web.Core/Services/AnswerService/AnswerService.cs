@@ -33,7 +33,7 @@ namespace Mindfights.Services.AnswerService
             _userManager = userManager;
         }
 
-        public async Task<List<MindfightQuestionAnswerDto>> GetQuestionAnswers(long questionId)
+        public async Task<MindfightQuestionAnswerDto> GetQuestionAnswer(long questionId)
         {
             var currentQuestion = await _questionRepository
                 .GetAll()
@@ -53,52 +53,14 @@ namespace Mindfights.Services.AnswerService
             if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId 
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentQuestion.Tour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+            
+            var answer = await _answerRepository
+                .FirstOrDefaultAsync(x => x.QuestionId == questionId);
 
-            var questionAnswers = new List<MindfightQuestionAnswerDto>();
-            var answers = await _answerRepository.GetAll()
-                .Where(x => x.QuestionId == questionId)
-                .ToListAsync();
-
-            foreach (var answer in answers)
-            {
-                var answerDto = new MindfightQuestionAnswerDto();
-                answer.MapTo(answerDto);
-                questionAnswers.Add(answerDto);
-            }
-            return questionAnswers;
-        }
-
-        public async Task<MindfightQuestionAnswerDto> GetQuestionAnswer(long answerId)
-        {
-            var currentAnswer = await _answerRepository
-                .GetAll()
-                .FirstOrDefaultAsync(x => x.Id == answerId);
-            if (currentAnswer == null)
-                throw new UserFriendlyException("Answer with specified id does not exist!");
-
-            var currentQuestion = await _questionRepository
-                .GetAll()
-                .Include(x => x.Tour)
-                .ThenInclude(x => x.Mindfight)
-                .FirstOrDefaultAsync(x => x.Id == currentAnswer.QuestionId);
-            if (currentQuestion == null)
-                throw new UserFriendlyException("Question with specified id does not exist!");
-
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
-            if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights")
-                || currentQuestion.Tour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
-
-            var currentAnswerDto = new MindfightQuestionAnswerDto();
-            currentAnswer.MapTo(currentAnswerDto);
-            return currentAnswerDto;
+            var answerDto = new MindfightQuestionAnswerDto();
+            answer.MapTo(answerDto);
+            return answerDto;
         }
 
         public async Task<long> CreateQuestionAnswer(MindfightQuestionAnswerDto answer, long questionId)
@@ -117,7 +79,7 @@ namespace Mindfights.Services.AnswerService
 
             if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var answerToCreate = new Answer(currentQuestion, answer.Description, answer.IsCorrect);
             return await _answerRepository.InsertAndGetIdAsync(answerToCreate);
@@ -147,7 +109,7 @@ namespace Mindfights.Services.AnswerService
 
             if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             currentAnswer.Description = answer.Description;
             currentAnswer.IsCorrect = answer.IsCorrect;
@@ -178,7 +140,7 @@ namespace Mindfights.Services.AnswerService
 
             if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             await _answerRepository.DeleteAsync(currentAnswer);
         }

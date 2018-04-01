@@ -122,7 +122,7 @@ namespace Mindfights.Services.TeamAnswerService
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentQuestion.Tour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId)
                 || user.TeamId != teamId)
-                throw new UserFriendlyException("Insufficient permissions to get this team answer!");
+                throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
 
             var teamAnswer = await _teamAnswerRepository.GetAll()
                 .FirstOrDefaultAsync(x => x.QuestionId == questionId && x.TeamId == teamId);
@@ -168,7 +168,7 @@ namespace Mindfights.Services.TeamAnswerService
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId)
                 || user.TeamId != teamId)
-                throw new UserFriendlyException("Insufficient permissions to get this team answer!");
+                throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
 
             var teamAnswers = await _teamAnswerRepository.GetAll()
                 .Where(x => currentQuestions.Any(y => y.Id == x.QuestionId) && x.TeamId == teamId)
@@ -218,7 +218,7 @@ namespace Mindfights.Services.TeamAnswerService
             if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentQuestion.Tour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("Insufficient permissions!");
+                throw new AbpAuthorizationException("Insufficient permissions!");
 
             teamAnswer.IsCurrentlyEvaluated = isCurrentlyEvaluated;
             await _teamAnswerRepository.UpdateAsync(teamAnswer);
@@ -247,7 +247,7 @@ namespace Mindfights.Services.TeamAnswerService
             if (currentQuestion.Tour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentQuestion.Tour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("Insufficient permissions!");
+                throw new AbpAuthorizationException("Insufficient permissions!");
 
             var currentTeam = await _teamRepository
                 .GetAll()

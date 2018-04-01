@@ -59,7 +59,7 @@ namespace Mindfights.Services.ResultService
 
             if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to create result!");
+                throw new AbpAuthorizationException("Insufficient permissions to create result!");
 
             var currentTeam = await _teamRepository
                 .GetAll()

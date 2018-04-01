@@ -162,7 +162,7 @@ namespace Mindfights.Services.RegistrationService
 
             if (currentMindfight.CreatorId != _userManager.AbpSession.UserId 
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var currentTeam = await _teamRepository
                 .GetAll()

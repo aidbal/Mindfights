@@ -55,7 +55,7 @@ namespace Mindfights.Services.TourService
             if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentMindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var toursDto = new List<TourDto>();
             var tours = await _tourRepository
@@ -90,7 +90,7 @@ namespace Mindfights.Services.TourService
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights")
                 || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
-                throw new UserFriendlyException("Insufficient permissions to get this tour!");
+                throw new AbpAuthorizationException("Insufficient permissions to get this tour!");
 
             var tour = new TourDto();
             currentTour.MapTo(tour);
@@ -173,7 +173,7 @@ namespace Mindfights.Services.TourService
 
             if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to create tour!");
+                throw new AbpAuthorizationException("Insufficient permissions to create tour!");
 
             tour.OrderNumber = await GetLastOrderNumber(mindfightId);
             tour.OrderNumber = tour.OrderNumber == 0 ? 1 : tour.OrderNumber + 1;
@@ -203,7 +203,7 @@ namespace Mindfights.Services.TourService
 
             if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to update tour!");
+                throw new AbpAuthorizationException("Insufficient permissions to update tour!");
 
             tour.OrderNumber = currentTour.OrderNumber;
             tour.MapTo(currentTour);
@@ -229,7 +229,7 @@ namespace Mindfights.Services.TourService
 
             if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions to delete tour!");
+                throw new AbpAuthorizationException("Insufficient permissions to delete tour!");
 
             currentMindfight.ToursCount -= 1;
             var orderNumber = tourToDelete.OrderNumber;
@@ -251,7 +251,7 @@ namespace Mindfights.Services.TourService
 
             if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
                 || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new UserFriendlyException("Insufficient permissions!");
+                throw new AbpAuthorizationException("Insufficient permissions!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
