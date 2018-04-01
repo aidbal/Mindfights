@@ -1,10 +1,10 @@
-import { SkautatinklisTemplatePage } from './app.po';
+import { MindfightsTemplatePage } from './app.po';
 
-describe('Skautatinklis App', function() {
-  let page: SkautatinklisTemplatePage;
+describe('Mindfights App', function() {
+  let page: MindfightsTemplatePage;
 
   beforeEach(() => {
-    page = new SkautatinklisTemplatePage();
+    page = new MindfightsTemplatePage();
   });
 
   it('should display message saying app works', () => {

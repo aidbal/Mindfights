@@ -8,7 +8,7 @@
     };
 
     static readonly localization = {
-        defaultLocalizationSourceName: 'Skautatinklis'
+        defaultLocalizationSourceName: 'Mindfights'
     };
 
     static readonly authorization = {

@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+    <RootNamespace>Mindfights</RootNamespace>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20180310095942_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310100455_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310102821_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310103442_Extended user model.cs" />
+    <Compile Remove="Migrations\20180310165414_Added scout achievements model.cs" />
+    <Compile Remove="Migrations\20180310165541_Added scout achievements model.cs" />
+    <Compile Remove="Migrations\20180310171633_Added mindfight model.cs" />
+    <Compile Remove="Migrations\20180310173102_Added mindfightQuestion model.cs" />
+    <Compile Remove="Migrations\20180310173508_Added mindfightQuestion model.cs" />
+    <Compile Remove="Migrations\20180310180911_Added mindfightQuestion model.cs" />
+    <Compile Remove="Migrations\20180310182007_Added answer model.cs" />
+    <Compile Remove="Migrations\20180310184045_Added TeamAnswer model.cs" />
+    <Compile Remove="Migrations\20180310185727_Added QuestionListToMindfights.cs" />
+    <Compile Remove="Migrations\20180310192245_Added MindfightResult Model.cs" />
+    <Compile Remove="Migrations\20180310201309_Added MindfightResult Model.cs" />
+    <Compile Remove="Migrations\20180310202233_Added MindfightRegistration model.cs" />
+    <Compile Remove="Migrations\20180310213910_Added Title and Description fields.cs" />
+    <Compile Remove="Migrations\20180310224436_Renamed MindfightAssignedQuestions.cs" />
+    <Compile Remove="Migrations\20180310225838_Added Teams.cs" />
+    <Compile Remove="Migrations\20180310231610_Renamed UserMindfightResult to UserMindfightResults.cs" />
+    <Compile Remove="Migrations\20180311133901_Changed PKs to long.cs" />
+    <Compile Remove="Migrations\20180312195917_test.cs" />
+    <Compile Remove="Migrations\20180312200506_test.cs" />
+    <Compile Remove="Migrations\20180312201920_Added City.cs" />
+    <Compile Remove="Migrations\20180312202252_Extended User.cs" />
+    <Compile Remove="Migrations\20180312212008_Extended User Model.cs" />
+    <Compile Remove="Migrations\20180312212411_Added ScoutAchiementType.cs" />
+    <Compile Remove="Migrations\20180313174118_Added ScoutGroup.cs" />
+    <Compile Remove="Migrations\20180313181650_Added Mindfight Question.cs" />
+    <Compile Remove="Migrations\20180313201753_Added TeamAnswer Delete Restriction.cs" />
+    <Compile Remove="Migrations\20180313202137_Added Mindfight Delete Restriction.cs" />
+    <Compile Remove="Migrations\20180325111013_test.cs" />
+    <Compile Remove="Migrations\20180327171652_test.cs" />
+    <Compile Remove="Migrations\20180327193602_test.cs" />
+    <Compile Remove="Migrations\20180327193857_test.cs" />
+    <Compile Remove="Migrations\20180328194323_Renamed QuestionsCount To TourCount.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mindfights.Core\Mindfights.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0" />
+  </ItemGroup>
+</Project>

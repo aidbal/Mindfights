@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-export class SkautatinklisTemplatePage {
+export class MindfightsTemplatePage {
   navigateTo() {
     return browser.get('/');
   }
