@@ -44,6 +44,7 @@
     <Compile Remove="Migrations\20180327193602_test.cs" />
     <Compile Remove="Migrations\20180327193857_test.cs" />
     <Compile Remove="Migrations\20180328194323_Renamed QuestionsCount To TourCount.cs" />
+    <Compile Remove="Migrations\20180401122354_Changed Answer Model.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />

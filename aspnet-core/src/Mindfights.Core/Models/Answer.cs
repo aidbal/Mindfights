@@ -15,12 +15,6 @@ namespace Mindfights.Models
         public DateTime CreationTime { get; set; }
         public bool IsDeleted { get; set; }
 
-
-        private Answer()
-        {
-            CreationTime = Clock.Now;
-        }
-
         public Answer(Question question, string description, bool isCorrect) : this()
         {
             Description = description;
@@ -28,6 +22,10 @@ namespace Mindfights.Models
             Question = question;
             QuestionId = question.Id;
         }
-
+        
+        private Answer()
+        {
+            CreationTime = Clock.Now;
+        }
     }
 }

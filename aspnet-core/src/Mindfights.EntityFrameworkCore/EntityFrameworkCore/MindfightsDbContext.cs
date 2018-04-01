@@ -61,20 +61,6 @@ namespace Mindfights.EntityFrameworkCore
                 .WithMany(mr => mr.Users)
                 .HasForeignKey(umr => umr.MindfightResultId);
 
-
-            //modelBuilder.Entity<MindfightConfirmedTeam>()
-            //    .HasKey(mat => new { mat.MindfightId, mat.TeamId });
-
-            //modelBuilder.Entity<MindfightConfirmedTeam>()
-            //    .HasOne(mat => mat.Mindfight)
-            //    .WithMany(m => m.AllowedTeams)
-            //    .HasForeignKey(mat => mat.MindfightId).OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<MindfightConfirmedTeam>()
-            //    .HasOne(mat => mat.Team)
-            //    .WithMany(t => t.AllowedPrivateMindfights)
-            //    .HasForeignKey(mat => mat.TeamId);
-
             base.OnModelCreating(modelBuilder);
         }
     }

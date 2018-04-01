@@ -16,10 +16,10 @@ namespace Mindfights.Models
         public int OrderNumber { get; set; }
         public long TourId { get; set; }
         public Tour Tour { get; set; }
+        public Answer Answer { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-        public ICollection<Answer> MindfightQuestionAnswers { get; set; }
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
 
         public Question(Tour tour, string title, string description,
@@ -37,7 +37,6 @@ namespace Mindfights.Models
 
         private Question()
         {
-            MindfightQuestionAnswers = new List<Answer>();
             TeamAnswers = new List<TeamAnswer>();
             CreationTime = Clock.Now;
             IsActive = true;
