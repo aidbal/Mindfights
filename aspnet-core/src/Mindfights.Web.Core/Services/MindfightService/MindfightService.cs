@@ -98,7 +98,7 @@ namespace Mindfights.Services.MindfightService
 
         public async Task<long> CreateMindfight(MindfightCreateUpdateDto mindfight)
         {
-            if (!_permissionChecker.IsGranted("CreateMindfights") || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(_permissionChecker.IsGranted("CreateMindfights") || !_permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not authorized to create a mindfight!");
             
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
@@ -115,9 +115,6 @@ namespace Mindfights.Services.MindfightService
 
         public async Task UpdateMindfight(MindfightDto mindfight, long mindfightId)
         {
-            if (!_permissionChecker.IsGranted("CreateMindfights") || !_permissionChecker.IsGranted("ManageMindfights"))
-                throw new AbpAuthorizationException("You are not authorized to create a mindfight!");
-
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
@@ -126,7 +123,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var mindfightWithSameName = await _mindfightRepository
@@ -151,7 +148,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             await _mindfightRepository.DeleteAsync(currentMindfight);
@@ -177,7 +174,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var evaluators = await _userManager.Users.IgnoreQueryFilters()
@@ -216,7 +213,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             currentMindfight.IsActive = isActive;
@@ -234,7 +231,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
  
             currentMindfight.IsConfirmed = isConfirmed;

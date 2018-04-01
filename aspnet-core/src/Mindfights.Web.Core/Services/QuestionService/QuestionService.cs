@@ -50,9 +50,9 @@ namespace Mindfights.Services.QuestionService
             if (currentTour == null)
                 throw new UserFriendlyException("Tour with specified id does not exist!");
             
-            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights")
-                || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
+            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")
+                || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
                 throw new AbpAuthorizationException("Insufficient permissions to get this question!");
 
             var questionsDto = new List<QuestionDto>();
@@ -81,12 +81,12 @@ namespace Mindfights.Services.QuestionService
             if (currentTour == null)
                 throw new UserFriendlyException("Tour with specified id does not exist!");
 
-            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights")
-                || currentTour.Mindfight.Evaluators.All(x => x.UserId != _userManager.AbpSession.UserId))
+            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")
+                || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
                 throw new AbpAuthorizationException("Insufficient permissions to get this question!");
 
-            var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
+            var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.OrderNumber == orderNumber && x.TourId == tourId);
             if (currentQuestion == null)
                 throw new UserFriendlyException("Question with specified order number does not exist!");
 
@@ -152,8 +152,8 @@ namespace Mindfights.Services.QuestionService
             if (currentTour == null)
                 throw new UserFriendlyException("Tour with specified id does not exist!");
 
-            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to create question!");
 
             question.OrderNumber = await GetLastOrderNumber(tourId);
@@ -166,6 +166,7 @@ namespace Mindfights.Services.QuestionService
                 currentTour,
                 question.Title,
                 question.Description,
+                question.Answer,
                 question.TimeToAnswerInSeconds,
                 points,
                 question.OrderNumber, 
@@ -173,17 +174,17 @@ namespace Mindfights.Services.QuestionService
             return await _questionRepository.InsertAndGetIdAsync(questionToCreate);
         }
 
-        public async Task UpdateQuestion(QuestionDto question, long questionId, long mindfightId)
+        public async Task UpdateQuestion(QuestionDto question, long questionId, long tourId)
         {
             var currentTour = await _tourRepository
                 .GetAll()
                 .Include(x => x.Mindfight)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+                .FirstOrDefaultAsync(x => x.Id == tourId);
             if (currentTour == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to update question!");
 
             var questionToUpdate = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
@@ -210,8 +211,8 @@ namespace Mindfights.Services.QuestionService
             if (currentTour == null)
                 throw new UserFriendlyException("Error getting question's tour!");
             
-            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to delete question!");
 
             currentTour.QuestionsCount -= 1;
@@ -230,8 +231,8 @@ namespace Mindfights.Services.QuestionService
             if (currentTour == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (currentTour.Mindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to update order number!");
 
             var questionWithNewOrderNumber = await _questionRepository

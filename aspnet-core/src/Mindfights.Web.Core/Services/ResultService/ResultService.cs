@@ -57,8 +57,8 @@ namespace Mindfights.Services.ResultService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId
-                || !_permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId
+                || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to create result!");
 
             var currentTeam = await _teamRepository
