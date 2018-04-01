@@ -23,7 +23,7 @@ namespace Mindfights.Models
         public ICollection<Registration> Registrations { get; set; }
         public ICollection<User> Users { get; set; }
 
-        public Team(User leaderUser, string name, string description)
+        public Team(User leaderUser, string name, string description) : this()
         {
             GamePoints = 0;
             LeaderId = leaderUser.Id;

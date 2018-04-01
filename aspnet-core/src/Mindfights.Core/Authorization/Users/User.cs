@@ -16,6 +16,7 @@ namespace Mindfights.Authorization.Users
         public City City { get; set; }
         public long? TeamId { get; set; }
         public Team Team { get; set; }
+        public bool IsActiveInTeam { get; set; }
         public ICollection<MindfightEvaluator> Mindfights { get; set; }
         public ICollection<UserMindfightResult> MindfightResults { get; set; }
         public ICollection<TeamAnswer> EvaluatedAnswers { get; set; }

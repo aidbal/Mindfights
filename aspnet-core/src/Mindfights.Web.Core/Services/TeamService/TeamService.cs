@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Abp.Authorization;
 
 namespace Mindfights.Services.TeamService
 {
@@ -20,12 +21,14 @@ namespace Mindfights.Services.TeamService
         private readonly IRepository<Team, long> _teamRepository;
         private readonly UserManager _userManager;
         private readonly IObjectMapper _objectMapper;
+        private readonly IPermissionChecker _permissionChecker;
 
-        public TeamService(IRepository<Team, long> teamRepository, UserManager userManager, IObjectMapper objectMapper)
+        public TeamService(IRepository<Team, long> teamRepository, UserManager userManager, IObjectMapper objectMapper, IPermissionChecker permissionChecker)
         {
             _teamRepository = teamRepository;
             _userManager = userManager;
             _objectMapper = objectMapper;
+            _permissionChecker = permissionChecker;
         }
 
         public async Task<long> CreateTeam(TeamDto team)
@@ -38,11 +41,12 @@ namespace Mindfights.Services.TeamService
             if (currentUserTeam != null)
                 throw new UserFriendlyException("User already has created a team!");
             
-            var teamWithSameName = _teamRepository.FirstOrDefaultAsync(x => x.Name == team.Name);
+            var teamWithSameName = await _teamRepository.FirstOrDefaultAsync(x => string.CompareOrdinal(x.Name.ToUpper(), team.Name.ToUpper()) == 0);
             if (teamWithSameName != null)
                 throw new UserFriendlyException("Team with the same name already exists");
             
             var teamToInsert = new Team(user, team.Name, team.Description);
+            user.IsActiveInTeam = true;
             return await _teamRepository.InsertAndGetIdAsync(teamToInsert);
         }
 
@@ -76,7 +80,7 @@ namespace Mindfights.Services.TeamService
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist!");
 
-            var teamWithSameName = await _teamRepository.FirstOrDefaultAsync(x => x.Name == team.Name);
+            var teamWithSameName = await _teamRepository.FirstOrDefaultAsync(x => string.CompareOrdinal(x.Name.ToUpper(), team.Name.ToUpper()) == 0);
             if (teamWithSameName != null)
                 throw new UserFriendlyException("Team with the same name already exists!");
             
@@ -90,12 +94,39 @@ namespace Mindfights.Services.TeamService
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
-            
-            foreach (var user in currentTeam.Users)
-            {
-                user.Team = null;
-            }
+
+            if(!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
+                throw new AbpAuthorizationException("You don't have the permission to delete this team!");
+
+            var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentTeam.LeaderId);
+            if (leader == null)
+                throw new UserFriendlyException("There was a problem getting team leader");
+
+            leader.IsActiveInTeam = false;
             await _teamRepository.DeleteAsync(currentTeam);
+        }
+
+        public async Task UpdateUserActiveStatus(long userId, bool status)
+        {
+            var currentUser = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Include(x => x.Team)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+            if (currentUser == null)
+                throw new UserFriendlyException("User does not exist or is deleted!");
+
+            if (currentUser.Team == null)
+                throw new UserFriendlyException("User is not in a team!");
+
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == currentUser.Team.Id);
+            if (currentTeam == null)
+                throw new UserFriendlyException("User is in another team!");
+
+            if (!(_permissionChecker.IsGranted("Pages.Users") || currentTeam.LeaderId == _userManager.AbpSession.UserId))
+                throw new AbpAuthorizationException("You don't have the permission to activate user!");
+
+            currentUser.IsActiveInTeam = status;
         }
 
         public async Task InsertUser(long teamId, long userId)
@@ -103,7 +134,10 @@ namespace Mindfights.Services.TeamService
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
-            
+
+            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
+                throw new AbpAuthorizationException("You don't have the permission to insert user!");
+
             var currentLeaderTeam = await _teamRepository.FirstOrDefaultAsync(x => x.LeaderId == userId);
             if (currentLeaderTeam != null)
                 throw new UserFriendlyException("User already has created a team!");
@@ -117,6 +151,7 @@ namespace Mindfights.Services.TeamService
             
             currentTeam.Users.Add(currentUser);
             currentTeam.UsersCount += 1;
+            currentUser.IsActiveInTeam = false;
             await _teamRepository.UpdateAsync(currentTeam);
         }
 
@@ -125,6 +160,9 @@ namespace Mindfights.Services.TeamService
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
+
+            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
+                throw new AbpAuthorizationException("You don't have the permission to remove user!");
 
             var currentLeaderTeam = await _teamRepository.FirstOrDefaultAsync(x => x.LeaderId == userId);
             if (currentLeaderTeam != null)
@@ -140,18 +178,26 @@ namespace Mindfights.Services.TeamService
             if (currentTeam.Users.Remove(currentUser))
             {
                 currentTeam.UsersCount -= 1;
+                currentUser.IsActiveInTeam = false;
                 await _teamRepository.UpdateAsync(currentTeam);
             }
         }
 
-        public async Task<List<string>> GetAllTeamPlayers(long teamId)
+        public async Task<List<TeamPlayerDto>> GetAllTeamPlayers(long teamId)
         {
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 
             var usersInTeam = await _userManager.Users.IgnoreQueryFilters().Where(x => x.TeamId == teamId).ToListAsync();
-            return usersInTeam.Select(user => user.Name).ToList();
+            return usersInTeam.Select(user => new TeamPlayerDto
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Points = user.Points,
+                    IsActiveInTeam = user.IsActiveInTeam
+                })
+                .ToList();
         }
 
         public async Task ChangeTeamLeader(long teamId, long newLeaderId)
@@ -168,18 +214,20 @@ namespace Mindfights.Services.TeamService
             if (newLeader == null)
                 throw new UserFriendlyException("User does not exist or is deleted!");
 
-            if (newLeader.Team != null)
+            if (newLeader.Team != null && newLeader.Team != currentTeam)
                 throw new UserFriendlyException("User is in another team!");
 
 
             if (currentTeam.Users.Remove(currentLeader))
             {
                 currentTeam.LeaderId = newLeaderId;
+                newLeader.IsActiveInTeam = true;
+                currentLeader.IsActiveInTeam = false;
                 await _teamRepository.UpdateAsync(currentTeam);
             }
             else
             {
-                throw new UserFriendlyException("There was a problem removing leader.!");
+                throw new UserFriendlyException("There was a problem removing leader!");
             }
         }
     }
