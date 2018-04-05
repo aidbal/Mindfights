@@ -106,6 +106,7 @@ namespace Mindfights.Services.TeamAnswerService
                 .GetAll()
                 .Include(x => x.Tour)
                 .ThenInclude(x => x.Mindfight)
+                .ThenInclude(x => x.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)
@@ -145,7 +146,9 @@ namespace Mindfights.Services.TeamAnswerService
                 throw new UserFriendlyException("Team with specified id does not exist!");
 
             var currentTour = await _tourRepository
-                .GetAllIncluding(x => x.Mindfight)
+                .GetAll()
+                .Include(x => x.Mindfight)
+                .ThenInclude(x => x.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == tourId);
 
             if (currentTour == null)
@@ -167,7 +170,7 @@ namespace Mindfights.Services.TeamAnswerService
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                 || _permissionChecker.IsGranted("ManageMindfights")
                 || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)
-                || user.TeamId != teamId))
+                || user.TeamId == teamId))
                 throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
 
             var teamAnswers = await _teamAnswerRepository.GetAll()
@@ -231,6 +234,7 @@ namespace Mindfights.Services.TeamAnswerService
                 .GetAll()
                 .Include(x => x.Tour)
                 .ThenInclude(x => x.Mindfight)
+                .ThenInclude(x => x.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)

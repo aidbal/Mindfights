@@ -146,7 +146,8 @@ namespace Mindfights.Services.RegistrationService
                     MindfightName = registration.Mindfight.Title,
                     MindfightStartTime = registration.Mindfight.StartTime,
                     TeamId = registration.TeamId,
-                    TeamName = registration.Team.Name
+                    TeamName = registration.Team.Name,
+                    IsConfirmed = registration.IsConfirmed
                 })
                 .ToList();
         }

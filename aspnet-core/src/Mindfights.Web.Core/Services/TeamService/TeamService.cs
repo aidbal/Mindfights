@@ -95,7 +95,7 @@ namespace Mindfights.Services.TeamService
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 
-            if(!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
+            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
                 throw new AbpAuthorizationException("You don't have the permission to delete this team!");
 
             var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentTeam.LeaderId);
@@ -217,18 +217,11 @@ namespace Mindfights.Services.TeamService
             if (newLeader.Team != null && newLeader.Team != currentTeam)
                 throw new UserFriendlyException("User is in another team!");
 
-
-            if (currentTeam.Users.Remove(currentLeader))
-            {
-                currentTeam.LeaderId = newLeaderId;
-                newLeader.IsActiveInTeam = true;
-                currentLeader.IsActiveInTeam = false;
-                await _teamRepository.UpdateAsync(currentTeam);
-            }
-            else
-            {
-                throw new UserFriendlyException("There was a problem removing leader!");
-            }
+            
+            currentTeam.LeaderId = newLeaderId;
+            newLeader.IsActiveInTeam = true;
+            currentLeader.IsActiveInTeam = false;
+            await _teamRepository.UpdateAsync(currentTeam);
         }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Abp.AutoMapper;
+using Mindfights.Models;
 
 namespace Mindfights.DTOs
 {
+    [AutoMapFrom(typeof(TeamAnswer))]
     public class TeamAnswerDto
     {
         [Required]
