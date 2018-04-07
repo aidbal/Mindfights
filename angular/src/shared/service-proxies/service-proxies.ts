@@ -3361,7 +3361,7 @@ export class TokenAuthServiceProxy {
 }
 
 @Injectable()
-export class TourServiceServiceProxy {
+export class TourServiceProxy {
     private http: Http;
     private baseUrl: string;
     protected jsonParseReviver: (key: string, value: any) => any = undefined;
@@ -3375,7 +3375,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     getAllMindfightTours(mindfightId: number): Observable<TourDto[]> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/GetAllMindfightTours?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/GetAllMindfightTours?";
         if (mindfightId === undefined || mindfightId === null)
             throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
@@ -3429,7 +3429,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     getTour(tourId: number): Observable<TourDto> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/GetTour?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/GetTour?";
         if (tourId === undefined || tourId === null)
             throw new Error("The parameter 'tourId' must be defined and cannot be null.");
         else
@@ -3479,7 +3479,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     getNextTour(mindfightId: number, teamId: number): Observable<TourDto> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/GetNextTour?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/GetNextTour?";
         if (mindfightId === undefined || mindfightId === null)
             throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
@@ -3534,7 +3534,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     createTour(tour: TourDto, mindfightId: number): Observable<number> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/CreateTour?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/CreateTour?";
         if (mindfightId === undefined || mindfightId === null)
             throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
@@ -3588,7 +3588,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     updateTour(tour: TourDto, tourId: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/UpdateTour?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/UpdateTour?";
         if (tourId === undefined || tourId === null)
             throw new Error("The parameter 'tourId' must be defined and cannot be null.");
         else
@@ -3637,7 +3637,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     deleteTour(tourId: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/DeleteTour?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/DeleteTour?";
         if (tourId === undefined || tourId === null)
             throw new Error("The parameter 'tourId' must be defined and cannot be null.");
         else
@@ -3683,7 +3683,7 @@ export class TourServiceServiceProxy {
      * @return Success
      */
     updateOrderNumber(tourId: number, newOrderNumber: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/mindfights/TourService/UpdateOrderNumber?";
+        let url_ = this.baseUrl + "/api/services/mindfights/Tour/UpdateOrderNumber?";
         if (tourId === undefined || tourId === null)
             throw new Error("The parameter 'tourId' must be defined and cannot be null.");
         else
