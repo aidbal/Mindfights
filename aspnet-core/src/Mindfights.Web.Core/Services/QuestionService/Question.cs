@@ -14,17 +14,17 @@ using System.Threading.Tasks;
 namespace Mindfights.Services.QuestionService
 {
     [AbpMvcAuthorize]
-    public class QuestionService : IQuestionService
+    public class Question : IQuestionService
     {
-        private readonly IRepository<Question, long> _questionRepository;
+        private readonly IRepository<Models.Question, long> _questionRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
         private readonly IRepository<Tour, long> _tourRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public QuestionService(
-            IRepository<Question, long> questionRepository, 
+        public Question(
+            IRepository<Models.Question, long> questionRepository, 
             IRepository<Team, long> teamRepository, 
             IRepository<TeamAnswer, long> teamAnswerRepository, 
             IRepository<Tour, long> tourRepository,
@@ -162,7 +162,7 @@ namespace Mindfights.Services.QuestionService
             var points = question.Points > 0 ? question.Points : 0;
             currentTour.TotalPoints += points;
 
-            var questionToCreate = new Question(
+            var questionToCreate = new Models.Question(
                 currentTour,
                 question.Title,
                 question.Description,

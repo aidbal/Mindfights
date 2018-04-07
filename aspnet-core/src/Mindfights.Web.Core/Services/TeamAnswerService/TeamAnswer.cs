@@ -14,19 +14,19 @@ using System.Threading.Tasks;
 namespace Mindfights.Services.TeamAnswerService
 {
     [AbpMvcAuthorize]
-    public class TeamAnswerService : ITeamAnswerService
+    public class TeamAnswer : ITeamAnswerService
     {
         private readonly IRepository<Question, long> _questionRepository;
-        private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
+        private readonly IRepository<Models.TeamAnswer, long> _teamAnswerRepository;
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<Tour, long> _tourRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public TeamAnswerService(
+        public TeamAnswer(
             IRepository<Question, long> questionRepository,
-            IRepository<TeamAnswer, long> teamAnswerRepository,
+            IRepository<Models.TeamAnswer, long> teamAnswerRepository,
             IRepository<Mindfight, long> mindfightRepository,
             IRepository<Team, long> teamRepository,
             IRepository<Tour, long> tourRepository,
@@ -88,7 +88,7 @@ namespace Mindfights.Services.TeamAnswerService
             if (currentMindfight.Registrations.Any(x => x.TeamId != user.Team.Id && x.IsConfirmed))
                 throw new UserFriendlyException("User's team is not confirmed to play this mindfight!");
 
-            var teamAnswerToInsert = new TeamAnswer(currentQuestion, user.Team, enteredAnswer, false);
+            var teamAnswerToInsert = new Models.TeamAnswer(currentQuestion, user.Team, enteredAnswer, false);
             return await _teamAnswerRepository.InsertAndGetIdAsync(teamAnswerToInsert);
         }
 

@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 namespace Mindfights.Services.MindfightService
 {
     [AbpMvcAuthorize]
-    public class MindfightService : IMindfightService
+    public class Mindfight : IMindfightService
     {
-        private readonly IRepository<Mindfight, long> _mindfightRepository;
+        private readonly IRepository<Models.Mindfight, long> _mindfightRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public MindfightService(IRepository<Mindfight, long> mindfightRepository, IPermissionChecker permissionChecker, UserManager userManager)
+        public Mindfight(IRepository<Models.Mindfight, long> mindfightRepository, IPermissionChecker permissionChecker, UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
             _permissionChecker = permissionChecker;
@@ -109,7 +109,7 @@ namespace Mindfights.Services.MindfightService
             if (mindfightWithSameName != null)
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
 
-            var newMindfight = new Mindfight(user, mindfight.Title, mindfight.Description, mindfight.PlayersLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes);
+            var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.PlayersLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
 
@@ -256,7 +256,7 @@ namespace Mindfights.Services.MindfightService
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
-        private async Task<List<MindfightEvaluator>> GetEvaluatorsFromEmails(IReadOnlyCollection<string> evaluatorEmails, Mindfight mindfight)
+        private async Task<List<MindfightEvaluator>> GetEvaluatorsFromEmails(IReadOnlyCollection<string> evaluatorEmails, Models.Mindfight mindfight)
         {
             var users = await _userManager.Users.IgnoreQueryFilters()
                 .Where(p => evaluatorEmails.All(p2 => p2.ToUpper() == p.NormalizedEmailAddress)).ToListAsync();

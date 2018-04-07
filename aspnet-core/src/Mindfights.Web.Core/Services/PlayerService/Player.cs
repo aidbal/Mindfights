@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Mindfights.Services.PlayerService
 {
-    public class PlayerService : IPlayerService
+    public class Player : IPlayerService
     {
         private readonly UserManager _userManager;
 
-        public PlayerService(UserManager userManager)
+        public Player(UserManager userManager)
         {
             _userManager = userManager;
         }

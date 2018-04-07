@@ -16,14 +16,14 @@ using Abp.Authorization;
 namespace Mindfights.Services.TeamService
 {
     [AbpMvcAuthorize]
-    public class TeamService : ITeamService
+    public class Team : ITeamService
     {
-        private readonly IRepository<Team, long> _teamRepository;
+        private readonly IRepository<Models.Team, long> _teamRepository;
         private readonly UserManager _userManager;
         private readonly IObjectMapper _objectMapper;
         private readonly IPermissionChecker _permissionChecker;
 
-        public TeamService(IRepository<Team, long> teamRepository, UserManager userManager, IObjectMapper objectMapper, IPermissionChecker permissionChecker)
+        public Team(IRepository<Models.Team, long> teamRepository, UserManager userManager, IObjectMapper objectMapper, IPermissionChecker permissionChecker)
         {
             _teamRepository = teamRepository;
             _userManager = userManager;
@@ -45,7 +45,7 @@ namespace Mindfights.Services.TeamService
             if (teamWithSameName != null)
                 throw new UserFriendlyException("Team with the same name already exists");
             
-            var teamToInsert = new Team(user, team.Name, team.Description);
+            var teamToInsert = new Models.Team(user, team.Name, team.Description);
             user.IsActiveInTeam = true;
             return await _teamRepository.InsertAndGetIdAsync(teamToInsert);
         }

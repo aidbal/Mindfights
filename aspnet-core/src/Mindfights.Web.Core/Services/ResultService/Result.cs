@@ -15,7 +15,7 @@ using Abp.Authorization;
 namespace Mindfights.Services.ResultService
 {
     [AbpMvcAuthorize]
-    public class ResultService : IResultService
+    public class Result : IResultService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
@@ -26,7 +26,7 @@ namespace Mindfights.Services.ResultService
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public ResultService(
+        public Result(
             IRepository<Mindfight, long> mindfightRepository,
             IRepository<Team, long> teamRepository,
             IRepository<MindfightResult, long> resultRepository,

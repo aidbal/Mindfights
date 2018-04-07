@@ -14,18 +14,18 @@ using Abp.Authorization;
 namespace Mindfights.Services.RegistrationService
 {
     [AbpMvcAuthorize]
-    public class RegistrationService : IRegistrationService
+    public class Registration : IRegistrationService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
-        private readonly IRepository<Registration, long> _registrationRepository;
+        private readonly IRepository<Models.Registration, long> _registrationRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public RegistrationService(
+        public Registration(
             IRepository<Mindfight, long> mindfightRepository,
             IRepository<Team, long> teamRepository,
-            IRepository<Registration, long> registrationRepository,
+            IRepository<Models.Registration, long> registrationRepository,
             IPermissionChecker permissionChecker,
             UserManager userManager)
         {
@@ -59,7 +59,7 @@ namespace Mindfights.Services.RegistrationService
 
             var currentRegistration = await _registrationRepository
                                           .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId) ??
-                                      new Registration(currentMindfight, currentTeam);
+                                      new Models.Registration(currentMindfight, currentTeam);
 
             currentRegistration.CreationTime = Clock.Now;
             return await _registrationRepository.InsertOrUpdateAndGetIdAsync(currentRegistration);
