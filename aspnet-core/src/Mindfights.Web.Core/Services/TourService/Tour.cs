@@ -14,18 +14,18 @@ using System.Threading.Tasks;
 namespace Mindfights.Services.TourService
 {
     [AbpMvcAuthorize]
-    public class TourService : ITourService
+    public class Tour : ITourService
     {
         private readonly IRepository<Mindfight, long> _mindfightRepository;
-        private readonly IRepository<Tour, long> _tourRepository;
+        private readonly IRepository<Models.Tour, long> _tourRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public TourService(
+        public Tour(
             IRepository<Mindfight, long> mindfightRepository,
-            IRepository<Tour, long> tourRepository,
+            IRepository<Models.Tour, long> tourRepository,
             IRepository<Team, long> teamRepository,
             IRepository<TeamAnswer, long> teamAnswerRepository,
             IPermissionChecker permissionChecker,
@@ -179,7 +179,7 @@ namespace Mindfights.Services.TourService
             tour.OrderNumber = tour.OrderNumber == 0 ? 1 : tour.OrderNumber + 1;
             currentMindfight.ToursCount += 1;
 
-            var tourToCreate = new Tour(
+            var tourToCreate = new Models.Tour(
                 currentMindfight,
                 tour.Title,
                 tour.Description,
