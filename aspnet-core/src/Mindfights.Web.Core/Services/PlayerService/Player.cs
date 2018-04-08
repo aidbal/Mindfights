@@ -25,17 +25,23 @@ namespace Mindfights.Services.PlayerService
             return player.Points;
         }
 
-        public async Task<string> GetPlayerTeam(long userId)
+        public async Task<long> GetPlayerTeam(long userId)
         {
-            var player = await _userManager.Users.IgnoreQueryFilters().Include(x => x.Team).FirstOrDefaultAsync(x => x.Id == userId);
-            if (player == null)
-                throw new UserFriendlyException("The player with specified id does not exist!");
+            long teamId = 0;
+            var player = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Include(x => x.Team)
+                .FirstOrDefaultAsync(x => x.Id == userId);
 
-            var team = player.Team;
-            if (team == null)
-                throw new UserFriendlyException("The player does not have any team!");
-
-            return team.Name;
+            if (player != null)
+            {
+                var team = player.Team;
+                if (team != null)
+                {
+                    teamId = team.Id;
+                }
+            }
+            return teamId;
         }
     }
 }

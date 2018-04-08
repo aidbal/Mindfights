@@ -50,7 +50,7 @@ namespace Mindfights.Services.MindfightService
                 Description = currentMindfight.Description,
                 StartTime = currentMindfight.StartTime,
                 EndTime = currentMindfight.EndTime,
-                PlayersLimit = currentMindfight.PlayersLimit
+                TeamsLimit = currentMindfight.PlayersLimit
             };
 
             var getPrivateInfo = currentMindfight.CreatorId == _userManager.AbpSession.UserId;
@@ -67,7 +67,7 @@ namespace Mindfights.Services.MindfightService
                         getPrivateInfo = true;
                     }
                 }
-                if (currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId))
+                if (currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId) || _permissionChecker.IsGranted("ManageMindfights"))
                 {
                     getPrivateInfo = true;
                     getPrivateInfoForEvaluator = true;
@@ -75,7 +75,6 @@ namespace Mindfights.Services.MindfightService
             }
             if (getPrivateInfo)
             {
-                mindfight.PlayersLimit = currentMindfight.PlayersLimit;
                 mindfight.PrepareTime = currentMindfight.PrepareTime;
                 mindfight.ToursCount = currentMindfight.ToursCount;
                 mindfight.TotalTimeLimitInMinutes = currentMindfight.TotalTimeLimitInMinutes;
@@ -93,6 +92,9 @@ namespace Mindfights.Services.MindfightService
                     }
                 }
             }
+            mindfight.TeamsLimit = currentMindfight.PlayersLimit;
+            mindfight.RegisteredTeamsCount = currentMindfight.Registrations.Count;
+            mindfight.CreatorId = currentMindfight.CreatorId;
             return mindfight;
         }
 
@@ -156,11 +158,16 @@ namespace Mindfights.Services.MindfightService
 
         public async Task<List<MindfightPublicDto>> GetUpcomingMindfights()
         {
-            var publicMindfights = await _mindfightRepository.GetAll()
+            var mindfights = await _mindfightRepository
+                .GetAllIncluding(x => x.Registrations)
                 .Where(x => x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();
-            var publicMindfightsDto = new List<MindfightPublicDto>();
-            publicMindfights.MapTo(publicMindfightsDto);
-            return publicMindfightsDto;
+            var mindfightsDto = new List<MindfightPublicDto>();
+            mindfights.MapTo(mindfightsDto);
+            for (var i = 0; i < mindfights.Count; i++)
+            {
+                mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
+            }
+            return mindfightsDto;
         }
 
         public async Task UpdateEvaluators(long mindfightId, List<string> evaluatorEmails)
