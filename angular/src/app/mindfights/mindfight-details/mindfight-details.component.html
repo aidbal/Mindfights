@@ -1,0 +1,51 @@
+<div class="row clearfix">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content" *ngIf="mindfight">
+            <div class="header">
+                <h2>
+                    {{mindfight.title}} <span class="event-detail-header"><i class="fa fa-calendar"></i> <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span></span>
+                </h2>
+                <ul class="header-dropdown m-r--5">
+                    <li>
+                        <div>
+                            <button type="button" [routerLink]="['/app/mindfights']" class="btn bg-black waves-effect waves-light"><i class="fa fa-arrow-circle-left"></i> Atgal į protmūšius</button>
+                            <!--<button *ngIf="!isRegistered() && !event.isCancelled" type="button" class="btn bg-green waves-effect waves-light" (click)="registerToEvent()"><i class="fa fa-star"></i> {{l('Register')}}</button>
+                            <button *ngIf="isRegistered() && !event.isCancelled" type="button" class="btn bg-orange waves-effect waves-light" (click)="cancelRegistrationFromEvent()"><i class="fa fa-remove"></i> {{l('CancelRegistration')}}</button>-->
+                            <button *ngIf="canEditMindfight()" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="body table-responsive">
+                <div>
+                    {{mindfight.description}}
+                </div>
+                <h5>
+                    {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
+                </h5>
+                <hr />
+                <table class="table table-hover" *ngIf="registrations.length > 0">
+                    <thead>
+                        <tr>
+                            <th>Patvirtinta</th>
+                            <th>Komandos pavadinimas</th>
+                            <th>Registracijos laikas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let registration of registrations"
+                            [ngClass]="{'highlighted': playerTeamId === registration.teamId}">
+                            <td>
+                                <input type="checkbox" id="isTeamConfirmed" disabled
+                                       [ngModel]="registration.isConfirmed">
+                                <label for="isTeamConfirmed"></label>
+                            </td>
+                            <td>{{registration.teamName}}</td>
+                            <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
