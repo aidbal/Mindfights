@@ -36,6 +36,7 @@ import { CreateMindfightComponent } from './mindfights/create-mindfight/create-m
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MindfightDetailsComponent } from './mindfights/mindfight-details/mindfight-details.component';
 
 @NgModule({
     declarations: [
@@ -58,7 +59,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         SideBarFooterComponent,
         RightSideBarComponent,
         MindfightsComponent,
-        CreateMindfightComponent
+        CreateMindfightComponent,
+        MindfightDetailsComponent
     
     ],
     imports: [

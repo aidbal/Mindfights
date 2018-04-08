@@ -1,5 +1,58 @@
-<a routerLink="/app/mindfights/create">
-    <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right">
-        <i class="material-icons">add</i>
-    </button>
-</a>
+<!--[@routerTransition]-->
+<div>
+    <div class="block-header">
+        <h2>Protmūšiai</h2>
+        <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-small"
+                [routerLink]="['/app/mindfights/create']">
+            <i class="material-icons">add</i>
+        </button>
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="main-content">
+                <div class="body">
+                    <div class="row">
+                        <div class="col-md-6" *ngFor="let mindfight of mindfights">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>
+                                        {{mindfight.title}} <small class="event-description">{{mindfight.description}}</small>
+                                    </h2>
+                                    <ul class="header-dropdown m-r-0">
+                                        <li>
+                                            <i class="fa fa-calendar"></i>
+                                        </li>
+                                        <li>
+                                            <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span>
+                                        </li>
+                                    </ul>
+                                    <hr />
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <small *ngIf="mindfight.registeredTeamsCount < mindfight.playersLimit">
+                                                {{mindfight.registeredTeamsCount}} iš {{mindfight.playersLimit}} užsiregistravo.
+                                            </small>
+                                            <small *ngIf="mindfight.playersLimit > 0 && mindfight.registeredTeamsCount >= mindfight.playersLimit">
+                                                {{mindfight.registeredTeamsCount}} iš {{mindfight.playersLimit}} užsiregistravo. Registracija baigta.
+                                            </small>
+                                            <small *ngIf="mindfight.playersLimit <= 0">
+                                                {{mindfight.registeredTeamsCount}} užsiregistravo. Registracija neribota.
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                                    [routerLink]="['/app/mindfights', mindfight.id]">
+                                                <span>Daugiau</span>
+                                                <i class="fa fa-arrow-circle-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
