@@ -714,7 +714,7 @@ export class PlayerServiceProxy {
     /**
      * @return Success
      */
-    getPlayerTeam(userId: number): Observable<string> {
+    getPlayerTeam(userId: number): Observable<number> {
         let url_ = this.baseUrl + "/api/services/mindfights/Player/GetPlayerTeam?";
         if (userId === undefined || userId === null)
             throw new Error("The parameter 'userId' must be defined and cannot be null.");
@@ -737,14 +737,14 @@ export class PlayerServiceProxy {
                 try {
                     return this.processGetPlayerTeam(<any>response_);
                 } catch (e) {
-                    return <Observable<string>><any>Observable.throw(e);
+                    return <Observable<number>><any>Observable.throw(e);
                 }
             } else
-                return <Observable<string>><any>Observable.throw(response_);
+                return <Observable<number>><any>Observable.throw(response_);
         });
     }
 
-    protected processGetPlayerTeam(response: Response): Observable<string> {
+    protected processGetPlayerTeam(response: Response): Observable<number> {
         const status = response.status;
 
         let _headers: any = response.headers ? response.headers.toJSON() : {};
@@ -758,7 +758,7 @@ export class PlayerServiceProxy {
             const _responseText = response.text();
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Observable.of<string>(<any>null);
+        return Observable.of<number>(<any>null);
     }
 }
 
@@ -4377,8 +4377,10 @@ export class MindfightDto implements IMindfightDto {
     endTime: moment.Moment;
     prepareTime: number;
     toursCount: number;
+    creatorId: number;
     totalTimeLimitInMinutes: number;
-    playersLimit: number;
+    teamsLimit: number;
+    registeredTeamsCount: number;
     usersAllowedToEvaluate: string[];
     teamsAllowedToParticipate: string[];
 
@@ -4400,8 +4402,10 @@ export class MindfightDto implements IMindfightDto {
             this.endTime = data["endTime"] ? moment(data["endTime"].toString()) : <any>undefined;
             this.prepareTime = data["prepareTime"];
             this.toursCount = data["toursCount"];
+            this.creatorId = data["creatorId"];
             this.totalTimeLimitInMinutes = data["totalTimeLimitInMinutes"];
-            this.playersLimit = data["playersLimit"];
+            this.teamsLimit = data["teamsLimit"];
+            this.registeredTeamsCount = data["registeredTeamsCount"];
             if (data["usersAllowedToEvaluate"] && data["usersAllowedToEvaluate"].constructor === Array) {
                 this.usersAllowedToEvaluate = [];
                 for (let item of data["usersAllowedToEvaluate"])
@@ -4431,8 +4435,10 @@ export class MindfightDto implements IMindfightDto {
         data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
         data["prepareTime"] = this.prepareTime;
         data["toursCount"] = this.toursCount;
+        data["creatorId"] = this.creatorId;
         data["totalTimeLimitInMinutes"] = this.totalTimeLimitInMinutes;
-        data["playersLimit"] = this.playersLimit;
+        data["teamsLimit"] = this.teamsLimit;
+        data["registeredTeamsCount"] = this.registeredTeamsCount;
         if (this.usersAllowedToEvaluate && this.usersAllowedToEvaluate.constructor === Array) {
             data["usersAllowedToEvaluate"] = [];
             for (let item of this.usersAllowedToEvaluate)
@@ -4462,8 +4468,10 @@ export interface IMindfightDto {
     endTime: moment.Moment;
     prepareTime: number;
     toursCount: number;
+    creatorId: number;
     totalTimeLimitInMinutes: number;
-    playersLimit: number;
+    teamsLimit: number;
+    registeredTeamsCount: number;
     usersAllowedToEvaluate: string[];
     teamsAllowedToParticipate: string[];
 }
@@ -4572,7 +4580,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
     title: string;
     description: string;
     startTime: moment.Moment;
-    playersLimit: number;
+    teamsLimit: number;
+    registeredTeamsCount: number;
 
     constructor(data?: IMindfightPublicDto) {
         if (data) {
@@ -4589,7 +4598,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
             this.title = data["title"];
             this.description = data["description"];
             this.startTime = data["startTime"] ? moment(data["startTime"].toString()) : <any>undefined;
-            this.playersLimit = data["playersLimit"];
+            this.teamsLimit = data["teamsLimit"];
+            this.registeredTeamsCount = data["registeredTeamsCount"];
         }
     }
 
@@ -4606,7 +4616,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
         data["title"] = this.title;
         data["description"] = this.description;
         data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
-        data["playersLimit"] = this.playersLimit;
+        data["teamsLimit"] = this.teamsLimit;
+        data["registeredTeamsCount"] = this.registeredTeamsCount;
         return data; 
     }
 
@@ -4623,7 +4634,8 @@ export interface IMindfightPublicDto {
     title: string;
     description: string;
     startTime: moment.Moment;
-    playersLimit: number;
+    teamsLimit: number;
+    registeredTeamsCount: number;
 }
 
 export class QuestionDto implements IQuestionDto {
