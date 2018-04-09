@@ -1,47 +1,76 @@
-﻿using Abp.Runtime.Session;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Abp.Runtime.Session;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
 using System.Threading.Tasks;
+using Abp.Authorization;
+using Abp.AutoMapper;
+using Abp.Domain.Repositories;
+using Mindfights.Models;
+using Mindfights.DTOs;
 
 namespace Mindfights.Services.PlayerService
 {
     public class Player : IPlayerService
     {
         private readonly UserManager _userManager;
+        private readonly IRepository<Mindfight, long> _mindfightRepository;
+        private readonly IPermissionChecker _permissionChecker;
 
-        public Player(UserManager userManager)
+        public Player(
+            UserManager userManager,
+            IRepository<Mindfight, long> mindfightRepository,
+            IPermissionChecker permissionChecker
+            )
         {
             _userManager = userManager;
+            _mindfightRepository = mindfightRepository;
+            _permissionChecker = permissionChecker;
         }
 
-        public async Task<int> GetPlayerPoints(long? userId)
+        public async Task<PlayerDto> GetPlayerInfo(long userId)
         {
-            var currentUserId = userId ?? NullAbpSession.Instance.UserId;
-            var player = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentUserId);
-            if (player == null)
-                throw new UserFriendlyException("The player with specified id does not exist!");
-
-            return player.Points;
-        }
-
-        public async Task<long> GetPlayerTeam(long userId)
-        {
-            long teamId = 0;
+            var playerDto = new PlayerDto();
             var player = await _userManager.Users
                 .IgnoreQueryFilters()
                 .Include(x => x.Team)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
-            if (player != null)
+            if (player == null)
             {
-                var team = player.Team;
-                if (team != null)
-                {
-                    teamId = team.Id;
-                }
+                throw new UserFriendlyException("Player with specified id does not exist!");
             }
-            return teamId;
+            player.MapTo(playerDto);
+            return playerDto;
+        }
+
+        public async Task<List<PlayerDto>> GetMindfightEvaluators(long mindfightId)
+        {
+            var currentMindfight = await _mindfightRepository
+                .GetAllIncluding(x => x.Evaluators)
+                .Where(x => x.Id == mindfightId).FirstOrDefaultAsync();
+
+            if (currentMindfight == null)
+            {
+                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
+
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId ||
+                  _permissionChecker.IsGranted("ManageMindfights")))
+            {
+                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+            }
+
+            var evaluators = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Where(x => currentMindfight.Evaluators.Any(y => x.Id == y.UserId))
+                .ToListAsync();
+
+            var evaluatorsDto = new List<PlayerDto>();
+            evaluators.MapTo(evaluatorsDto);
+            return evaluatorsDto;
         }
     }
 }
