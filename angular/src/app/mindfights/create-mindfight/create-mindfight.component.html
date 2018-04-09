@@ -1,7 +1,7 @@
 <div class="row clearfix">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card main-content">
-            <form #createEventForm="ngForm" id="frm_create_event" novalidate (ngSubmit)="save()">
+            <form #createMindfightForm="ngForm" id="frm_create_event" novalidate (ngSubmit)="createMindfight()">
                 <div class="modal-header">
                     <h4 class="modal-title">
                         <span>Sukurti naują protmūšį</span>
@@ -10,56 +10,52 @@
                 <div class="modal-body">
                     <div class="row clearfix">
                         <div class="col-sm-12">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input class="form-control" type="text" name="Title" [(ngModel)]="event.title" required maxlength="64" minlength="2">
-                                    <label class="form-label">Pavadinimas</label>
-                                </div>
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="mindfight.title"
+                                           placeholder="Pavadinimas"
+                                           name="Title"
+                                           type="text"
+                                           maxlength="255" minlength="2"
+                                           required>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
                     <div class="row clearfix">
                         <div class="col-sm-12">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <textarea name="Description" class="form-control" [(ngModel)]="event.description"></textarea>
-                                    <label class="form-label">Aprašymas</label>
-                                </div>
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="mindfight.description"
+                                           placeholder="Aprašymas"
+                                           name="Description"
+                                           type="text"
+                                           maxlength="2550" minlength="2"
+                                           required>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
                     <div class="row clearfix">
                         <div class="col-sm-12">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <mat-form-field>
-                                        <mat-select placeholder="Protmūšio tipas" class="form-control" [(ngModel)]="selectedMindfightType" name="mindfightType">
-                                            <mat-option value="1">Nuo iki</mat-option>
-                                            <mat-option value="2">Tam tikru metu</mat-option>
-                                        </mat-select>
-                                    </mat-form-field>
-                                </div>
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <mat-select placeholder="Protmūšio tipas" class="form-control" [(ngModel)]="selectedMindfightType" name="mindfightType" required>
+                                        <mat-option value="1">Nuo iki</mat-option>
+                                        <mat-option value="2">Tam tikru metu</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
                     <div *ngIf="selectedMindfightType == 1">
                         <div class="row clearfix">
                             <div class="col-sm-12">
-                                <div class="form-group form-float">
-                                    <div class="form-line">
-                                        <input type="text" #eventDate name="Date" class="form-control">
-                                        <label class="form-label">Data nuo</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-sm-12">
-                                <div class="form-group form-float">
-                                    <div class="form-line">
-                                        <input type="text" #eventDate name="Date" class="form-control">
-                                        <label class="form-label">Data iki</label>
-                                    </div>
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <input matInput type="text" name="daterangeInput" daterangepicker [options]="rangeDatepickerOptions"
+                                               (selected)="selectedDateEvent($event)" class="form-control" placeholder="Starto laikas nuo iki" required/>
+                                    </mat-form-field>
                                 </div>
                             </div>
                         </div>
@@ -67,43 +63,47 @@
                     <div *ngIf="selectedMindfightType == 2">
                         <div class="row clearfix">
                             <div class="col-sm-12">
-                                <div class="form-group form-float">
-                                    <div class="form-line">
-                                        <input type="text" #eventDate name="Date" class="form-control">
-                                        <label class="form-label">Pradžia</label>
-                                    </div>
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <input matInput type="text" name="daterangeInput" daterangepicker [options]="singleDatepickerOptions"
+                                               (selected)="selectedDateEvent($event)" class="form-control" placeholder="Starto laikas" />
+                                    </mat-form-field>
                                 </div>
                             </div>
                         </div>
                         <div class="row clearfix">
                             <div class="col-sm-12">
-                                <div class="form-group form-float">
-                                    <div class="form-line">
-                                        <mat-form-field>
-                                            <input matInput class="form-control" [(ngModel)]="event.maxRegistrationCount"
-                                                   placeholder="Kiek minučių nuo starto bus galima prisijungti"
-                                                   name="startTimeframe"
-                                                   type="number"
-                                                   min="5">
-                                        </mat-form-field>
-                                    </div>
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <input matInput class="form-control" [(ngModel)]="mindfight.prepareTime"
+                                               placeholder="Kiek minučių nuo starto bus galima prisijungti"
+                                               name="startTimeframe"
+                                               type="number"
+                                               min="5" required>
+                                    </mat-form-field>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row clearfix">
                         <div class="col-sm-12">
-                            <div class="form-group form-float">
-                                <div class="form-line">
-                                    <input type="number" name="MaxRegistrationCount" class="form-control" [(ngModel)]="event.maxRegistrationCount">
-                                    <label class="form-label">Komandų kiekis (0: neribota)</label>
-                                </div>
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="mindfight.teamsLimit"
+                                           placeholder="Komandų kiekis (0: neribota)"
+                                           name="MaxRegistrationCount"
+                                           type="number"
+                                           min="0" required>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button [disabled]="!createEventForm.form.valid || saving" type="submit" class="btn btn-primary blue">Sukurti</button>
+                    <button (click)="cancel()" class="btn red"><i class="fa fa-arrow-circle-left fa-xs"></i> Atšaukti</button>
+                    <button [disabled]="!createMindfightForm.form.valid || saving" type="submit" class="btn btn-primary green">
+                        Sukurti <i class="fa fa-check fa-xs"></i>
+                    </button>
                 </div>
             </form>
         </div>

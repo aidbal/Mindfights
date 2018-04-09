@@ -51,12 +51,8 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         });
     }
 
-    ChangeTeamConfirmationStatus(registrationId): void {
-        
-    }
-
-    isTeamRegistered(teamId): boolean {
-        return _.some(teamId, { userId: abp.session.userId });
+    isPlayerTeamRegistered(registrationTeamId): boolean {
+        return this.playerTeamId === registrationTeamId;
     };
 
     getPlayerTeam(): void {

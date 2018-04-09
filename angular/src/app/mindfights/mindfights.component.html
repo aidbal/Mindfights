@@ -2,9 +2,14 @@
 <div>
     <div class="block-header">
         <h2>Protmūšiai</h2>
-        <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-small"
-                [routerLink]="['/app/mindfights/create']">
+        <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-medium"
+                [routerLink]="['/app/mindfights/create']" title="Sukurti naują protmūšį">
             <i class="material-icons">add</i>
+        </button>
+        <button type="button" data-toggle="modal"
+                class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-medium margin-right-small"
+                [routerLink]="['/app/mindfights/administrate']" title="Administruoti protmūšius">
+            <i class="material-icons">settings</i>
         </button>
     </div>
     <div class="row clearfix">

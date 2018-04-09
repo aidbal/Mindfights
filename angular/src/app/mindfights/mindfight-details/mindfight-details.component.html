@@ -34,7 +34,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let registration of registrations"
-                            [ngClass]="{'highlighted': playerTeamId === registration.teamId}">
+                            [ngClass]="{'highlighted': isPlayerTeamRegistered(registration.teamId)}">
                             <td>
                                 <input type="checkbox" id="isTeamConfirmed" disabled
                                        [ngModel]="registration.isConfirmed">
