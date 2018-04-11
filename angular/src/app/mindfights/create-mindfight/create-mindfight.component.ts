@@ -1,7 +1,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { MindfightCreateUpdateDto, MindfightServiceProxy } from 'shared/service-proxies/service-proxies';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { DatepickerOptionsService } from '../../services/datepickerOptions.service';
 import { Location } from '@angular/common';
@@ -23,7 +23,8 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
         private mindfightService: MindfightServiceProxy,
         private datepickerOptionsService: DatepickerOptionsService,
         private location: Location,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private router: Router) {
         super(injector);
     }
 
@@ -44,14 +45,19 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
     createMindfight(): void {
         if (this.selectedMindfightType == 1) {
             this.mindfight.startTime = this.selectedDate.startDate;
+            this.mindfight.endTime = this.selectedDate.endDate;
         } else if (this.selectedMindfightType == 2) {
             this.mindfight.startTime = this.selectedDate.startDate;
-            this.mindfight.endTime = this.selectedDate.endDate;
+            this.mindfight.endTime = null;
         }
+        this.mindfightService.createMindfight(this.mindfight).subscribe(() => {
+            this.notify.success("Protmūšis sėkmingai sukurtas!");
+            this.router.navigate(['../administrate'], { relativeTo: this.route });
+        });
         console.log(this.mindfight);
     }
 
-    cancel() {
+    goBack() {
         this.location.back();
     }
 }

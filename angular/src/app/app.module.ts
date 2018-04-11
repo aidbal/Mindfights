@@ -37,6 +37,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MindfightDetailsComponent } from './mindfights/mindfight-details/mindfight-details.component';
+import { Daterangepicker } from 'ng2-daterangepicker';
+import { DatepickerOptionsService } from './services/datepickerOptions.service';
+import { AdministrateMindfightsComponent } from './mindfights/administrate-mindfights/administrate-mindfights.component';
+import { MindfightsListComponent } from './mindfights/mindfights-list/mindfights-list.component';
+import { MindfightCardComponent } from './mindfights/mindfight-card/mindfight-card.component';
 
 @NgModule({
     declarations: [
@@ -60,10 +65,15 @@ import { MindfightDetailsComponent } from './mindfights/mindfight-details/mindfi
         RightSideBarComponent,
         MindfightsComponent,
         CreateMindfightComponent,
-        MindfightDetailsComponent
+        MindfightDetailsComponent,
+        AdministrateMindfightsComponent,
+        MindfightsListComponent,
+        MindfightCardComponent
     
     ],
     imports: [
+        MatSelectModule,
+        MatInputModule,
         CommonModule,
         FormsModule,
         HttpModule,
@@ -74,12 +84,11 @@ import { MindfightDetailsComponent } from './mindfights/mindfight-details/mindfi
         ServiceProxyModule,
         SharedModule,
         NgxPaginationModule,
-        MatSelectModule,
-        MatInputModule,
-        MatDatepickerModule
+        MatDatepickerModule,
+        Daterangepicker 
     ],
     providers: [
-
+        DatepickerOptionsService
     ]
 })
 export class AppModule { }
