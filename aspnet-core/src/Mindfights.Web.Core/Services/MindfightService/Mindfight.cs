@@ -50,7 +50,9 @@ namespace Mindfights.Services.MindfightService
                 Description = currentMindfight.Description,
                 StartTime = currentMindfight.StartTime,
                 EndTime = currentMindfight.EndTime,
-                TeamsLimit = currentMindfight.PlayersLimit
+                TeamsLimit = currentMindfight.PlayersLimit,
+                CreatorId = user.Id,
+                CreatorEmail = user.EmailAddress
             };
 
             var getPrivateInfo = currentMindfight.CreatorId == _userManager.AbpSession.UserId;
@@ -111,7 +113,7 @@ namespace Mindfights.Services.MindfightService
             if (mindfightWithSameName != null)
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
 
-            var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.PlayersLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes);
+            var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.TeamsLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
 
@@ -156,16 +158,61 @@ namespace Mindfights.Services.MindfightService
             await _mindfightRepository.DeleteAsync(currentMindfight);
         }
 
-        public async Task<List<MindfightPublicDto>> GetUpcomingMindfights()
+        public async Task<List<MindfightDto>> GetMyCreatedMindfights()
         {
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
+            if (user == null)
+            {
+                throw new UserFriendlyException("There was a problem getting current user!");
+            }
             var mindfights = await _mindfightRepository
                 .GetAllIncluding(x => x.Registrations)
-                .Where(x => x.IsActive && !x.IsDeleted && x.IsConfirmed && !x.IsFinished).ToListAsync();
-            var mindfightsDto = new List<MindfightPublicDto>();
+                .Where(x => x.CreatorId == user.Id).ToListAsync();
+            var mindfightsDto = new List<MindfightDto>();
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
+                mindfightsDto[i].CreatorId = user.Id;
+                mindfightsDto[i].CreatorEmail = user.EmailAddress;
+            }
+            return mindfightsDto;
+        }
+
+        public async Task<List<MindfightDto>> GetAllowedToEvaluateMindfights()
+        {
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
+            if (user == null)
+            {
+                throw new UserFriendlyException("There was a problem getting current user!");
+            }
+
+            var mindfights = await _mindfightRepository
+                .GetAllIncluding(x => x.Registrations, x => x.Evaluators)
+                .Where(x => x.Evaluators.Any(y => y.UserId == user.Id) && x.CreatorId != user.Id).ToListAsync();
+            var mindfightsDto = new List<MindfightDto>();
+            mindfights.MapTo(mindfightsDto);
+            for (var i = 0; i < mindfights.Count; i++)
+            {
+                var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == mindfights[i].CreatorId);
+                mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
+                mindfightsDto[i].CreatorEmail = creator.EmailAddress;
+            }
+            return mindfightsDto;
+        }
+
+        public async Task<List<MindfightPublicDto>> GetUpcomingMindfights()
+        {
+            var mindfights = await _mindfightRepository
+                .GetAllIncluding(x => x.Registrations)
+                .Where(x => x.IsActive && x.IsConfirmed && !x.IsFinished).ToListAsync();
+            var mindfightsDto = new List<MindfightPublicDto>();
+            mindfights.MapTo(mindfightsDto);
+            for (var i = 0; i < mindfights.Count; i++)
+            {
+                var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == mindfights[i].CreatorId);
+                mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
+                mindfightsDto[i].CreatorEmail = creator.EmailAddress;
             }
             return mindfightsDto;
         }

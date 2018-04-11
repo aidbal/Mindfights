@@ -43,6 +43,10 @@ namespace Mindfights.Services.PlayerService
                 throw new UserFriendlyException("Player with specified id does not exist!");
             }
             player.MapTo(playerDto);
+            if (player.Team != null)
+            {
+                playerDto.TeamId = player.Team.Id;
+            }
             return playerDto;
         }
 
@@ -74,3 +78,4 @@ namespace Mindfights.Services.PlayerService
         }
     }
 }
+
