@@ -22,11 +22,10 @@ namespace Mindfights.DTOs
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public int? PrepareTime { get; set; }
-        public int? ToursCount { get; set; }
         [Required]
         public int TotalTimeLimitInMinutes { get; set; }
         [Required]
-        public int PlayersLimit { get; set; }
+        public int TeamsLimit { get; set; }
         public List<long> UsersAllowedToEvaluateIds { get; set; }
         public List<long> TeamsAllowedToParticipateIds { get; set; }
     }

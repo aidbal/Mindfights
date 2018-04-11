@@ -24,6 +24,7 @@ namespace Mindfights.DTOs
         public int? PrepareTime { get; set; }
         public int? ToursCount { get; set; }
         public long? CreatorId { get; set; }
+        public string CreatorEmail { get; set; }
         [Required]
         public int? TotalTimeLimitInMinutes { get; set; }
         [Required]

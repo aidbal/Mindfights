@@ -18,5 +18,7 @@ namespace Mindfights.DTOs
         public DateTime StartTime { get; set; }
         public int TeamsLimit { get; set; }
         public int RegisteredTeamsCount { get; set; }
+        public long? CreatorId { get; set; }
+        public string CreatorEmail { get; set; }
     }
 }
