@@ -1,7 +1,8 @@
 import { Component, OnInit, Injector } from '@angular/core';
-import { MindfightDto, RegistrationDto, MindfightServiceProxy, RegistrationServiceProxy, PlayerServiceProxy } from 'shared/service-proxies/service-proxies';
+import { MindfightDto, RegistrationDto, MindfightServiceProxy, RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-mindfight-details',
@@ -12,7 +13,7 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     mindfight: MindfightDto;
     registrations: RegistrationDto[] = [];
     mindfightId: number;
-    playerTeamId: number;
+    playerInfo: PlayerDto;
     private routeSubscriber: any;
 
     constructor(
@@ -20,7 +21,9 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         private mindfightService: MindfightServiceProxy,
         private registrationService: RegistrationServiceProxy,
         private playerService: PlayerServiceProxy,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private location: Location
+    ) {
         super(injector);
     }
 
@@ -52,12 +55,12 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     }
 
     isPlayerTeamRegistered(registrationTeamId): boolean {
-        return this.playerTeamId === registrationTeamId;
+        return this.playerInfo.teamId === registrationTeamId;
     };
 
     getPlayerTeam(): void {
-        this.playerService.getPlayerTeam(abp.session.userId).subscribe((result) => {
-            this.playerTeamId = result;
+        this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
+            this.playerInfo = result;
         });
     };
 
@@ -67,5 +70,9 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
 
     canEditMindfight(): boolean {
         return this.isMindfightCreator() || abp.auth.isGranted("ManageMindfights");
+    }
+
+    goBack() {
+        this.location.back();
     }
 }

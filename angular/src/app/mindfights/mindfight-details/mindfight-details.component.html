@@ -8,7 +8,7 @@
                 <ul class="header-dropdown m-r--5">
                     <li>
                         <div>
-                            <button type="button" [routerLink]="['/app/mindfights']" class="btn bg-black waves-effect waves-light"><i class="fa fa-arrow-circle-left"></i> Atgal į protmūšius</button>
+                            <button type="button" (click)="goBack()" class="btn bg-black waves-effect waves-light"><i class="fa fa-arrow-circle-left"></i> Atgal</button>
                             <!--<button *ngIf="!isRegistered() && !event.isCancelled" type="button" class="btn bg-green waves-effect waves-light" (click)="registerToEvent()"><i class="fa fa-star"></i> {{l('Register')}}</button>
                             <button *ngIf="isRegistered() && !event.isCancelled" type="button" class="btn bg-orange waves-effect waves-light" (click)="cancelRegistrationFromEvent()"><i class="fa fa-remove"></i> {{l('CancelRegistration')}}</button>-->
                             <button *ngIf="canEditMindfight()" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
