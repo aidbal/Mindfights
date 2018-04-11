@@ -17,12 +17,21 @@
                 </ul>
             </div>
             <div class="body table-responsive">
+                <br />
                 <div>
                     {{mindfight.description}}
                 </div>
-                <h5>
-                    {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
-                </h5>
+                <br />
+                <br/>
+                <div>
+                    <small>
+                        <b>
+                            {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
+                        </b>
+                    </small>
+                    <br/>
+                    <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
+                </div>
                 <hr />
                 <table class="table table-hover" *ngIf="registrations.length > 0">
                     <thead>

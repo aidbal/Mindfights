@@ -4483,6 +4483,7 @@ export class MindfightDto implements IMindfightDto {
     prepareTime: number;
     toursCount: number;
     creatorId: number;
+    creatorEmail: string;
     totalTimeLimitInMinutes: number;
     teamsLimit: number;
     registeredTeamsCount: number;
@@ -4508,6 +4509,7 @@ export class MindfightDto implements IMindfightDto {
             this.prepareTime = data["prepareTime"];
             this.toursCount = data["toursCount"];
             this.creatorId = data["creatorId"];
+            this.creatorEmail = data["creatorEmail"];
             this.totalTimeLimitInMinutes = data["totalTimeLimitInMinutes"];
             this.teamsLimit = data["teamsLimit"];
             this.registeredTeamsCount = data["registeredTeamsCount"];
@@ -4541,6 +4543,7 @@ export class MindfightDto implements IMindfightDto {
         data["prepareTime"] = this.prepareTime;
         data["toursCount"] = this.toursCount;
         data["creatorId"] = this.creatorId;
+        data["creatorEmail"] = this.creatorEmail;
         data["totalTimeLimitInMinutes"] = this.totalTimeLimitInMinutes;
         data["teamsLimit"] = this.teamsLimit;
         data["registeredTeamsCount"] = this.registeredTeamsCount;
@@ -4574,6 +4577,7 @@ export interface IMindfightDto {
     prepareTime: number;
     toursCount: number;
     creatorId: number;
+    creatorEmail: string;
     totalTimeLimitInMinutes: number;
     teamsLimit: number;
     registeredTeamsCount: number;
@@ -4683,6 +4687,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
     startTime: moment.Moment;
     teamsLimit: number;
     registeredTeamsCount: number;
+    creatorId: number;
+    creatorEmail: string;
 
     constructor(data?: IMindfightPublicDto) {
         if (data) {
@@ -4701,6 +4707,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
             this.startTime = data["startTime"] ? moment(data["startTime"].toString()) : <any>undefined;
             this.teamsLimit = data["teamsLimit"];
             this.registeredTeamsCount = data["registeredTeamsCount"];
+            this.creatorId = data["creatorId"];
+            this.creatorEmail = data["creatorEmail"];
         }
     }
 
@@ -4719,6 +4727,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
         data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
         data["teamsLimit"] = this.teamsLimit;
         data["registeredTeamsCount"] = this.registeredTeamsCount;
+        data["creatorId"] = this.creatorId;
+        data["creatorEmail"] = this.creatorEmail;
         return data; 
     }
 
@@ -4737,6 +4747,8 @@ export interface IMindfightPublicDto {
     startTime: moment.Moment;
     teamsLimit: number;
     registeredTeamsCount: number;
+    creatorId: number;
+    creatorEmail: string;
 }
 
 export class PlayerDto implements IPlayerDto {

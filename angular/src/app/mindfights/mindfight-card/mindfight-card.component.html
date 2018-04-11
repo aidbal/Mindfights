@@ -1,4 +1,4 @@
-<div class="col-md-6">
+<div class="col-md-12">
     <div class="card">
         <div class="header">
             <h2>
@@ -15,22 +15,26 @@
             <hr />
             <div class="row">
                 <div class="col-md-6">
-                    <small *ngIf="mindfight.registeredTeamsCount < mindfight.playersLimit">
-                        {{mindfight.registeredTeamsCount}} iš {{mindfight.playersLimit}} užsiregistravo.
+                    <small *ngIf="mindfight.registeredTeamsCount < mindfight.teamsLimit">
+                        {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
                     </small>
-                    <small *ngIf="mindfight.playersLimit > 0 && mindfight.registeredTeamsCount >= mindfight.playersLimit">
-                        {{mindfight.registeredTeamsCount}} iš {{mindfight.playersLimit}} užsiregistravo. Registracija baigta.
+                    <small *ngIf="mindfight.teamsLimit > 0 && mindfight.registeredTeamsCount >= mindfight.playersLimit">
+                        {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo. Registracija baigta.
                     </small>
-                    <small *ngIf="mindfight.playersLimit <= 0">
+                    <small *ngIf="mindfight.teamsLimit <= 0">
                         {{mindfight.registeredTeamsCount}} užsiregistravo. Registracija neribota.
+                        <br />
+                        <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                     </small>
                 </div>
-                <div class="col-md-6 text-right">
-                    <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
-                            [routerLink]="['/app/mindfights', mindfight.id]">
-                        <span>Daugiau</span>
-                        <i class="fa fa-arrow-circle-right"></i>
-                    </button>
+                <div class="col-md-6">
+                    <div class="text-right">
+                        <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                [routerLink]="['/app/mindfights', mindfight.id]">
+                            <span>Daugiau</span>
+                            <i class="fa fa-arrow-circle-right"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
