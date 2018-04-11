@@ -403,6 +403,106 @@ export class MindfightServiceProxy {
     /**
      * @return Success
      */
+    getMyCreatedMindfights(): Observable<MindfightDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/GetMyCreatedMindfights";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetMyCreatedMindfights(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetMyCreatedMindfights(<any>response_);
+                } catch (e) {
+                    return <Observable<MindfightDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<MindfightDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetMyCreatedMindfights(response: Response): Observable<MindfightDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(MindfightDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<MindfightDto[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllowedToEvaluateMindfights(): Observable<MindfightDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/GetAllowedToEvaluateMindfights";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetAllowedToEvaluateMindfights(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetAllowedToEvaluateMindfights(<any>response_);
+                } catch (e) {
+                    return <Observable<MindfightDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<MindfightDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetAllowedToEvaluateMindfights(response: Response): Observable<MindfightDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(MindfightDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<MindfightDto[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
     getUpcomingMindfights(): Observable<MindfightPublicDto[]> {
         let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/GetUpcomingMindfights";
         url_ = url_.replace(/[?&]$/, "");
@@ -663,59 +763,10 @@ export class PlayerServiceProxy {
     }
 
     /**
-     * @userId (optional) 
      * @return Success
      */
-    getPlayerPoints(userId: number): Observable<number> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Player/GetPlayerPoints?";
-        if (userId !== undefined)
-            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            method: "get",
-            headers: new Headers({
-                "Content-Type": "application/json", 
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request(url_, options_).flatMap((response_ : any) => {
-            return this.processGetPlayerPoints(response_);
-        }).catch((response_: any) => {
-            if (response_ instanceof Response) {
-                try {
-                    return this.processGetPlayerPoints(<any>response_);
-                } catch (e) {
-                    return <Observable<number>><any>Observable.throw(e);
-                }
-            } else
-                return <Observable<number>><any>Observable.throw(response_);
-        });
-    }
-
-    protected processGetPlayerPoints(response: Response): Observable<number> {
-        const status = response.status;
-
-        let _headers: any = response.headers ? response.headers.toJSON() : {};
-        if (status === 200) {
-            const _responseText = response.text();
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return Observable.of(result200);
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.text();
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Observable.of<number>(<any>null);
-    }
-
-    /**
-     * @return Success
-     */
-    getPlayerTeam(userId: number): Observable<number> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Player/GetPlayerTeam?";
+    getPlayerInfo(userId: number): Observable<PlayerDto> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Player/GetPlayerInfo?";
         if (userId === undefined || userId === null)
             throw new Error("The parameter 'userId' must be defined and cannot be null.");
         else
@@ -731,20 +782,20 @@ export class PlayerServiceProxy {
         };
 
         return this.http.request(url_, options_).flatMap((response_ : any) => {
-            return this.processGetPlayerTeam(response_);
+            return this.processGetPlayerInfo(response_);
         }).catch((response_: any) => {
             if (response_ instanceof Response) {
                 try {
-                    return this.processGetPlayerTeam(<any>response_);
+                    return this.processGetPlayerInfo(<any>response_);
                 } catch (e) {
-                    return <Observable<number>><any>Observable.throw(e);
+                    return <Observable<PlayerDto>><any>Observable.throw(e);
                 }
             } else
-                return <Observable<number>><any>Observable.throw(response_);
+                return <Observable<PlayerDto>><any>Observable.throw(response_);
         });
     }
 
-    protected processGetPlayerTeam(response: Response): Observable<number> {
+    protected processGetPlayerInfo(response: Response): Observable<PlayerDto> {
         const status = response.status;
 
         let _headers: any = response.headers ? response.headers.toJSON() : {};
@@ -752,13 +803,67 @@ export class PlayerServiceProxy {
             const _responseText = response.text();
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            result200 = resultData200 ? PlayerDto.fromJS(resultData200) : new PlayerDto();
             return Observable.of(result200);
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.text();
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Observable.of<number>(<any>null);
+        return Observable.of<PlayerDto>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getMindfightEvaluators(mindfightId: number): Observable<PlayerDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Player/GetMindfightEvaluators?";
+        if (mindfightId === undefined || mindfightId === null)
+            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
+        else
+            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetMindfightEvaluators(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetMindfightEvaluators(<any>response_);
+                } catch (e) {
+                    return <Observable<PlayerDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<PlayerDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetMindfightEvaluators(response: Response): Observable<PlayerDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(PlayerDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<PlayerDto[]>(<any>null);
     }
 }
 
@@ -4483,9 +4588,8 @@ export class MindfightCreateUpdateDto implements IMindfightCreateUpdateDto {
     startTime: moment.Moment;
     endTime: moment.Moment;
     prepareTime: number;
-    toursCount: number;
     totalTimeLimitInMinutes: number;
-    playersLimit: number;
+    teamsLimit: number;
     usersAllowedToEvaluateIds: number[];
     teamsAllowedToParticipateIds: number[];
 
@@ -4506,9 +4610,8 @@ export class MindfightCreateUpdateDto implements IMindfightCreateUpdateDto {
             this.startTime = data["startTime"] ? moment(data["startTime"].toString()) : <any>undefined;
             this.endTime = data["endTime"] ? moment(data["endTime"].toString()) : <any>undefined;
             this.prepareTime = data["prepareTime"];
-            this.toursCount = data["toursCount"];
             this.totalTimeLimitInMinutes = data["totalTimeLimitInMinutes"];
-            this.playersLimit = data["playersLimit"];
+            this.teamsLimit = data["teamsLimit"];
             if (data["usersAllowedToEvaluateIds"] && data["usersAllowedToEvaluateIds"].constructor === Array) {
                 this.usersAllowedToEvaluateIds = [];
                 for (let item of data["usersAllowedToEvaluateIds"])
@@ -4537,9 +4640,8 @@ export class MindfightCreateUpdateDto implements IMindfightCreateUpdateDto {
         data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
         data["endTime"] = this.endTime ? this.endTime.toISOString() : <any>undefined;
         data["prepareTime"] = this.prepareTime;
-        data["toursCount"] = this.toursCount;
         data["totalTimeLimitInMinutes"] = this.totalTimeLimitInMinutes;
-        data["playersLimit"] = this.playersLimit;
+        data["teamsLimit"] = this.teamsLimit;
         if (this.usersAllowedToEvaluateIds && this.usersAllowedToEvaluateIds.constructor === Array) {
             data["usersAllowedToEvaluateIds"] = [];
             for (let item of this.usersAllowedToEvaluateIds)
@@ -4568,9 +4670,8 @@ export interface IMindfightCreateUpdateDto {
     startTime: moment.Moment;
     endTime: moment.Moment;
     prepareTime: number;
-    toursCount: number;
     totalTimeLimitInMinutes: number;
-    playersLimit: number;
+    teamsLimit: number;
     usersAllowedToEvaluateIds: number[];
     teamsAllowedToParticipateIds: number[];
 }
@@ -4636,6 +4737,73 @@ export interface IMindfightPublicDto {
     startTime: moment.Moment;
     teamsLimit: number;
     registeredTeamsCount: number;
+}
+
+export class PlayerDto implements IPlayerDto {
+    id: number;
+    emailAddress: string;
+    userName: string;
+    name: string;
+    points: number;
+    teamId: number;
+    teamName: string;
+
+    constructor(data?: IPlayerDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.emailAddress = data["emailAddress"];
+            this.userName = data["userName"];
+            this.name = data["name"];
+            this.points = data["points"];
+            this.teamId = data["teamId"];
+            this.teamName = data["teamName"];
+        }
+    }
+
+    static fromJS(data: any): PlayerDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PlayerDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["emailAddress"] = this.emailAddress;
+        data["userName"] = this.userName;
+        data["name"] = this.name;
+        data["points"] = this.points;
+        data["teamId"] = this.teamId;
+        data["teamName"] = this.teamName;
+        return data; 
+    }
+
+    clone() {
+        const json = this.toJSON();
+        let result = new PlayerDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface IPlayerDto {
+    id: number;
+    emailAddress: string;
+    userName: string;
+    name: string;
+    points: number;
+    teamId: number;
+    teamName: string;
 }
 
 export class QuestionDto implements IQuestionDto {
