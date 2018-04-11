@@ -42,6 +42,7 @@ import { DatepickerOptionsService } from './services/datepickerOptions.service';
 import { AdministrateMindfightsComponent } from './mindfights/administrate-mindfights/administrate-mindfights.component';
 import { MindfightsListComponent } from './mindfights/mindfights-list/mindfights-list.component';
 import { MindfightCardComponent } from './mindfights/mindfight-card/mindfight-card.component';
+import { EditMindfightComponent } from './mindfights/edit-mindfight/edit-mindfight.component';
 
 @NgModule({
     declarations: [
@@ -68,7 +69,8 @@ import { MindfightCardComponent } from './mindfights/mindfight-card/mindfight-ca
         MindfightDetailsComponent,
         AdministrateMindfightsComponent,
         MindfightsListComponent,
-        MindfightCardComponent
+        MindfightCardComponent,
+        EditMindfightComponent
     
     ],
     imports: [

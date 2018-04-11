@@ -16,7 +16,7 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
     selectedDate: any = {};
     singleDatepickerOptions: any;
     rangeDatepickerOptions: any;
-    selectedMindfightType: number;
+    selectedMindfightType: string;
 
     constructor(
         injector: Injector,
@@ -32,7 +32,6 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
         this.singleDatepickerOptions = this.datepickerOptionsService.getSingleDatepickerOptions();
         this.rangeDatepickerOptions = this.datepickerOptionsService.getRangeDatepickerOptions();
         this.selectedDate = this.datepickerOptionsService.getInitialDate();
-        console.log(moment().format('MM/DD/YYYY'));
         this.mindfight = new MindfightCreateUpdateDto();
     }
 

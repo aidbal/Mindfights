@@ -9,6 +9,7 @@ import { TenantsComponent } from './tenants/tenants.component';
 import { RolesComponent } from "app/roles/roles.component";
 import { MindfightsComponent } from 'app/mindfights/mindfights.component';
 import { CreateMindfightComponent } from 'app/mindfights/create-mindfight/create-mindfight.component';
+import { EditMindfightComponent } from 'app/mindfights/edit-mindfight/edit-mindfight.component';
 import { MindfightDetailsComponent } from 'app/mindfights/mindfight-details/mindfight-details.component';
 import { AdministrateMindfightsComponent } from 'app/mindfights/administrate-mindfights/administrate-mindfights.component';
 
@@ -21,6 +22,7 @@ import { AdministrateMindfightsComponent } from 'app/mindfights/administrate-min
                 children: [
                     { path: 'home', component: HomeComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/create', component: CreateMindfightComponent },
+                    { path: 'mindfights/edit/:mindfightId', component: EditMindfightComponent },
                     { path: 'mindfights/administrate', component: AdministrateMindfightsComponent },
                     { path: 'mindfights/:mindfightId', component: MindfightDetailsComponent },
                     { path: 'mindfights', component: MindfightsComponent },
