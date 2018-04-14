@@ -1,3 +1,7 @@
+<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float pull-right margin-bottom-medium navigate-button"
+        [routerLink]="['/app/mindfights/create']" title="Administruoti protmūšio turus">
+    Turai
+</button>
 <div class="row clearfix">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div *ngIf="mindfight" class="card main-content">
@@ -26,12 +30,13 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <mat-form-field>
-                                    <input matInput class="form-control" [(ngModel)]="mindfight.description"
-                                           placeholder="Aprašymas"
-                                           name="Description"
-                                           type="text"
-                                           maxlength="2550" minlength="2"
-                                           required>
+                                    <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="mindfight.description"
+                                              placeholder="Aprašymas"
+                                              name="Description"
+                                              type="text"
+                                              maxlength="2550" minlength="2"
+                                              required>
+                                    </textarea>
                                 </mat-form-field>
                             </div>
                         </div>
@@ -98,10 +103,26 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="usersAllowedToEvaluate"
+                                           placeholder="Vartotojų, galinčių vertinti atsakymus, el. paštai (atskirti kableliu)"
+                                           name="Evaluators"
+                                           type="text"
+                                           maxlength="2550">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button (click)="goBack()" class="btn red"><i class="fa fa-arrow-circle-left fa-xs"></i> Atšaukti</button>
-                    <button [disabled]="!editMindfightForm.form.dirty || !editMindfightForm.form.valid || saving" type="submit" class="btn btn-primary green">
+                    <button (click)="deleteMindfight()" class="btn btn-danger left-align">
+                        Ištrinti <i class="fa fa-times fa-xs"></i>
+                    </button>
+                    <button (click)="goBack()" class="btn"><i class="fa fa-arrow-circle-left fa-xs"></i> Atšaukti</button>
+                    <button [disabled]="!editMindfightForm.form.dirty || !editMindfightForm.form.valid || saving" (click)="updateMindfight()" class="btn btn-primary green">
                         Išsaugoti <i class="fa fa-check fa-xs"></i>
                     </button>
                 </div>
@@ -128,7 +149,7 @@
                                 <input type="checkbox" id="isTeamConfirmed{{i}}"
                                        [ngModel]="registration.isConfirmed"
                                        (click)="updateConfirmation(registration)">
-                                <label [attr.for]="'isTeamConfirmed'+i"></label>
+                                <label [attr.for]="'isTeamConfirmed'+i" title="Keisti patvirtinimo statusą"></label>
                             </td>
                             <td>{{registration.teamName}}</td>
                             <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>

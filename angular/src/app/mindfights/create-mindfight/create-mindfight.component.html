@@ -26,12 +26,13 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <mat-form-field>
-                                    <input matInput class="form-control" [(ngModel)]="mindfight.description"
+                                    <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="mindfight.description"
                                            placeholder="Aprašymas"
                                            name="Description"
                                            type="text"
                                            maxlength="2550" minlength="2"
                                            required>
+                                    </textarea>
                                 </mat-form-field>
                             </div>
                         </div>
@@ -100,7 +101,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button (click)="goBack()" class="btn red"><i class="fa fa-arrow-circle-left fa-xs"></i> Atšaukti</button>
+                    <button (click)="goBack()" type="button" class="btn red"><i class="fa fa-arrow-circle-left fa-xs"></i> Atšaukti</button>
                     <button [disabled]="!createMindfightForm.form.valid || saving" type="submit" class="btn btn-primary green">
                         Sukurti <i class="fa fa-check fa-xs"></i>
                     </button>

@@ -1,7 +1,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { MindfightDto, RegistrationDto, MindfightServiceProxy, RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
 @Component({
@@ -21,15 +21,16 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         private mindfightService: MindfightServiceProxy,
         private registrationService: RegistrationServiceProxy,
         private playerService: PlayerServiceProxy,
-        private route: ActivatedRoute,
-        private location: Location
+        private activatedRoute: ActivatedRoute,
+        private location: Location,
+        private router: Router
     ) {
         super(injector);
     }
 
     ngOnInit() {
         this.getPlayerTeam();
-        this.routeSubscriber = this.route.params.subscribe(params => {
+        this.routeSubscriber = this.activatedRoute.params.subscribe(params => {
             this.mindfightId = +params['mindfightId']; // (+) converts string 'id' to a number
         });
         this.getMindfight(this.mindfightId);
@@ -70,6 +71,10 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
 
     canEditMindfight(): boolean {
         return this.isMindfightCreator() || abp.auth.isGranted("ManageMindfights");
+    }
+
+    goToEdit(mindfightId) {
+        this.router.navigate(['../edit', mindfightId], { relativeTo: this.activatedRoute });
     }
 
     goBack() {

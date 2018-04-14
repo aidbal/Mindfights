@@ -42,10 +42,10 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
     }
 
     createMindfight(): void {
-        if (this.selectedMindfightType == 1) {
+        if (this.selectedMindfightType === '1') {
             this.mindfight.startTime = this.selectedDate.startDate;
             this.mindfight.endTime = this.selectedDate.endDate;
-        } else if (this.selectedMindfightType == 2) {
+        } else if (this.selectedMindfightType === '2') {
             this.mindfight.startTime = this.selectedDate.startDate;
             this.mindfight.endTime = null;
         }

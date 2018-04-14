@@ -11,7 +11,7 @@
                             <button type="button" (click)="goBack()" class="btn bg-black waves-effect waves-light"><i class="fa fa-arrow-circle-left"></i> Atgal</button>
                             <!--<button *ngIf="!isRegistered() && !event.isCancelled" type="button" class="btn bg-green waves-effect waves-light" (click)="registerToEvent()"><i class="fa fa-star"></i> {{l('Register')}}</button>
                             <button *ngIf="isRegistered() && !event.isCancelled" type="button" class="btn bg-orange waves-effect waves-light" (click)="cancelRegistrationFromEvent()"><i class="fa fa-remove"></i> {{l('CancelRegistration')}}</button>-->
-                            <button *ngIf="canEditMindfight()" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
+                            <button *ngIf="canEditMindfight()" (click)="goToEdit(mindfight.id)" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
                         </div>
                     </li>
                 </ul>
@@ -22,14 +22,14 @@
                     {{mindfight.description}}
                 </div>
                 <br />
-                <br/>
+                <br />
                 <div>
                     <small>
                         <b>
                             {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
                         </b>
                     </small>
-                    <br/>
+                    <br />
                     <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                 </div>
                 <hr />
@@ -42,12 +42,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let registration of registrations"
-                            [ngClass]="{'highlighted': isPlayerTeamRegistered(registration.teamId)}">
+                        <tr *ngFor="let registration of registrations; let i = index">
                             <td>
-                                <input type="checkbox" id="isTeamConfirmed" disabled
-                                       [ngModel]="registration.isConfirmed">
-                                <label for="isTeamConfirmed"></label>
+                                <input type="checkbox" id="isTeamConfirmed{{i}}" disabled
+                                       [ngModel]="registration.isConfirmed"
+                                       (click)="updateConfirmation(registration)">
+                                <label [attr.for]="'isTeamConfirmed'+i" title="Patvirtinimo statusas"></label>
                             </td>
                             <td>{{registration.teamName}}</td>
                             <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>
