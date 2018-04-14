@@ -1,0 +1,24 @@
+.description {
+    white-space: pre-wrap;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.right-side {
+    margin-left: auto;
+}
+
+.center {
+    align-items: center;
+    justify-content: center;
+}
+
+.no-padding-right {
+    padding-right: 0;
+}
+
+.no-padding-left {
+    padding-left: 0;
+}

@@ -12,6 +12,9 @@ import { CreateMindfightComponent } from 'app/mindfights/create-mindfight/create
 import { EditMindfightComponent } from 'app/mindfights/edit-mindfight/edit-mindfight.component';
 import { MindfightDetailsComponent } from 'app/mindfights/mindfight-details/mindfight-details.component';
 import { AdministrateMindfightsComponent } from 'app/mindfights/administrate-mindfights/administrate-mindfights.component';
+import { ToursComponent } from 'app/tours/tours.component';
+import { CreateTourComponent } from 'app/tours/create-tour/create-tour.component';
+import { TourDetailsComponent } from 'app/tours/tour-details/tour-details.component';
 
 @NgModule({
     imports: [
@@ -22,9 +25,12 @@ import { AdministrateMindfightsComponent } from 'app/mindfights/administrate-min
                 children: [
                     { path: 'home', component: HomeComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/create', component: CreateMindfightComponent },
-                    { path: 'mindfights/edit/:mindfightId', component: EditMindfightComponent },
                     { path: 'mindfights/administrate', component: AdministrateMindfightsComponent },
                     { path: 'mindfights/:mindfightId', component: MindfightDetailsComponent },
+                    { path: 'mindfights/:mindfightId/edit', component: EditMindfightComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours', component: ToursComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId', component: TourDetailsComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/create', component: CreateTourComponent },
                     { path: 'mindfights', component: MindfightsComponent },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },

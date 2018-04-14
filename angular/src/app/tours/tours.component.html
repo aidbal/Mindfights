@@ -1,0 +1,33 @@
+<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+        [routerLink]="['/app/mindfights/' + mindfightId + '/edit']" title="Grįžti į protmūšio puslapį">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Protmūšis
+</button>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">
+                    <span>Turų redagavimas</span>
+                </h4>
+            </div>
+            <div class="modal-body text-center">
+                <div *ngIf="mindfight">
+                    <span>Protmūšis: <b>{{mindfight.title}}</b></span>
+                    <br />
+                    <span>Pradžios data: <b>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="block-header">
+        <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float margin-bottom-medium"
+                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/create']" title="Sukurti naują turą">
+            <i class="material-icons">add</i>
+        </button>
+    </div>
+</div>
+<div *ngFor="let tour of tours">
+    <app-tour-card [tour]="tour" [mindfightId]="mindfightId" (notifyOrderChange)="onOrderChange($event)"></app-tour-card>
+</div>

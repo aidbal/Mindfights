@@ -43,6 +43,10 @@ import { AdministrateMindfightsComponent } from './mindfights/administrate-mindf
 import { MindfightsListComponent } from './mindfights/mindfights-list/mindfights-list.component';
 import { MindfightCardComponent } from './mindfights/mindfight-card/mindfight-card.component';
 import { EditMindfightComponent } from './mindfights/edit-mindfight/edit-mindfight.component';
+import { ToursComponent } from './tours/tours.component';
+import { CreateTourComponent } from './tours/create-tour/create-tour.component';
+import { TourCardComponent } from './tours/tour-card/tour-card.component';
+import { TourDetailsComponent } from './tours/tour-details/tour-details.component';
 
 @NgModule({
     declarations: [
@@ -70,7 +74,11 @@ import { EditMindfightComponent } from './mindfights/edit-mindfight/edit-mindfig
         AdministrateMindfightsComponent,
         MindfightsListComponent,
         MindfightCardComponent,
-        EditMindfightComponent
+        EditMindfightComponent,
+        ToursComponent,
+        CreateTourComponent,
+        TourCardComponent,
+        TourDetailsComponent
     
     ],
     imports: [

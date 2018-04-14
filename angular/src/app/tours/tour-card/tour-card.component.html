@@ -1,0 +1,46 @@
+<div *ngIf="tour" class="col-md-12">
+    <div class="card">
+        <div class="header">
+            <div class="col-md-8 no-padding-left">
+                <h2>
+                    {{tour.title}}
+                    <small class="event-description description">
+                        {{tour.description}}
+                    </small>
+                </h2>
+            </div>
+            <div class="col-md-4 no-padding-right">
+                <div class="display-flex">
+                    <div class="right-side display-flex">
+                        <div class="btn-circle waves-float waves-circle margin-bottom-medium display-flex center"
+                             title="Turo eilės numeris">
+                            {{tour.orderNumber}}
+                        </div>
+                        <div *ngIf="tour.orderNumber != 1" class="btn-circle waves-effect waves-circle waves-float margin-bottom-medium display-flex center"
+                             title="Perkelti turą aukštyn" (click)="moveTourOrderUp(tour.id)"  ngDisabled="saving">
+                            <i class="material-icons">keyboard_arrow_up</i>
+                        </div>
+                        <div *ngIf="!tour.isLastTour" class="btn-circle waves-effect waves-circle waves-float margin-bottom-medium display-flex center"
+                             title="Perkelti turą žemyn" (click)="moveTourOrderDown(tour.id)" ngDisabled="saving">
+                            <i class="material-icons">keyboard_arrow_down</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-8">
+                </div>
+                <div class="col-md-4 display-flex">
+                    <div class="right-side">
+                        <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tour.id]">
+                            <span>Daugiau</span>
+                            <i class="fa fa-arrow-circle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
