@@ -308,12 +308,8 @@ export class MindfightServiceProxy {
      * @mindfight (optional) 
      * @return Success
      */
-    updateMindfight(mindfight: MindfightDto, mindfightId: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/UpdateMindfight?";
-        if (mindfightId === undefined || mindfightId === null)
-            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
-        else
-            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
+    updateMindfight(mindfight: MindfightDto): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/UpdateMindfight";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(mindfight);

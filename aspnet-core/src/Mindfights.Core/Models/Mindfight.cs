@@ -34,7 +34,6 @@ namespace Mindfights.Models
         {
             Title = title;
             Description = description;
-            Evaluators = new List<MindfightEvaluator> { new MindfightEvaluator(this, creator) };
             CreatorId = creator.Id;
             PlayersLimit = playersLimit;
             StartTime = startTime;
@@ -46,6 +45,7 @@ namespace Mindfights.Models
         private Mindfight()
         {
             Tours = new List<Tour>();
+            Evaluators = new List<MindfightEvaluator>();
             Registrations = new List<Registration>();
             CreationTime = Clock.Now;
             TotalPoints = 0;

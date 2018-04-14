@@ -38,7 +38,7 @@ namespace Mindfights.Services.MindfightService
 
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            
+
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
@@ -52,51 +52,22 @@ namespace Mindfights.Services.MindfightService
                 EndTime = currentMindfight.EndTime,
                 TeamsLimit = currentMindfight.PlayersLimit,
                 CreatorId = user.Id,
-                CreatorEmail = user.EmailAddress
+                CreatorEmail = user.EmailAddress,
+                PrepareTime = currentMindfight.PrepareTime,
+                ToursCount = currentMindfight.ToursCount,
+                TotalTimeLimitInMinutes = currentMindfight.TotalTimeLimitInMinutes,
+                RegisteredTeamsCount = currentMindfight.Registrations.Count,
+                TeamsAllowedToParticipate = new List<string>(),
+                UsersAllowedToEvaluate = new List<string>()
             };
-
-            var getPrivateInfo = currentMindfight.CreatorId == _userManager.AbpSession.UserId;
-            var getPrivateInfoForEvaluator = getPrivateInfo;
-            if (!getPrivateInfo)
+            foreach (var team in currentMindfight.Registrations.Where(x => x.IsConfirmed))
             {
-                if (user.Team != null && currentMindfight.StartTime >= Clock.Now)
-                {
-                    var userTeamAllowedToParticipate =
-                        currentMindfight.Registrations.Any(x => x.Team == user.Team);
-
-                    if (userTeamAllowedToParticipate)
-                    {
-                        getPrivateInfo = true;
-                    }
-                }
-                if (currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId) || _permissionChecker.IsGranted("ManageMindfights"))
-                {
-                    getPrivateInfo = true;
-                    getPrivateInfoForEvaluator = true;
-                }
+                mindfight.TeamsAllowedToParticipate.Add(team.Team.Name);
             }
-            if (getPrivateInfo)
+            foreach (var allowedUser in currentMindfight.Evaluators)
             {
-                mindfight.PrepareTime = currentMindfight.PrepareTime;
-                mindfight.ToursCount = currentMindfight.ToursCount;
-                mindfight.TotalTimeLimitInMinutes = currentMindfight.TotalTimeLimitInMinutes;
-                if (getPrivateInfoForEvaluator)
-                {
-                    mindfight.TeamsAllowedToParticipate = new List<string>();
-                    mindfight.UsersAllowedToEvaluate = new List<string>();
-                    foreach (var team in currentMindfight.Registrations.Where(x => x.IsConfirmed))
-                    {
-                        mindfight.TeamsAllowedToParticipate.Add(team.Team.Name);
-                    }
-                    foreach (var allowedUser in currentMindfight.Evaluators)
-                    {
-                        mindfight.UsersAllowedToEvaluate.Add(allowedUser.User.EmailAddress);
-                    }
-                }
+                mindfight.UsersAllowedToEvaluate.Add(allowedUser.User.EmailAddress);
             }
-            mindfight.TeamsLimit = currentMindfight.PlayersLimit;
-            mindfight.RegisteredTeamsCount = currentMindfight.Registrations.Count;
-            mindfight.CreatorId = currentMindfight.CreatorId;
             return mindfight;
         }
 
@@ -104,7 +75,7 @@ namespace Mindfights.Services.MindfightService
         {
             if (!(_permissionChecker.IsGranted("CreateMindfights") || !_permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not authorized to create a mindfight!");
-            
+
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
@@ -117,9 +88,9 @@ namespace Mindfights.Services.MindfightService
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
 
-        public async Task UpdateMindfight(MindfightDto mindfight, long mindfightId)
+        public async Task UpdateMindfight(MindfightDto mindfight)
         {
-            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
+            var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfight.Id);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
@@ -131,14 +102,18 @@ namespace Mindfights.Services.MindfightService
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var mindfightWithSameName = await _mindfightRepository
-                .FirstOrDefaultAsync(x => x.Title == mindfight.Title && x.Id != mindfightId);
+                .FirstOrDefaultAsync(x => x.Title == mindfight.Title && x.Id != mindfight.Id);
             if (mindfightWithSameName != null)
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
 
-            mindfight.MapTo(currentMindfight);
-            currentMindfight.Id = mindfightId;
-            currentMindfight.Evaluators = await GetEvaluatorsFromEmails(mindfight.UsersAllowedToEvaluate, currentMindfight);
-            //TODO decide what to do with allowed teams
+            //mindfight.MapTo(currentMindfight);
+            currentMindfight.Title = mindfight.Title;
+            currentMindfight.Description = mindfight.Description;
+            currentMindfight.StartTime = mindfight.StartTime;
+            currentMindfight.EndTime = mindfight.EndTime;
+            currentMindfight.PrepareTime = mindfight.PrepareTime;
+            currentMindfight.PlayersLimit = mindfight.TeamsLimit;
+            await UpdateEvaluators(currentMindfight.Id, mindfight.UsersAllowedToEvaluate);
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
@@ -238,7 +213,7 @@ namespace Mindfights.Services.MindfightService
             for (var i = currentMindfight.Evaluators.Count - 1; i >= 0; i--)
             {
                 var currentEvaluator = currentMindfight.Evaluators.ElementAt(i);
-                if (evaluators.Contains(currentEvaluator.User) || currentEvaluator.UserId == currentMindfight.CreatorId)
+                if (evaluators.Contains(currentEvaluator.User))
                 {
                     evaluators.Remove(currentEvaluator.User);
                 }
@@ -287,7 +262,7 @@ namespace Mindfights.Services.MindfightService
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
- 
+
             currentMindfight.IsConfirmed = isConfirmed;
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
@@ -308,14 +283,6 @@ namespace Mindfights.Services.MindfightService
 
             currentMindfight.IsFinished = isFinished;
             await _mindfightRepository.UpdateAsync(currentMindfight);
-        }
-
-        private async Task<List<MindfightEvaluator>> GetEvaluatorsFromEmails(IReadOnlyCollection<string> evaluatorEmails, Models.Mindfight mindfight)
-        {
-            var users = await _userManager.Users.IgnoreQueryFilters()
-                .Where(p => evaluatorEmails.All(p2 => p2.ToUpper() == p.NormalizedEmailAddress)).ToListAsync();
-            var evaluators = users.Select(user => new MindfightEvaluator(mindfight, user)).ToList();
-            return evaluators;
         }
     }
 }
