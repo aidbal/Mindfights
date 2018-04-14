@@ -139,6 +139,10 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
             );
     }
 
+    goToTours() {
+        this.location.back();
+    }
+
     goBack() {
         this.location.back();
     }

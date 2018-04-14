@@ -73,8 +73,8 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         return this.isMindfightCreator() || abp.auth.isGranted("ManageMindfights");
     }
 
-    goToEdit(mindfightId) {
-        this.router.navigate(['../edit', mindfightId], { relativeTo: this.activatedRoute });
+    goToEdit() {
+        this.router.navigate(['./edit'], { relativeTo: this.activatedRoute });
     }
 
     goBack() {

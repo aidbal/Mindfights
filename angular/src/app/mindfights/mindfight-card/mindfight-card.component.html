@@ -2,7 +2,10 @@
     <div class="card">
         <div class="header">
             <h2>
-                {{mindfight.title}} <small class="event-description">{{mindfight.description}}</small>
+                {{mindfight.title}}
+                <small class="event-description description">
+                        {{mindfight.description}}
+                </small>
             </h2>
             <ul class="header-dropdown m-r-0">
                 <li>
@@ -18,7 +21,7 @@
                     <small *ngIf="mindfight.registeredTeamsCount < mindfight.teamsLimit">
                         {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
                     </small>
-                    <small *ngIf="mindfight.teamsLimit > 0 && mindfight.registeredTeamsCount >= mindfight.playersLimit">
+                    <small *ngIf="mindfight.teamsLimit > 0 && mindfight.registeredTeamsCount >= mindfight.teamsLimit">
                         {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo. Registracija baigta.
                     </small>
                     <small *ngIf="mindfight.teamsLimit <= 0">

@@ -1,3 +1,7 @@
 .highlighted {
     background-color: aliceblue;
 }
+
+.description {
+    white-space: pre-wrap;
+}

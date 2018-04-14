@@ -11,7 +11,7 @@
                             <button type="button" (click)="goBack()" class="btn bg-black waves-effect waves-light"><i class="fa fa-arrow-circle-left"></i> Atgal</button>
                             <!--<button *ngIf="!isRegistered() && !event.isCancelled" type="button" class="btn bg-green waves-effect waves-light" (click)="registerToEvent()"><i class="fa fa-star"></i> {{l('Register')}}</button>
                             <button *ngIf="isRegistered() && !event.isCancelled" type="button" class="btn bg-orange waves-effect waves-light" (click)="cancelRegistrationFromEvent()"><i class="fa fa-remove"></i> {{l('CancelRegistration')}}</button>-->
-                            <button *ngIf="canEditMindfight()" (click)="goToEdit(mindfight.id)" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
+                            <button *ngIf="canEditMindfight()" (click)="goToEdit()" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
                         </div>
                     </li>
                 </ul>
@@ -19,7 +19,9 @@
             <div class="body table-responsive">
                 <br />
                 <div>
-                    {{mindfight.description}}
+                    <p class="description">
+                        {{mindfight.description}}
+                    </p>
                 </div>
                 <br />
                 <br />
