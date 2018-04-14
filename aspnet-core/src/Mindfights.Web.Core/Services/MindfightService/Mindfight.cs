@@ -186,6 +186,7 @@ namespace Mindfights.Services.MindfightService
             for (var i = 0; i < mindfights.Count; i++)
             {
                 var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == mindfights[i].CreatorId);
+                mindfightsDto[i].TeamsLimit = mindfights[i].PlayersLimit;
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
                 mindfightsDto[i].CreatorEmail = creator.EmailAddress;
             }

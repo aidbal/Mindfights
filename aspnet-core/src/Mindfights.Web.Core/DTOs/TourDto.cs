@@ -19,12 +19,10 @@ namespace Mindfights.DTOs
         public string Description { get; set; }
 
         [Required]
-        public int TotalPoints { get; set; }
-
-        [Required]
         public int TimeToEnterAnswersInSeconds { get; set; }
 
-        [Required]
+        public int TotalPoints { get; set; }
+
         public int OrderNumber { get; set; }
 
         public int QuestionsCount { get; set; }

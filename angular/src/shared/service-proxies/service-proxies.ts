@@ -6266,8 +6266,8 @@ export class TourDto implements ITourDto {
     id: number;
     title: string;
     description: string;
-    totalPoints: number;
     timeToEnterAnswersInSeconds: number;
+    totalPoints: number;
     orderNumber: number;
     questionsCount: number;
     isLastTour: boolean;
@@ -6286,8 +6286,8 @@ export class TourDto implements ITourDto {
             this.id = data["id"];
             this.title = data["title"];
             this.description = data["description"];
-            this.totalPoints = data["totalPoints"];
             this.timeToEnterAnswersInSeconds = data["timeToEnterAnswersInSeconds"];
+            this.totalPoints = data["totalPoints"];
             this.orderNumber = data["orderNumber"];
             this.questionsCount = data["questionsCount"];
             this.isLastTour = data["isLastTour"];
@@ -6306,8 +6306,8 @@ export class TourDto implements ITourDto {
         data["id"] = this.id;
         data["title"] = this.title;
         data["description"] = this.description;
-        data["totalPoints"] = this.totalPoints;
         data["timeToEnterAnswersInSeconds"] = this.timeToEnterAnswersInSeconds;
+        data["totalPoints"] = this.totalPoints;
         data["orderNumber"] = this.orderNumber;
         data["questionsCount"] = this.questionsCount;
         data["isLastTour"] = this.isLastTour;
@@ -6326,8 +6326,8 @@ export interface ITourDto {
     id: number;
     title: string;
     description: string;
-    totalPoints: number;
     timeToEnterAnswersInSeconds: number;
+    totalPoints: number;
     orderNumber: number;
     questionsCount: number;
     isLastTour: boolean;

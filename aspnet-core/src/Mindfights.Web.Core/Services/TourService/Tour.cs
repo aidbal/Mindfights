@@ -61,6 +61,7 @@ namespace Mindfights.Services.TourService
             var tours = await _tourRepository
                 .GetAll()
                 .Where(x => x.MindfightId == mindfightId)
+                .OrderBy(x => x.OrderNumber)
                 .ToListAsync();
 
             foreach (var tour in tours)
@@ -68,6 +69,10 @@ namespace Mindfights.Services.TourService
                 var tourDto = new TourDto();
                 tour.MapTo(tourDto);
                 toursDto.Add(tourDto);
+            }
+            if (toursDto.Count > 0)
+            {
+                toursDto[toursDto.Count - 1].IsLastTour = true;
             }
             return toursDto;
         }
