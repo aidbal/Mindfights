@@ -1,0 +1,32 @@
+.description {
+    white-space: pre-wrap;
+}
+
+.navigate-button {
+    background-color: white;
+    min-width: 150px;
+}
+
+.margin-bottom-medium {
+    margin-bottom: 20px;
+}
+
+.white {
+    background-color: white;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.paddingless {
+    padding: 0;
+}

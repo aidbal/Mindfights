@@ -1,0 +1,54 @@
+<div *ngIf="question" class="col-md-12">
+    <div class="card">
+        <div class="header">
+            <div class="col-md-8 no-padding-left">
+                <h2>
+                    {{question.title}}
+                </h2>
+            </div>
+            <div class="col-md-4 no-padding-right">
+                <div class="display-flex">
+                    <div class="right-side display-flex">
+                        <div *ngIf="question.orderNumber != 1" class="btn-circle waves-effect waves-circle waves-float margin-bottom-medium display-flex center"
+                             title="Perkelti klausimą aukštyn" (click)="moveOrderUp()" ngDisabled="saving">
+                            <i class="material-icons">keyboard_arrow_up</i>
+                        </div>
+                        <div *ngIf="!question.isLastQuestion" class="btn-circle waves-effect waves-circle waves-float margin-bottom-medium display-flex center"
+                             title="Perkelti klausimą žemyn" (click)="moveOrderDown()" ngDisabled="saving">
+                            <i class="material-icons">keyboard_arrow_down</i>
+                        </div>
+                        <div class="btn-circle waves-float waves-circle margin-bottom-medium display-flex center"
+                             title="Klausimo eilės numeris">
+                            {{question.orderNumber}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <small class="event-description description">
+                    {{question.description}}
+                </small>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-8">
+                    <div>
+                        Taškai: <b>{{question.points}}</b>
+                    </div>
+                    <div>
+                        Laikas: <b>{{question.timeToAnswerInSeconds}}</b>s
+                    </div>
+                </div>
+                <div class="col-md-4 display-flex">
+                    <div class="right-side">
+                        <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions/' + question.id]">
+                            <span>Daugiau</span>
+                            <i class="fa fa-arrow-circle-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
