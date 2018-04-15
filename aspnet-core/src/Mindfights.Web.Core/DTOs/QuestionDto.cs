@@ -26,7 +26,6 @@ namespace Mindfights.DTOs
 
         public string AttachmentLocation { get; set; }
 
-        [Required]
         public int OrderNumber { get; set; }
 
         [Required]

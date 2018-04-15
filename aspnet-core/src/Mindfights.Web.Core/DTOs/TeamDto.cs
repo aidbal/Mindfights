@@ -14,6 +14,7 @@ namespace Mindfights.DTOs
         [Required]
         [MaxLength(255)]
         public string Description { get; set; }
+        public long LeaderId { get; set; }
         public string LeaderName { get; set; }
         public int? UsersCount { get; set; }
         public int? GamePoints { get; set; }

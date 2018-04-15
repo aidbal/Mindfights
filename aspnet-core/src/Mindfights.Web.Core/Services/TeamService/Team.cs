@@ -58,7 +58,8 @@ namespace Mindfights.Services.TeamService
 
             var teamDto = new TeamDto();
             team.MapTo(teamDto);
-            teamDto.LeaderName = _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == team.LeaderId).Result.Name;
+            var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == team.LeaderId);
+            teamDto.LeaderName = leader.Name;
             teamDto.UsersCount = team.UsersCount;
             return teamDto;
         }
@@ -193,7 +194,7 @@ namespace Mindfights.Services.TeamService
             return usersInTeam.Select(user => new TeamPlayerDto
                 {
                     Id = user.Id,
-                    Name = user.Name,
+                    UserName = user.UserName,
                     Points = user.Points,
                     IsActiveInTeam = user.IsActiveInTeam
                 })
