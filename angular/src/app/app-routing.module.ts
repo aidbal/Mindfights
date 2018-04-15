@@ -15,6 +15,12 @@ import { AdministrateMindfightsComponent } from 'app/mindfights/administrate-min
 import { ToursComponent } from 'app/tours/tours.component';
 import { CreateTourComponent } from 'app/tours/create-tour/create-tour.component';
 import { TourDetailsComponent } from 'app/tours/tour-details/tour-details.component';
+import { EditTourComponent } from 'app/tours/edit-tour/edit-tour.component';
+import { QuestionsComponent } from 'app/questions/questions.component';
+import { QuestionDetailsComponent } from 'app/questions/question-details/question-details.component';
+import { CreateQuestionComponent } from 'app/questions/create-question/create-question.component';
+import { EditQuestionComponent } from 'app/questions/edit-question/edit-question.component';
+import { TeamComponent } from 'app/team/team.component';
 
 @NgModule({
     imports: [
@@ -29,9 +35,15 @@ import { TourDetailsComponent } from 'app/tours/tour-details/tour-details.compon
                     { path: 'mindfights/:mindfightId', component: MindfightDetailsComponent },
                     { path: 'mindfights/:mindfightId/edit', component: EditMindfightComponent },
                     { path: 'mindfights/:mindfightId/edit/tours', component: ToursComponent },
-                    { path: 'mindfights/:mindfightId/edit/tours/:tourId', component: TourDetailsComponent },
                     { path: 'mindfights/:mindfightId/edit/tours/create', component: CreateTourComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId', component: TourDetailsComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId/edit', component: EditTourComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId/questions', component: QuestionsComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId/questions/create', component: CreateQuestionComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId/questions/:questionId', component: QuestionDetailsComponent },
+                    { path: 'mindfights/:mindfightId/edit/tours/:tourId/questions/:questionId/edit', component: EditQuestionComponent },
                     { path: 'mindfights', component: MindfightsComponent },
+                    { path: 'team', component: TeamComponent },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },
                     { path: 'tenants', component: TenantsComponent, data: { permission: 'Pages.Tenants' }, canActivate: [AppRouteGuard] },

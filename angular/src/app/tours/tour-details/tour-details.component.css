@@ -10,3 +10,35 @@
 .margin-bottom-medium {
     margin-bottom: 20px;
 }
+
+.white {
+    background-color: white;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.paddingless {
+    padding: 0;
+}
+
+.row-ID {
+    width: 15%;
+}
+
+.row-question {
+    width: 70%;
+}
+
+.row-more {
+    width: 15%;
+}

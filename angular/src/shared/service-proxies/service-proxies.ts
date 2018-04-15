@@ -931,16 +931,12 @@ export class QuestionServiceProxy {
     /**
      * @return Success
      */
-    getQuestion(tourId: number, orderNumber: number): Observable<QuestionDto> {
+    getQuestion(questionId: number): Observable<QuestionDto> {
         let url_ = this.baseUrl + "/api/services/mindfights/Question/GetQuestion?";
-        if (tourId === undefined || tourId === null)
-            throw new Error("The parameter 'tourId' must be defined and cannot be null.");
+        if (questionId === undefined || questionId === null)
+            throw new Error("The parameter 'questionId' must be defined and cannot be null.");
         else
-            url_ += "tourId=" + encodeURIComponent("" + tourId) + "&"; 
-        if (orderNumber === undefined || orderNumber === null)
-            throw new Error("The parameter 'orderNumber' must be defined and cannot be null.");
-        else
-            url_ += "orderNumber=" + encodeURIComponent("" + orderNumber) + "&"; 
+            url_ += "questionId=" + encodeURIComponent("" + questionId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1094,16 +1090,12 @@ export class QuestionServiceProxy {
      * @question (optional) 
      * @return Success
      */
-    updateQuestion(question: QuestionDto, questionId: number, tourId: number): Observable<void> {
+    updateQuestion(question: QuestionDto, questionId: number): Observable<void> {
         let url_ = this.baseUrl + "/api/services/mindfights/Question/UpdateQuestion?";
         if (questionId === undefined || questionId === null)
             throw new Error("The parameter 'questionId' must be defined and cannot be null.");
         else
             url_ += "questionId=" + encodeURIComponent("" + questionId) + "&"; 
-        if (tourId === undefined || tourId === null)
-            throw new Error("The parameter 'tourId' must be defined and cannot be null.");
-        else
-            url_ += "tourId=" + encodeURIComponent("" + tourId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(question);
@@ -5641,6 +5633,7 @@ export class TeamDto implements ITeamDto {
     id: number;
     name: string;
     description: string;
+    leaderId: number;
     leaderName: string;
     usersCount: number;
     gamePoints: number;
@@ -5659,6 +5652,7 @@ export class TeamDto implements ITeamDto {
             this.id = data["id"];
             this.name = data["name"];
             this.description = data["description"];
+            this.leaderId = data["leaderId"];
             this.leaderName = data["leaderName"];
             this.usersCount = data["usersCount"];
             this.gamePoints = data["gamePoints"];
@@ -5677,6 +5671,7 @@ export class TeamDto implements ITeamDto {
         data["id"] = this.id;
         data["name"] = this.name;
         data["description"] = this.description;
+        data["leaderId"] = this.leaderId;
         data["leaderName"] = this.leaderName;
         data["usersCount"] = this.usersCount;
         data["gamePoints"] = this.gamePoints;
@@ -5695,6 +5690,7 @@ export interface ITeamDto {
     id: number;
     name: string;
     description: string;
+    leaderId: number;
     leaderName: string;
     usersCount: number;
     gamePoints: number;
@@ -5702,9 +5698,10 @@ export interface ITeamDto {
 
 export class TeamPlayerDto implements ITeamPlayerDto {
     id: number;
-    name: string;
+    userName: string;
     points: number;
     isActiveInTeam: boolean;
+    isTeamLeader: boolean;
 
     constructor(data?: ITeamPlayerDto) {
         if (data) {
@@ -5718,9 +5715,10 @@ export class TeamPlayerDto implements ITeamPlayerDto {
     init(data?: any) {
         if (data) {
             this.id = data["id"];
-            this.name = data["name"];
+            this.userName = data["userName"];
             this.points = data["points"];
             this.isActiveInTeam = data["isActiveInTeam"];
+            this.isTeamLeader = data["isTeamLeader"];
         }
     }
 
@@ -5734,9 +5732,10 @@ export class TeamPlayerDto implements ITeamPlayerDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["name"] = this.name;
+        data["userName"] = this.userName;
         data["points"] = this.points;
         data["isActiveInTeam"] = this.isActiveInTeam;
+        data["isTeamLeader"] = this.isTeamLeader;
         return data; 
     }
 
@@ -5750,9 +5749,10 @@ export class TeamPlayerDto implements ITeamPlayerDto {
 
 export interface ITeamPlayerDto {
     id: number;
-    name: string;
+    userName: string;
     points: number;
     isActiveInTeam: boolean;
+    isTeamLeader: boolean;
 }
 
 export class TeamAnswerDto implements ITeamAnswerDto {

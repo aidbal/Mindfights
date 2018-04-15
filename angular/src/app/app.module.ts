@@ -47,6 +47,13 @@ import { ToursComponent } from './tours/tours.component';
 import { CreateTourComponent } from './tours/create-tour/create-tour.component';
 import { TourCardComponent } from './tours/tour-card/tour-card.component';
 import { TourDetailsComponent } from './tours/tour-details/tour-details.component';
+import { EditTourComponent } from './tours/edit-tour/edit-tour.component';
+import { QuestionsComponent } from './questions/questions.component';
+import { QuestionCardComponent } from './questions/question-card/question-card.component';
+import { QuestionDetailsComponent } from './questions/question-details/question-details.component';
+import { EditQuestionComponent } from './questions/edit-question/edit-question.component';
+import { CreateQuestionComponent } from './questions/create-question/create-question.component';
+import { TeamComponent } from './team/team.component';
 
 @NgModule({
     declarations: [
@@ -78,7 +85,14 @@ import { TourDetailsComponent } from './tours/tour-details/tour-details.componen
         ToursComponent,
         CreateTourComponent,
         TourCardComponent,
-        TourDetailsComponent
+        TourDetailsComponent,
+        EditTourComponent,
+        QuestionsComponent,
+        QuestionCardComponent,
+        QuestionDetailsComponent,
+        EditQuestionComponent,
+        CreateQuestionComponent,
+        TeamComponent
     
     ],
     imports: [

@@ -30,7 +30,7 @@ export class TourCardComponent extends AppComponentBase implements OnInit {
         this.orderChangeObject.currentOrderNumber = this.tour.orderNumber;
     }
 
-    moveTourOrderDown(tourId): void {
+    moveTourOrderDown(): void {
         this.orderChangeObject.currentOrderNumber = this.tour.orderNumber;
         var newOrderNumber = this.tour.orderNumber + 1;
         this.saving = true;
