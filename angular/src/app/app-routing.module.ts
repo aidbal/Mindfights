@@ -21,6 +21,8 @@ import { QuestionDetailsComponent } from 'app/questions/question-details/questio
 import { CreateQuestionComponent } from 'app/questions/create-question/create-question.component';
 import { EditQuestionComponent } from 'app/questions/edit-question/edit-question.component';
 import { TeamComponent } from 'app/team/team.component';
+import { CreateTeamComponent } from 'app/team/create-team/create-team.component';
+import { EditTeamComponent } from 'app/team/edit-team/edit-team.component';
 
 @NgModule({
     imports: [
@@ -44,6 +46,8 @@ import { TeamComponent } from 'app/team/team.component';
                     { path: 'mindfights/:mindfightId/edit/tours/:tourId/questions/:questionId/edit', component: EditQuestionComponent },
                     { path: 'mindfights', component: MindfightsComponent },
                     { path: 'team', component: TeamComponent },
+                    { path: 'team/create', component: CreateTeamComponent },
+                    { path: 'team/:teamId/edit', component: EditTeamComponent },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },
                     { path: 'tenants', component: TenantsComponent, data: { permission: 'Pages.Tenants' }, canActivate: [AppRouteGuard] },

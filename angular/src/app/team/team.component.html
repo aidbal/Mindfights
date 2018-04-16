@@ -9,7 +9,7 @@
         </div>
     </div>
 </div>
-<div class="display-flex flex-end">
+<div class="display-flex flex-end" *ngIf="!team">
     <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float margin-bottom-medium"
             [routerLink]="['/app/team/create']" title="Sukurti naują komandą">
         <i class="material-icons">add</i>
@@ -42,12 +42,12 @@
                 <br />
                 <div>
                     <p>
-                        Laikas, skirtas įvesti atsakymams, pasibaigus turui: <b>a</b> (s)
+                        Bendri komandos taškai: <b>{{team.gamePoints}}</b>
                     </p>
                 </div>
                 <div>
                     <p>
-                        Turo eilės numeris: <b>a</b>
+                        Komandos narių kiekis: <b>{{team.usersCount}}</b>
                     </p>
                 </div>
                 <table *ngIf="activeTeamPlayers" class="table table-hover">

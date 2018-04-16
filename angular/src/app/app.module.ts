@@ -54,6 +54,8 @@ import { QuestionDetailsComponent } from './questions/question-details/question-
 import { EditQuestionComponent } from './questions/edit-question/edit-question.component';
 import { CreateQuestionComponent } from './questions/create-question/create-question.component';
 import { TeamComponent } from './team/team.component';
+import { CreateTeamComponent } from './team/create-team/create-team.component';
+import { EditTeamComponent } from './team/edit-team/edit-team.component';
 
 @NgModule({
     declarations: [
@@ -92,7 +94,9 @@ import { TeamComponent } from './team/team.component';
         QuestionDetailsComponent,
         EditQuestionComponent,
         CreateQuestionComponent,
-        TeamComponent
+        TeamComponent,
+        CreateTeamComponent,
+        EditTeamComponent
     
     ],
     imports: [

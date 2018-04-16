@@ -34,8 +34,8 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     getPlayerInfo(): void {
         this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
             this.playerInfo = result;
-            console.log(this.playerInfo);
             if (this.playerInfo.teamId != 0) {
+                this.teamId = this.playerInfo.teamId;
                 this.getPlayerTeam(this.playerInfo.teamId);
             }
         });
@@ -45,8 +45,8 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.teamService.getTeam(teamId).subscribe(
             (result) => {
                 this.team = result;
-                this.getAllTeamPlayers(this.playerInfo.teamId);
                 console.log(this.team);
+                this.getAllTeamPlayers(this.playerInfo.teamId);
             }
         );
     }
@@ -55,7 +55,6 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.teamService.getAllTeamPlayers(teamId).subscribe(
             (result) => {
                 this.teamPlayers = result;
-                console.log(this.teamPlayers);
                 this.getActivePassiveTeamPlayers(this.teamPlayers);
             }
         );

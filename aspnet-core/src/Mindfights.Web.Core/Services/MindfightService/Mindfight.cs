@@ -80,9 +80,12 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            var mindfightWithSameName = await _mindfightRepository.FirstOrDefaultAsync(x => x.Title == mindfight.Title);
+            var mindfightWithSameName = await _mindfightRepository
+                .FirstOrDefaultAsync(x => string.CompareOrdinal(x.Title.ToUpper(), mindfight.Title.ToUpper()) == 0);
             if (mindfightWithSameName != null)
+            {
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
+            }
 
             var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.TeamsLimit, mindfight.StartTime, mindfight.EndTime, mindfight.PrepareTime, mindfight.TotalTimeLimitInMinutes);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
@@ -102,11 +105,10 @@ namespace Mindfights.Services.MindfightService
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var mindfightWithSameName = await _mindfightRepository
-                .FirstOrDefaultAsync(x => x.Title == mindfight.Title && x.Id != mindfight.Id);
+                .FirstOrDefaultAsync(x => string.CompareOrdinal(x.Title.ToUpper(), mindfight.Title.ToUpper()) == 0 && x.Id != mindfight.Id);
             if (mindfightWithSameName != null)
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
-
-            //mindfight.MapTo(currentMindfight);
+            
             currentMindfight.Title = mindfight.Title;
             currentMindfight.Description = mindfight.Description;
             currentMindfight.StartTime = mindfight.StartTime;

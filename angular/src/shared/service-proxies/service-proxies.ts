@@ -2499,18 +2499,17 @@ export class TeamServiceProxy {
     }
 
     /**
+     * @username (optional) 
      * @return Success
      */
-    insertUser(teamId: number, userId: number): Observable<void> {
+    insertUser(teamId: number, username: string): Observable<void> {
         let url_ = this.baseUrl + "/api/services/mindfights/Team/InsertUser?";
         if (teamId === undefined || teamId === null)
             throw new Error("The parameter 'teamId' must be defined and cannot be null.");
         else
             url_ += "teamId=" + encodeURIComponent("" + teamId) + "&"; 
-        if (userId === undefined || userId === null)
-            throw new Error("The parameter 'userId' must be defined and cannot be null.");
-        else
-            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
+        if (username !== undefined)
+            url_ += "username=" + encodeURIComponent("" + username) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

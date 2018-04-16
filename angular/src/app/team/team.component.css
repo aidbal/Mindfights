@@ -6,8 +6,18 @@
     justify-content: flex-end;
 }
 
+.center {
+    align-items: center;
+    justify-content: center;
+}
+
 .margin-bottom-medium {
     margin-bottom: 20px;
+}
+
+.small-padding-sides {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .active-row {
