@@ -34,7 +34,7 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     getPlayerInfo(): void {
         this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
             this.playerInfo = result;
-            if (this.playerInfo.teamId != 0) {
+            if (this.playerInfo.teamId != null) {
                 this.teamId = this.playerInfo.teamId;
                 this.getPlayerTeam(this.playerInfo.teamId);
             }

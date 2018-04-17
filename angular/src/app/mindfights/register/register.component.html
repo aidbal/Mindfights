@@ -1,0 +1,17 @@
+<div *ngIf="playerInfo">
+    <div *ngIf="playerInfo.isTeamLeader">
+        <div *ngIf="registration">
+            <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float register-button" title="Atšaukti registraciją"
+                    [ngClass]="{'yellow': !registration.isConfirmed, 'green': registration.isConfirmed}"
+                    (click)="deleteRegistration()">
+                {{registration.isConfirmed ? 'Užregistruota. Patvirtinta':'Užregistruota. Nepatvirtinta'}} <i class="fa fa-xs" [ngClass]="{'fa-clock-o': !registration.isConfirmed, 'fa-check': registration.isConfirmed}"></i>
+            </button>
+        </div>
+        <div *ngIf="!registration">
+            <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float register-button white"
+                    title="Registruotis" (click)="createRegistration()">
+                Registruotis
+            </button>
+        </div>
+    </div>
+</div>

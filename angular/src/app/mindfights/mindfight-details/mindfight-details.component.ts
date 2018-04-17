@@ -1,5 +1,6 @@
 import { Component, OnInit, Injector } from '@angular/core';
-import { MindfightDto, RegistrationDto, MindfightServiceProxy, RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
+import { MindfightDto, RegistrationDto, MindfightServiceProxy,
+    RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -41,17 +42,33 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         this.routeSubscriber.unsubscribe();
     }
 
+    onRegisterChange(registrationChangeObject): void {
+        if (registrationChangeObject.createEvent) {
+            this.addNewRegistration(registrationChangeObject.registrationId);
+        } else {
+            const currentRegistrationIndex =
+                this.registrations.findIndex(registration => registration.id === registrationChangeObject.registrationId);
+            if (currentRegistrationIndex > 0) {
+                this.registrations.splice(currentRegistrationIndex, 1);
+            }
+        }
+    }
+
+    addNewRegistration(registrationId): void {
+        this.registrationService.getRegistration(registrationId).subscribe((result) => {
+            this.registrations.push(result);
+        });
+    }
+
     getMindfight(mindfightId): void {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
-            console.log(result);
         });
     }
 
     getRegistrations(mindfightId): void {
         this.registrationService.getMindfightRegistrations(mindfightId).subscribe((result) => {
             this.registrations = result;
-            console.log(result);
         });
     }
 

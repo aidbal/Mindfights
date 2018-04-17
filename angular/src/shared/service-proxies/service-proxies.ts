@@ -1405,6 +1405,110 @@ export class RegistrationServiceProxy {
     /**
      * @return Success
      */
+    getRegistration(registrationId: number): Observable<RegistrationDto> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Registration/GetRegistration?";
+        if (registrationId === undefined || registrationId === null)
+            throw new Error("The parameter 'registrationId' must be defined and cannot be null.");
+        else
+            url_ += "registrationId=" + encodeURIComponent("" + registrationId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetRegistration(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetRegistration(<any>response_);
+                } catch (e) {
+                    return <Observable<RegistrationDto>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<RegistrationDto>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetRegistration(response: Response): Observable<RegistrationDto> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? RegistrationDto.fromJS(resultData200) : new RegistrationDto();
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<RegistrationDto>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getMindfightTeamRegistration(mindfightId: number, teamId: number): Observable<RegistrationDto> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Registration/GetMindfightTeamRegistration?";
+        if (mindfightId === undefined || mindfightId === null)
+            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
+        else
+            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
+        if (teamId === undefined || teamId === null)
+            throw new Error("The parameter 'teamId' must be defined and cannot be null.");
+        else
+            url_ += "teamId=" + encodeURIComponent("" + teamId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetMindfightTeamRegistration(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetMindfightTeamRegistration(<any>response_);
+                } catch (e) {
+                    return <Observable<RegistrationDto>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<RegistrationDto>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetMindfightTeamRegistration(response: Response): Observable<RegistrationDto> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? RegistrationDto.fromJS(resultData200) : new RegistrationDto();
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<RegistrationDto>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
     getMindfightRegistrations(mindfightId: number): Observable<RegistrationDto[]> {
         let url_ = this.baseUrl + "/api/services/mindfights/Registration/GetMindfightRegistrations?";
         if (mindfightId === undefined || mindfightId === null)
@@ -4746,6 +4850,7 @@ export class PlayerDto implements IPlayerDto {
     points: number;
     teamId: number;
     teamName: string;
+    isTeamLeader: boolean;
 
     constructor(data?: IPlayerDto) {
         if (data) {
@@ -4765,6 +4870,7 @@ export class PlayerDto implements IPlayerDto {
             this.points = data["points"];
             this.teamId = data["teamId"];
             this.teamName = data["teamName"];
+            this.isTeamLeader = data["isTeamLeader"];
         }
     }
 
@@ -4784,6 +4890,7 @@ export class PlayerDto implements IPlayerDto {
         data["points"] = this.points;
         data["teamId"] = this.teamId;
         data["teamName"] = this.teamName;
+        data["isTeamLeader"] = this.isTeamLeader;
         return data; 
     }
 
@@ -4803,6 +4910,7 @@ export interface IPlayerDto {
     points: number;
     teamId: number;
     teamName: string;
+    isTeamLeader: boolean;
 }
 
 export class QuestionDto implements IQuestionDto {
@@ -4885,6 +4993,7 @@ export interface IQuestionDto {
 }
 
 export class RegistrationDto implements IRegistrationDto {
+    id: number;
     mindfightId: number;
     mindfightName: string;
     mindfightStartTime: moment.Moment;
@@ -4904,6 +5013,7 @@ export class RegistrationDto implements IRegistrationDto {
 
     init(data?: any) {
         if (data) {
+            this.id = data["id"];
             this.mindfightId = data["mindfightId"];
             this.mindfightName = data["mindfightName"];
             this.mindfightStartTime = data["mindfightStartTime"] ? moment(data["mindfightStartTime"].toString()) : <any>undefined;
@@ -4923,6 +5033,7 @@ export class RegistrationDto implements IRegistrationDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
         data["mindfightId"] = this.mindfightId;
         data["mindfightName"] = this.mindfightName;
         data["mindfightStartTime"] = this.mindfightStartTime ? this.mindfightStartTime.toISOString() : <any>undefined;
@@ -4942,6 +5053,7 @@ export class RegistrationDto implements IRegistrationDto {
 }
 
 export interface IRegistrationDto {
+    id: number;
     mindfightId: number;
     mindfightName: string;
     mindfightStartTime: moment.Moment;

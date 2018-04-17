@@ -19,15 +19,19 @@ namespace Mindfights.Services.TeamService
     public class Team : ITeamService
     {
         private readonly IRepository<Models.Team, long> _teamRepository;
+        private readonly IRepository<Registration, long> _registrationRepository;
         private readonly UserManager _userManager;
-        private readonly IObjectMapper _objectMapper;
         private readonly IPermissionChecker _permissionChecker;
 
-        public Team(IRepository<Models.Team, long> teamRepository, UserManager userManager, IObjectMapper objectMapper, IPermissionChecker permissionChecker)
+        public Team(
+            IRepository<Models.Team, long> teamRepository, 
+            IRepository<Registration, long> registrationRepository, 
+            UserManager userManager, 
+            IPermissionChecker permissionChecker)
         {
             _teamRepository = teamRepository;
+            _registrationRepository = registrationRepository;
             _userManager = userManager;
-            _objectMapper = objectMapper;
             _permissionChecker = permissionChecker;
         }
 
@@ -68,7 +72,7 @@ namespace Mindfights.Services.TeamService
         {
             var teams = await _teamRepository.GetAll().ToListAsync();
             var teamsDto = new List<TeamDto>();
-            _objectMapper.Map(teams, teamsDto);
+            teams.MapTo(teamsDto);
             for (var i = 0; i < teams.Count; i++)
                 teamsDto[i].LeaderName = _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == teams[i].LeaderId).Result.Name;
 
@@ -109,6 +113,8 @@ namespace Mindfights.Services.TeamService
                 player.Team = null;
                 player.IsActiveInTeam = false;
             }
+
+            await _registrationRepository.DeleteAsync(x => x.TeamId == teamId);
             await _teamRepository.DeleteAsync(currentTeam);
         }
 

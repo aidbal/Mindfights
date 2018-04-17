@@ -46,6 +46,7 @@ namespace Mindfights.Services.PlayerService
             if (player.Team != null)
             {
                 playerDto.TeamId = player.Team.Id;
+                playerDto.IsTeamLeader = player.Team.LeaderId == player.Id;
             }
             return playerDto;
         }

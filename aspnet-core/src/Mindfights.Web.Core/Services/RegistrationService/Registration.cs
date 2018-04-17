@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Abp.Authorization;
+using Abp.AutoMapper;
 
 namespace Mindfights.Services.RegistrationService
 {
@@ -123,6 +124,53 @@ namespace Mindfights.Services.RegistrationService
                     IsConfirmed = registration.IsConfirmed
                 })
                 .ToList();
+        }
+
+        public async Task<RegistrationDto> GetRegistration(long registrationId)
+        {
+            var currentRegistration = await _registrationRepository
+                .GetAllIncluding(x => x.Mindfight, x => x.Team)
+                .FirstOrDefaultAsync(x => x.Id == registrationId);
+
+            if (currentRegistration == null) {
+                throw new UserFriendlyException("Registration with specified id does not exist!");
+            }
+
+            var registrationDto = new RegistrationDto();
+            currentRegistration.MapTo(registrationDto);
+            registrationDto.MindfightName = currentRegistration.Mindfight.Title;
+
+            return registrationDto;
+        }
+
+        public async Task<RegistrationDto> GetMindfightTeamRegistration(long mindfightId, long teamId)
+        {
+            var currentMindfight = await _mindfightRepository
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+
+            if (currentMindfight == null)
+                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+
+            var currentTeam = await _teamRepository
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.Id == teamId);
+
+            if (currentTeam == null)
+                throw new UserFriendlyException("Team with specified id does not exist!");
+
+            var currentRegistration = await _registrationRepository
+                .GetAllIncluding(x => x.Mindfight, x => x.Team)
+                .FirstOrDefaultAsync(x => mindfightId == x.MindfightId && teamId == x.TeamId);
+
+            var registrationDto = new RegistrationDto();
+
+            if (currentRegistration != null)
+            {
+                currentRegistration.MapTo(registrationDto);
+                registrationDto.MindfightName = currentMindfight.Title;
+            }
+            return registrationDto;
         }
 
         public async Task<List<RegistrationDto>> GetMindfightRegistrations(long mindfightId)

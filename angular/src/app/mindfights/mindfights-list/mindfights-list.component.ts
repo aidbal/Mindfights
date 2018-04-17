@@ -30,21 +30,18 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
     getUpcomingMindfights(): void {
         this.mindfightService.getUpcomingMindfights().subscribe((result) => {
             this.mindfights = result;
-            console.log(result);
         });
     }
 
     getAllowedToEvaluateMindfights(): void {
         this.mindfightService.getAllowedToEvaluateMindfights().subscribe((result) => {
             this.mindfights = result;
-            console.log(result);
         });
     }
 
     getMyCreatedMindfights(): void {
         this.mindfightService.getMyCreatedMindfights().subscribe((result) => {
             this.mindfights = result;
-            console.log(result);
         });
     }
 }

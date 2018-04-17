@@ -15,7 +15,13 @@ export class MindfightCardComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
-        console.log(this.mindfight);
     }
 
+    onRegisterChange(registrationChangeObject): void {
+        if (registrationChangeObject.createEvent) {
+            this.mindfight.registeredTeamsCount += 1;
+        } else {
+            this.mindfight.registeredTeamsCount -= 1;
+        }
+    }
 }
