@@ -28,6 +28,7 @@ namespace Mindfights.Models
         public ICollection<MindfightEvaluator> Evaluators { get; set; }
         public ICollection<Registration> Registrations { get; set; }
         public ICollection<Tour> Tours { get; set; }
+        public ICollection<MindfightState> MindfightStates { get; set; }
 
         public Mindfight(User creator, string title, string description, int playersLimit, DateTime startTime,
             DateTime? endTime, int? prepareTime, int totalTimeLimitInMinutes) : this()
@@ -47,6 +48,7 @@ namespace Mindfights.Models
             Tours = new List<Tour>();
             Evaluators = new List<MindfightEvaluator>();
             Registrations = new List<Registration>();
+            MindfightStates = new List<MindfightState>();
             CreationTime = Clock.Now;
             TotalPoints = 0;
             ToursCount = 0;

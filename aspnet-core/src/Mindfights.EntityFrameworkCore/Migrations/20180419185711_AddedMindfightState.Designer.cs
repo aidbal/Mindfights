@@ -16,9 +16,10 @@ using System;
 namespace Mindfights.Migrations
 {
     [DbContext(typeof(MindfightsDbContext))]
-    partial class MindfightsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180419185711_AddedMindfightState")]
+    partial class AddedMindfightState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -19,6 +19,7 @@ namespace Mindfights.EntityFrameworkCore
         public DbSet<Registration> Registrations { get; set; }
         public DbSet<MindfightResult> MindfightResults { get; set; }
         public DbSet<UserMindfightResult> UserMindfightResults { get; set; }
+        public DbSet<MindfightState> MindfightStates { get; set; }
 
         public MindfightsDbContext(DbContextOptions<MindfightsDbContext> options)
             : base(options)
@@ -59,6 +60,20 @@ namespace Mindfights.EntityFrameworkCore
                 .HasOne(umr => umr.MindfightResult)
                 .WithMany(mr => mr.Users)
                 .HasForeignKey(umr => umr.MindfightResultId);
+
+
+            modelBuilder.Entity<MindfightState>()
+                .HasKey(ms => new { ms.TeamId, ms.MindfightId });
+
+            modelBuilder.Entity<MindfightState>()
+                .HasOne(ms => ms.Team)
+                .WithMany(t => t.MindfightStates)
+                .HasForeignKey(ms => ms.TeamId).OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<MindfightState>()
+                .HasOne(ms => ms.Mindfight)
+                .WithMany(m => m.MindfightStates)
+                .HasForeignKey(ms => ms.MindfightId);
 
             base.OnModelCreating(modelBuilder);
         }

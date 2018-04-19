@@ -22,6 +22,7 @@ namespace Mindfights.Models
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
         public ICollection<Registration> Registrations { get; set; }
         public ICollection<User> Users { get; set; }
+        public ICollection<MindfightState> MindfightStates { get; set; }
 
         public Team(User leaderUser, string name, string description) : this()
         {
@@ -33,6 +34,7 @@ namespace Mindfights.Models
             Users = new List<User> { leaderUser };
             TeamAnswers = new List<TeamAnswer>();
             Registrations = new List<Registration>();
+            MindfightStates = new List<MindfightState>();
         }
 
         private Team()

@@ -112,7 +112,7 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
             var tour = _context.Tours.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoTour");
             if (tour == null && mindfight != null)
             {
-                tour = new Tour(mindfight, "DemoTour", "DemoDescription", 120, 1);
+                tour = new Tour(mindfight, "DemoTour", "DemoDescription", 120, 10, 1);
 
                 _context.Tours.Add(tour);
                 _context.SaveChanges();

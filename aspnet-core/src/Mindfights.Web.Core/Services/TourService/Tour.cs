@@ -1,4 +1,5 @@
-﻿using Abp.AspNetCore.Mvc.Authorization;
+﻿using System;
+using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
@@ -10,6 +11,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Timing;
 
 namespace Mindfights.Services.TourService
 {
@@ -19,22 +21,23 @@ namespace Mindfights.Services.TourService
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Models.Tour, long> _tourRepository;
         private readonly IRepository<Team, long> _teamRepository;
-        private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
+        private readonly IRepository<Question, long> _questionRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
+        private const int BufferSeconds = 5;
 
         public Tour(
             IRepository<Mindfight, long> mindfightRepository,
             IRepository<Models.Tour, long> tourRepository,
             IRepository<Team, long> teamRepository,
-            IRepository<TeamAnswer, long> teamAnswerRepository,
+            IRepository<Question, long> questionRepository,
             IPermissionChecker permissionChecker,
             UserManager userManager)
         {
             _mindfightRepository = mindfightRepository;
             _tourRepository = tourRepository;
             _teamRepository = teamRepository;
-            _teamAnswerRepository = teamAnswerRepository;
+            _questionRepository = questionRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
@@ -104,61 +107,107 @@ namespace Mindfights.Services.TourService
 
         public async Task<TourDto> GetNextTour(long mindfightId, long teamId)
         {
-            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
+            var currentMindfight = await _mindfightRepository
+                .GetAllIncluding(mindfight => mindfight.MindfightStates)
+                .FirstOrDefaultAsync(mindfight => mindfight.Id == mindfightId);
 
-            //var currentTour = await _tourRepository.FirstOrDefaultAsync(x => x.Id == tourId);
-            //if (currentTour == null)
-            //    throw new UserFriendlyException("Tour with specified id does not exist!");
-
-            //if (currentMindfight.StartTime.AddMinutes(currentMindfight.PrepareTime ?? 0) > Clock.Now.AddMinutes(-1))
-            //    throw new UserFriendlyException("Mindfight has not yet started!");
-
-            //if (currentMindfight.EndTime > Clock.Now)
-            //    throw new UserFriendlyException("Mindfight is already over!");
+            if (currentMindfight == null)
+            {
+                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
 
             var currentTeam = await _teamRepository
-                .GetAll()
-                .FirstOrDefaultAsync(x => x.Id == teamId);
+                .FirstOrDefaultAsync(team => team.Id == teamId);
+
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
-            var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.Registrations)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId);
-
-            if (currentMindfight.Registrations.Any(x => x.TeamId != user.Team.Id && x.IsConfirmed))
+            if (currentMindfight.Registrations.Any(x => x.TeamId != teamId && x.IsConfirmed))
+            {
                 throw new UserFriendlyException("User's team is not confirmed to play this mindfight!");
+            }
+            if (!(currentMindfight.IsConfirmed || currentMindfight.StartTime > Clock.Now))
+            {
+                throw new UserFriendlyException("Mindfight has not started yet!");
+            }
 
-            var teamMindfightAnswers = await _teamAnswerRepository
-                .GetAll()
-                .Include(x => x.Question)
-                .ThenInclude(x => x.Tour)
-                .OrderByDescending(x => x.Question.Tour.OrderNumber)
-                .Where(x => x.TeamId == teamId && x.Question.Tour.MindfightId == mindfightId)
-                .ToListAsync();
+            var teamMindfightState = currentMindfight.MindfightStates
+                .FirstOrDefault(state => state.MindfightId == mindfightId && state.TeamId == teamId);
 
-            var nextTourOrderNumber = 1;
+            Models.Tour currentTour;
+            int nextTourOrderNumber;
+            var addNewMindfightState = false;
 
-            if (teamMindfightAnswers.Count > 0)
-                nextTourOrderNumber = teamMindfightAnswers[0].Question.Tour.OrderNumber + 1;
+            if (teamMindfightState == null)
+            {
+                currentTour = await GetFirstMindfightTour(mindfightId);
+                if (currentTour == null)
+                {
+                    throw new UserFriendlyException("There was a problem getting tour from state");
+                }
+                nextTourOrderNumber = currentTour.OrderNumber;
+                addNewMindfightState = true;
+            }
+            else
+            {
+                if (teamMindfightState.IsCompleted)
+                {
+                    throw new UserFriendlyException("This team has already finished mindfight!");
+                }
 
-            var tours = await _tourRepository
+                currentTour = await _tourRepository
+                    .FirstOrDefaultAsync(tour => tour.Id == teamMindfightState.CurrentTourId);
+                if (currentTour == null)
+                {
+                    throw new UserFriendlyException("There was a problem getting tour");
+                }
+
+                nextTourOrderNumber = currentTour.OrderNumber;
+                var questionsTotalTime = await GetTourQuestionsTotalTime(currentTour);
+                var tourTotalTime = questionsTotalTime + currentTour.TimeToEnterAnswersInSeconds;
+
+                if ((Clock.Now - teamMindfightState.ChangeTime).TotalSeconds >
+                    tourTotalTime - BufferSeconds)
+                {
+                    nextTourOrderNumber += 1;
+                }
+            }
+
+            var mindfightTours = await _tourRepository
                 .GetAll()
                 .OrderBy(x => x.OrderNumber)
                 .Where(x => x.MindfightId == mindfightId && x.OrderNumber >= nextTourOrderNumber)
                 .ToListAsync();
 
-            if (tours.Count == 0)
-                throw new UserFriendlyException("There are no more questions left to answer!");
+            if (mindfightTours.Count == 0)
+            {
+                throw new UserFriendlyException("There are no more tours left!");
+            }
 
-            var currentTour = tours.First();
+            var tourToReturn = mindfightTours.First();
+            if (addNewMindfightState)
+            {
+                var newTeamMindfightState = new MindfightState(currentMindfight, currentTeam)
+                {
+                    ChangeTime = Clock.Now,
+                    CurrentTourId = currentTour.Id,
+                };
+                currentMindfight.MindfightStates.Add(newTeamMindfightState);
+            }
+            else if (currentTour.Id != tourToReturn.Id)
+            {
+                currentMindfight.MindfightStates.Remove(teamMindfightState);
+                teamMindfightState.CurrentTourId = tourToReturn.Id;
+                teamMindfightState.ChangeTime = Clock.Now;
+                currentMindfight.MindfightStates.Add(teamMindfightState);
+            }
 
             var tourDto = new TourDto();
-            currentTour.MapTo(tourDto);
+            tourToReturn.MapTo(tourDto);
 
-            if (tours.Count == 1)
+            if (mindfightTours.Count == 1)
                 tourDto.IsLastTour = true;
 
             return tourDto;
@@ -189,6 +238,7 @@ namespace Mindfights.Services.TourService
                 tour.Title,
                 tour.Description,
                 tour.TimeToEnterAnswersInSeconds,
+                tour.IntroTimeInSeconds,
                 tour.OrderNumber);
             return await _tourRepository.InsertAndGetIdAsync(tourToCreate);
         }
@@ -304,6 +354,36 @@ namespace Mindfights.Services.TourService
             }
 
             return lastOrderNumber;
+        }
+
+        private async Task<Models.Tour> GetFirstMindfightTour(long mindfightId)
+        {
+            var mindfightTours = await _tourRepository
+                .GetAll()
+                .OrderBy(x => x.OrderNumber)
+                .Where(tour => tour.MindfightId == mindfightId)
+                .ToListAsync();
+            if (mindfightTours.Count < 1)
+            {
+                throw new UserFriendlyException("Mindfight has no tours!");
+            }
+            return mindfightTours.First();
+        }
+
+        private async Task<int> GetTourQuestionsTotalTime(Models.Tour tour)
+        {
+            var tourQuestions = await _questionRepository
+                .GetAll()
+                .Where(question => question.TourId == tour.Id)
+                .ToListAsync();
+
+            if (tourQuestions.Count < 1)
+            {
+                throw new UserFriendlyException("Tour has no questions!");
+            }
+
+            var totalTime = tourQuestions.Sum(question => question.TimeToAnswerInSeconds);
+            return totalTime;
         }
     }
 }

@@ -2,7 +2,6 @@
 using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
-using Abp.Timing;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
@@ -41,7 +40,15 @@ namespace Mindfights.Services.MindfightService
 
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
+            {
                 throw new UserFriendlyException("User does not exist!");
+            }
+
+            var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == currentMindfight.CreatorId);
+            if (creator == null)
+            {
+                throw new UserFriendlyException("Creator does not exist!");
+            }
 
             var mindfight = new MindfightDto
             {
@@ -51,8 +58,8 @@ namespace Mindfights.Services.MindfightService
                 StartTime = currentMindfight.StartTime,
                 EndTime = currentMindfight.EndTime,
                 TeamsLimit = currentMindfight.PlayersLimit,
-                CreatorId = user.Id,
-                CreatorEmail = user.EmailAddress,
+                CreatorId = creator.Id,
+                CreatorEmail = creator.EmailAddress,
                 PrepareTime = currentMindfight.PrepareTime,
                 ToursCount = currentMindfight.ToursCount,
                 TotalTimeLimitInMinutes = currentMindfight.TotalTimeLimitInMinutes,

@@ -14,6 +14,7 @@ namespace Mindfights.Models
         public int OrderNumber { get; set; }
         public int QuestionsCount { get; set; }
         public int TimeToEnterAnswersInSeconds { get; set; }
+        public int IntroTimeInSeconds { get; set; }
         public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
         public DateTime CreationTime { get; set; }
@@ -23,7 +24,7 @@ namespace Mindfights.Models
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
 
         public Tour(Mindfight mindfight, string title, string description,
-            int timeToEnterAnswersInSeconds, int orderNumber) : this()
+            int timeToEnterAnswersInSeconds, int introTimeInSeconds, int orderNumber) : this()
         {
             MindfightId = mindfight.Id;
             Mindfight = mindfight;
@@ -31,6 +32,7 @@ namespace Mindfights.Models
             Description = description;
             OrderNumber = orderNumber;
             TimeToEnterAnswersInSeconds = timeToEnterAnswersInSeconds;
+            IntroTimeInSeconds = introTimeInSeconds;
         }
 
         private Tour()
