@@ -47,28 +47,27 @@ export class EditTourComponent extends AppComponentBase implements OnInit {
     updateTour(): void {
         this.saving = true;
         this.tourService.updateTour(this.tour, this.tourId).subscribe(() => {
-            abp.message.success("Turas sėkmingai atnaujintas!", "Atlikta");
+            this.notify.success("Turas sėkmingai atnaujintas!", "Atlikta");
             //this.router.navigate(['../'], { relativeTo: this.route });
             this.saving = false;
         });
     }
 
     deleteTour(): void {
-        var that = this;
         abp.message.confirm(
             'Turas bus ištrintas.',
             'Are Jūs esate tikri?',
-            function (isConfirmed) {
+            isConfirmed => {
                 if (isConfirmed) {
-                    that.tourService.deleteTour(that.tourId).subscribe(
+                    this.tourService.deleteTour(this.tourId).subscribe(
                         () => {
-                            abp.message.success('Turas sėkmingai ištrintas!', 'Atlikta');
+                            this.notify.success('Turas sėkmingai ištrintas!', 'Atlikta');
                         },
                         () => {
-                            abp.message.error('Turo nepavyko ištrinti!', 'Klaida');
+                            this.notify.error('Turo nepavyko ištrinti!', 'Klaida');
                         },
                         () => {
-                            that.router.navigate(['../../'], { relativeTo: that.route });
+                            this.router.navigate(['../../'], { relativeTo: this.route });
                         }
                     );
                 }

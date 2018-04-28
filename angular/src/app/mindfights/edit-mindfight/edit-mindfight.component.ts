@@ -16,12 +16,11 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
     usersAllowedToEvaluate: string = null;
     selectedDate: any = {};
     singleDatepickerOptions: any;
-    rangeDatepickerOptions: any;
-    selectedMindfightType: string;
     registrations: RegistrationDto[] = [];
     mindfightId: number;
     saving: boolean = false;
     private routeSubscriber: any;
+    loaded = false;
 
     constructor(
         injector: Injector,
@@ -38,11 +37,9 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
 
     ngOnInit() {
         this.singleDatepickerOptions = this.datepickerOptionsService.getSingleDatepickerOptions();
-        this.rangeDatepickerOptions = this.datepickerOptionsService.getRangeDatepickerOptions();
-        this.selectedDate = this.datepickerOptionsService.getInitialDate();
         this.mindfight = new MindfightDto();
         this.routeSubscriber = this.route.params.subscribe(params => {
-            this.mindfightId = +params['mindfightId']; // (+) converts string 'id' to a number
+            this.mindfightId = +params['mindfightId'];
         });
         this.getMindfight(this.mindfightId);
         this.getRegistrations(this.mindfightId);
@@ -54,19 +51,20 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
 
     updateMindfight(): void {
         this.saving = true;
-        this.mindfight.endTime = this.selectedMindfightType === "2" ? this.selectedDate.endTime : null;
-        var evaluatorsString = this.usersAllowedToEvaluate.replace(/\s/g, '');
-        var evaluators = evaluatorsString.split(",");
+        let evaluatorsString = this.usersAllowedToEvaluate.replace(/\s/g, '');
+        let evaluators = evaluatorsString.split(",");
         this.mindfight.usersAllowedToEvaluate = [];
+        this.mindfight.startTime = moment.utc(this.selectedDate.startDate.format('YYYY-MM-DD HH:mm'),
+            'YYYY-MM-DD HH:mm');
         evaluators.forEach((evaluator) => {
             this.mindfight.usersAllowedToEvaluate.push(evaluator);
         });
         this.mindfightService.updateMindfight(this.mindfight).subscribe(
             () => {
-                abp.message.success('Protmūšis sėkmingai atnaujintas!', 'Atlikta');
+                this.notify.success('Protmūšis sėkmingai atnaujintas!', 'Atlikta');
             },
             () => {
-                abp.message.error('Protmūšio nepavyko atnaujinti!', 'Klaida');
+                this.notify.error('Protmūšio nepavyko atnaujinti!', 'Klaida');
             },
             () => {
                 this.router.navigate(['../../' + this.mindfightId], { relativeTo: this.route });
@@ -76,21 +74,20 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
     }
 
     deleteMindfight(): void {
-        var that = this;
         abp.message.confirm(
             'Protmūšis bus ištrintas.',
             'Are Jūs esate tikri?',
-            function (isConfirmed) {
+            isConfirmed => {
                 if (isConfirmed) {
-                    that.mindfightService.deleteMindfight(that.mindfightId).subscribe(
+                    this.mindfightService.deleteMindfight(this.mindfightId).subscribe(
                         () => {
-                            abp.message.success('Protmūšis sėkmingai ištrintas!', 'Atlikta');
+                            this.notify.success('Protmūšis sėkmingai ištrintas!', 'Atlikta');
                         },
                         () => {
-                            abp.message.error('Protmūšio nepavyko ištrinti!', 'Klaida');
+                            this.notify.error('Protmūšio nepavyko ištrinti!', 'Klaida');
                         },
                         () => {
-                            that.router.navigate(['../../administrate'], { relativeTo: that.route });
+                            this.router.navigate(['../../administrate'], { relativeTo: this.route });
                         }
                     );
                 }
@@ -108,9 +105,9 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
                 }
                 this.usersAllowedToEvaluate += evaluator;
             });
-            this.selectedMindfightType = this.mindfight.endTime !== null ? "2" : "1";
-            this.selectedDate.startTime = result.startTime;
-            this.selectedDate.endTime = result.endTime;
+            this.selectedDate.startDate = result.startTime;
+            this.singleDatepickerOptions.startDate = this.datepickerOptionsService.getDatetimeStringFromMoment(result.startTime);
+            this.loaded = true;
         });
     }
 
@@ -137,6 +134,10 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
             },
             () => this.notify.error("Klaida keičiant komandos patvirtinimo statusą")
             );
+    }
+
+    selectedDateEvent(value: any) {
+        this.selectedDate.startDate = value.start;
     }
 
     goToTours() {

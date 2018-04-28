@@ -41,7 +41,7 @@ export class CreateQuestionComponent extends AppComponentBase implements OnInit 
     createQuestion(): void {
         this.saving = true;
         this.questionService.createQuestion(this.question, this.tourId).subscribe(() => {
-            abp.message.success("Klausimas sėkmingai sukurtas!", "Atlikta");
+            this.notify.success("Klausimas sėkmingai sukurtas!", "Atlikta");
             this.router.navigate(['../'], { relativeTo: this.route });
             this.saving = false;
         });

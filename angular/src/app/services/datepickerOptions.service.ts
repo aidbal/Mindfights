@@ -55,25 +55,21 @@ export class DatepickerOptionsService {
         },
         "alwaysShowCalendars": true,
         "opens": "right",
-        "minDate": moment().add(1, 'days').format(this.dateFormat),
-        "startDate": this.initialDate.startDate.format(this.dateTimeFormat),
-        "endDate": this.initialDate.endDate.format(this.dateTimeFormat)
     };
 
     constructor() {
         Object.assign(this.singleDatepickerOptions, this.datepickerOptions, this.singleDatePickerOption);
-        Object.assign(this.rangeDatepickerOptions, this.datepickerOptions);
     }
 
     getSingleDatepickerOptions() {
         return this.singleDatepickerOptions;
     }
 
-    getRangeDatepickerOptions() {
-        return this.rangeDatepickerOptions;
-    }
-
     getInitialDate() {
         return this.initialDate;
+    }
+
+    getDatetimeStringFromMoment(datetime) {
+        return datetime.format(this.dateTimeFormat);
     }
 }

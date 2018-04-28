@@ -49,28 +49,27 @@ export class EditQuestionComponent extends AppComponentBase implements OnInit {
     updateQuestion(): void {
         this.saving = true;
         this.questionService.updateQuestion(this.question, this.questionId).subscribe(() => {
-            abp.message.success("Klausimas sėkmingai atnaujintas!", "Atlikta");
+            this.notify.success("Klausimas sėkmingai atnaujintas!", "Atlikta");
             this.router.navigate(['../'], { relativeTo: this.route });
             this.saving = false;
         });
     }
 
     deleteQuestion(): void {
-        var that = this;
         abp.message.confirm(
             'Klausimas bus ištrintas.',
             'Are Jūs esate tikri?',
-            function (isConfirmed) {
+            isConfirmed => {
                 if (isConfirmed) {
-                    that.questionService.deleteQuestion(that.questionId).subscribe(
+                    this.questionService.deleteQuestion(this.questionId).subscribe(
                         () => {
-                            abp.message.success('Klausimas sėkmingai ištrintas!', 'Atlikta');
+                            this.notify.success('Klausimas sėkmingai ištrintas!', 'Atlikta');
                         },
                         () => {
-                            abp.message.error('Klausimo nepavyko ištrinti!', 'Klaida');
+                            this.notify.error('Klausimo nepavyko ištrinti!', 'Klaida');
                         },
                         () => {
-                            that.router.navigate(['../../'], { relativeTo: that.route });
+                            this.router.navigate(['../../'], { relativeTo: this.route });
                         }
                     );
                 }

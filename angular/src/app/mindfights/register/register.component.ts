@@ -50,7 +50,7 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
 
     deleteRegistration(): void {
         this.registrationService.deleteRegistration(this.mindfight.id, this.playerInfo.teamId).subscribe((result) => {
-            abp.message.success("Registracija sėkmingai atšaukta!", "Atlikta");
+            this.notify.success("Registracija sėkmingai atšaukta!", "Atlikta");
             this.registrationChangeObject.registrationId = this.registration.id;
             this.registrationChangeObject.createEvent = false;
             this.notifyRegisterChange.emit(this.registrationChangeObject);
@@ -61,7 +61,7 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
     createRegistration(): void {
         this.registrationService.createRegistration(this.mindfight.id, this.playerInfo.teamId).subscribe((result) => {
             this.getRegistration(this.mindfight.id, this.playerInfo.teamId);
-            abp.message.success("Registracija sėkmingai sukurta!", "Atlikta");
+            this.notify.success("Registracija sėkmingai sukurta!", "Atlikta");
             this.registrationChangeObject.registrationId = result;
             this.registrationChangeObject.createEvent = true;
             this.notifyRegisterChange.emit(this.registrationChangeObject);

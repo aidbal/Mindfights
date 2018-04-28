@@ -30,7 +30,6 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
 
     ngOnInit() {
         this.singleDatepickerOptions = this.datepickerOptionsService.getSingleDatepickerOptions();
-        this.rangeDatepickerOptions = this.datepickerOptionsService.getRangeDatepickerOptions();
         this.selectedDate = this.datepickerOptionsService.getInitialDate();
         this.mindfight = new MindfightCreateUpdateDto();
     }
@@ -42,13 +41,7 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
     }
 
     createMindfight(): void {
-        if (this.selectedMindfightType === '1') {
-            this.mindfight.startTime = this.selectedDate.startDate;
-            this.mindfight.endTime = this.selectedDate.endDate;
-        } else if (this.selectedMindfightType === '2') {
-            this.mindfight.startTime = this.selectedDate.startDate;
-            this.mindfight.endTime = null;
-        }
+        this.mindfight.startTime = this.selectedDate.startDate;
         this.mindfightService.createMindfight(this.mindfight).subscribe(() => {
             this.notify.success("Protmūšis sėkmingai sukurtas!");
             this.router.navigate(['../administrate'], { relativeTo: this.route });

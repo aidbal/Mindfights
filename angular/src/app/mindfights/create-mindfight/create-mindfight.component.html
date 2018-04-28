@@ -27,11 +27,11 @@
                             <div class="form-group">
                                 <mat-form-field>
                                     <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="mindfight.description"
-                                           placeholder="Aprašymas"
-                                           name="Description"
-                                           type="text"
-                                           maxlength="2550" minlength="2"
-                                           required></textarea>
+                                              placeholder="Aprašymas"
+                                              name="Description"
+                                              type="text"
+                                              maxlength="2550" minlength="2"
+                                              required></textarea>
                                 </mat-form-field>
                             </div>
                         </div>
@@ -40,48 +40,22 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <mat-form-field>
-                                    <mat-select placeholder="Protmūšio tipas" class="form-control" [(ngModel)]="selectedMindfightType" name="mindfightType" required>
-                                        <mat-option value="1">Nuo iki</mat-option>
-                                        <mat-option value="2">Tam tikru metu</mat-option>
-                                    </mat-select>
+                                    <input matInput type="text" name="daterangeInput" daterangepicker [options]="singleDatepickerOptions"
+                                           (selected)="selectedDateEvent($event)" class="form-control" placeholder="Starto laikas" />
                                 </mat-form-field>
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="selectedMindfightType == 1">
-                        <div class="row clearfix">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <mat-form-field>
-                                        <input matInput type="text" name="daterangeInput" daterangepicker [options]="rangeDatepickerOptions"
-                                               (selected)="selectedDateEvent($event)" class="form-control" placeholder="Starto laikas nuo iki" required/>
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div *ngIf="selectedMindfightType == 2">
-                        <div class="row clearfix">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <mat-form-field>
-                                        <input matInput type="text" name="daterangeInput" daterangepicker [options]="singleDatepickerOptions"
-                                               (selected)="selectedDateEvent($event)" class="form-control" placeholder="Starto laikas" />
-                                    </mat-form-field>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row clearfix">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <mat-form-field>
-                                        <input matInput class="form-control" [(ngModel)]="mindfight.prepareTime"
-                                               placeholder="Kiek minučių nuo starto bus galima prisijungti"
-                                               name="startTimeframe"
-                                               type="number"
-                                               min="5" required>
-                                    </mat-form-field>
-                                </div>
+                    <div class="row clearfix">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="mindfight.prepareTime"
+                                           placeholder="Kiek minučių nuo starto bus galima prisijungti"
+                                           name="startTimeframe"
+                                           type="number"
+                                           min="5" required>
+                                </mat-form-field>
                             </div>
                         </div>
                     </div>

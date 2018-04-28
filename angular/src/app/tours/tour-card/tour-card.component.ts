@@ -37,7 +37,7 @@ export class TourCardComponent extends AppComponentBase implements OnInit {
         this.tourService.updateOrderNumber(this.tour.id, newOrderNumber).subscribe(
             () => {
                 this.orderChangeObject.newOrderNumber = newOrderNumber;
-                abp.message.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
+                this.notify.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
                 this.notifyOrderChange.emit(this.orderChangeObject);
                 this.saving = false;
             });
@@ -51,7 +51,7 @@ export class TourCardComponent extends AppComponentBase implements OnInit {
             this.tourService.updateOrderNumber(this.tour.id, newOrderNumber).subscribe(
                 () => {
                     this.orderChangeObject.newOrderNumber = newOrderNumber;
-                    abp.message.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
+                    this.notify.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
                     this.notifyOrderChange.emit(this.orderChangeObject);
                     this.saving = false;
                 });

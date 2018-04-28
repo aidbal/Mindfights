@@ -1,14 +1,16 @@
 import { Component, OnInit, Injector } from '@angular/core';
-import { MindfightDto, RegistrationDto, MindfightServiceProxy,
-    RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
+import {
+    MindfightDto, RegistrationDto, MindfightServiceProxy,
+    RegistrationServiceProxy, PlayerServiceProxy, PlayerDto
+} from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-mindfight-details',
-  templateUrl: './mindfight-details.component.html',
-  styleUrls: ['./mindfight-details.component.css']
+    selector: 'app-mindfight-details',
+    templateUrl: './mindfight-details.component.html',
+    styleUrls: ['./mindfight-details.component.css']
 })
 export class MindfightDetailsComponent extends AppComponentBase implements OnInit {
     mindfight: MindfightDto;
@@ -16,6 +18,8 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     mindfightId: number;
     playerInfo: PlayerDto;
     private routeSubscriber: any;
+    canEvaluate = false;
+    canEdit = false;
 
     constructor(
         injector: Injector,
@@ -30,12 +34,12 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     }
 
     ngOnInit() {
-        this.getPlayerTeam();
+        this.getPlayerInfo();
         this.routeSubscriber = this.activatedRoute.params.subscribe(params => {
             this.mindfightId = +params['mindfightId']; // (+) converts string 'id' to a number
+            this.getMindfight(this.mindfightId);
+            this.getRegistrations(this.mindfightId);
         });
-        this.getMindfight(this.mindfightId);
-        this.getRegistrations(this.mindfightId);
     }
 
     ngOnDestroy() {
@@ -63,6 +67,9 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     getMindfight(mindfightId): void {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
+            console.log(result);
+            this.canEditMindfight();
+            this.canEvaluateMindfight();
         });
     }
 
@@ -76,7 +83,7 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         return this.playerInfo.teamId === registrationTeamId;
     };
 
-    getPlayerTeam(): void {
+    getPlayerInfo(): void {
         this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
             this.playerInfo = result;
         });
@@ -86,12 +93,23 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         return abp.session.userId === this.mindfight.creatorId;
     }
 
-    canEditMindfight(): boolean {
-        return this.isMindfightCreator() || abp.auth.isGranted("ManageMindfights");
+    canEditMindfight() {
+        if (this.isMindfightCreator() || abp.auth.isGranted("ManageMindfights")) {
+            this.canEdit = true;
+        }
     }
 
-    goToEdit() {
-        this.router.navigate(['./edit'], { relativeTo: this.activatedRoute });
+    canEvaluateMindfight() {
+        if (this.canEditMindfight()) {
+            this.canEvaluate = true;
+        } else {
+            this.mindfight.usersAllowedToEvaluate.forEach((userEmail) => {
+                if (userEmail.toUpperCase() === this.playerInfo.emailAddress.toUpperCase()) {
+                    this.canEvaluate = true;
+                    return false;
+                }
+            });
+        }
     }
 
     goBack() {

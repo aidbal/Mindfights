@@ -1,10 +1,10 @@
 <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/']" title="Grįžti į turus">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Turai
+        [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details']" title="Komandų vertinimas">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Komandų vertinimas
 </button>
 <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + teamId]" title="Grįžti į turą">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
+        [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/team/' + teamId]" title="Grįžti į atsakymų vertinimą">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Atsakymų vertinimas
 </button>
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -53,7 +53,7 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <mat-form-field>
-                                    <input matInput class="form-control" [(ngModel)]="earnedPoints"
+                                    <input matInput class="form-control" [(ngModel)]="teamAnswer.earnedPoints"
                                            placeholder="Skiriamų taškų kiekis (maksimalus kiekis: {{question.points}})"
                                            name="earnedPoints"
                                            type="number" max="{{question.points}}" required>
@@ -65,7 +65,7 @@
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <mat-form-field>
-                                    <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="evaluatorComment"
+                                    <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="teamAnswer.evaluatorComment"
                                               placeholder="Komentaras"
                                               name="Comment"
                                               type="text"

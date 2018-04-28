@@ -38,7 +38,7 @@ export class CreateTourComponent extends AppComponentBase implements OnInit {
     createTour(): void {
         this.saving = true;
         this.tourService.createTour(this.tour, this.mindfightId).subscribe(() => {
-            abp.message.success("Turas sėkmingai sukurtas!", "Atlikta");
+            this.notify.success("Turas sėkmingai sukurtas!", "Atlikta");
             this.router.navigate(['../'], { relativeTo: this.route });
             this.saving = false;
         });

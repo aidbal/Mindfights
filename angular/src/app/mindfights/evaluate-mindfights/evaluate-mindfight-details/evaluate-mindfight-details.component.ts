@@ -59,4 +59,15 @@ export class EvaluateMindfightDetailsComponent extends AppComponentBase implemen
             console.log(result);
         });
     }
+
+    completeMindfight(): void {
+        this.mindfightService.updateFinishedStatus(this.mindfightId, true).subscribe(() => {
+            this.notify.success("Protmūšis sėkmingai užbaigtas", "Atlikta!");
+            this.mindfight.isFinished = true;
+        });
+    }
+
+    goBack() {
+        this.location.back();
+    }
 }

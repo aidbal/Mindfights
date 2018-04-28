@@ -8,53 +8,71 @@
                 <ul class="header-dropdown m-r--5">
                     <li>
                         <div>
-                            <button type="button" (click)="goBack()" class="btn bg-black waves-effect waves-light"><i class="fa fa-arrow-circle-left"></i> Atgal</button>
-                            <!--<button *ngIf="!isRegistered() && !event.isCancelled" type="button" class="btn bg-green waves-effect waves-light" (click)="registerToEvent()"><i class="fa fa-star"></i> {{l('Register')}}</button>
-                            <button *ngIf="isRegistered() && !event.isCancelled" type="button" class="btn bg-orange waves-effect waves-light" (click)="cancelRegistrationFromEvent()"><i class="fa fa-remove"></i> {{l('CancelRegistration')}}</button>-->
-                            <button *ngIf="canEditMindfight()" (click)="goToEdit()" type="button" class="btn bg-red waves-effect waves-light"><i class="fa fa-edit"></i>Redaguoti</button>
+                            <button type="button" (click)="goBack()"
+                                    class="btn bg-black waves-effect waves-light">
+                                <i class="fa fa-arrow-circle-left"></i> Atgal
+                            </button>
+                            <button *ngIf="canEvaluate" type="button"
+                                    class="btn bg-orange waves-effect waves-light"
+                                    [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details/']">
+                                <i class="fa fa-edit"></i> Vertinti atsakymus
+                            </button>
+                            <button *ngIf="canEdit" type="button"
+                                    class="btn bg-red waves-effect waves-light"
+                                    [routerLink]="['/app/mindfights/' + mindfightId + '/edit/']">
+                                <i class="fa fa-edit"></i>Redaguoti
+                            </button>
                         </div>
                     </li>
                 </ul>
             </div>
             <div class="body table-responsive">
-                <br/>
+                <br />
                 <div>
                     <p class="description">
                         {{mindfight.description}}
                     </p>
                 </div>
-                <br/>
-                <br/>
-                <app-register [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
+                <br />
+                <br />
+                <app-register *ngIf="!canEvaluate || !canEdit" [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
                 <div>
-                    <small>
-                        <b>
+                    <b>
+                        <small *ngIf="mindfight.registeredTeamsCount < mindfight.teamsLimit">
                             {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
-                        </b>
-                    </small>
-                    <br/>
+                        </small>
+                        <small *ngIf="mindfight.teamsLimit > 0 && mindfight.registeredTeamsCount >= mindfight.teamsLimit">
+                            {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo. Registracija baigta.
+                        </small>
+                        <small *ngIf="mindfight.teamsLimit <= 0">
+                            {{mindfight.registeredTeamsCount}} užsiregistravo. Registracija neribota.
+                            <br />
+                            <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
+                        </small>
+                    </b>
+                    <br />
                     <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                 </div>
-                <hr/>
+                <hr />
                 <table class="table table-hover" *ngIf="registrations.length > 0">
                     <thead>
-                    <tr>
-                        <th>Patvirtinta</th>
-                        <th>Komandos pavadinimas</th>
-                        <th>Registracijos laikas</th>
-                    </tr>
+                        <tr>
+                            <th>Patvirtinta</th>
+                            <th>Komandos pavadinimas</th>
+                            <th>Registracijos laikas</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr *ngFor="let registration of registrations; let i = index">
-                        <td>
-                            <input type="checkbox" id="isTeamConfirmed{{i}}" disabled
-                                   [ngModel]="registration.isConfirmed"
-                                   (click)="updateConfirmation(registration)">
-                            <label [attr.for]="'isTeamConfirmed'+i" title="Patvirtinimo statusas"></label>
-                        </td>
-                        <td>{{registration.teamName}}</td>
-                        <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>
-                    </tr>
+                        <tr *ngFor="let registration of registrations; let i = index">
+                            <td>
+                                <input type="checkbox" id="isTeamConfirmed{{i}}" disabled
+                                       [ngModel]="registration.isConfirmed"
+                                       (click)="updateConfirmation(registration)">
+                                <label [attr.for]="'isTeamConfirmed'+i" title="Patvirtinimo statusas"></label>
+                            </td>
+                            <td>{{registration.teamName}}</td>
+                            <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

@@ -41,7 +41,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
     updateTeam(): void {
         this.saving = true;
         this.teamService.updateTeam(this.team, this.teamId).subscribe(() => {
-            abp.message.success("Komanda sėkmingai atnaujinta!", "Atlikta");
+            this.notify.success("Komanda sėkmingai atnaujinta!", "Atlikta");
             this.router.navigate(['../../'], { relativeTo: this.route });
             this.saving = false;
         });
@@ -74,21 +74,20 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
     }
 
     deleteTeam(): void {
-        var that = this;
         abp.message.confirm(
             'Komanda bus ištrinta. Visi vartotojai bus išmesti iš komandos.',
             'Are Jūs esate tikri?',
-            function (isConfirmed) {
+            isConfirmed => {
                 if (isConfirmed) {
-                    that.teamService.deleteTeam(that.teamId).subscribe(
+                    this.teamService.deleteTeam(this.teamId).subscribe(
                         () => {
-                            abp.message.success('Komanda sėkmingai ištrintas!', 'Atlikta');
+                            this.notify.success('Komanda sėkmingai ištrintas!', 'Atlikta');
                         },
                         () => {
-                            abp.message.error('Komandos nepavyko ištrinti!', 'Klaida');
+                            this.notify.error('Komandos nepavyko ištrinti!', 'Klaida');
                         },
                         () => {
-                            that.router.navigate(['../../'], { relativeTo: that.route });
+                            this.router.navigate(['../../'], { relativeTo: this.route });
                         }
                     );
                 }
@@ -99,7 +98,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
     addNewPlayer(username): void {
         this.teamService.insertUser(this.teamId, username).subscribe(
             () => {
-                abp.message.success("Žaidėjas '" + username + "' sėkmingai pridėtas į komandą!", "Atlikta");
+                this.notify.success("Žaidėjas '" + username + "' sėkmingai pridėtas į komandą!", "Atlikta");
                 this.getAllTeamPlayers(this.teamId);
                 username = '';
             }
@@ -107,18 +106,17 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
     }
 
     removePlayer(playerId, username): void {
-        var that = this;
         abp.message.confirm(
             'Žaidėjas bus pašalintas iš komandos.',
             'Are Jūs esate tikri?',
-            function (isConfirmed) {
+            isConfirmed => {
                 if (isConfirmed) {
-                    that.teamService.removeUser(that.teamId, playerId).subscribe(
+                    this.teamService.removeUser(this.teamId, playerId).subscribe(
                         () => {
-                            abp.message.success("Žaidėjas '" + username + "' sėkmingai pašalintas!", "Atlikta");
-                            let playerIndex = that.teamPlayers.findIndex(i => i.id === playerId);
+                            this.notify.success("Žaidėjas '" + username + "' sėkmingai pašalintas!", "Atlikta");
+                            let playerIndex = this.teamPlayers.findIndex(i => i.id === playerId);
                             if (playerIndex) {
-                                that.teamPlayers.splice(playerIndex, 1);
+                                this.teamPlayers.splice(playerIndex, 1);
                             }
                         }
                     );

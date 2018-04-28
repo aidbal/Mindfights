@@ -1,5 +1,5 @@
 import { Component, OnInit, Injector, Input } from '@angular/core';
-import { MindfightServiceProxy, MindfightPublicDto } from '@shared/service-proxies/service-proxies';
+import { MindfightServiceProxy, PlayerDto, PlayerServiceProxy } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
 
 @Component({
@@ -10,10 +10,13 @@ import { AppComponentBase } from '@shared/app-component-base';
 export class MindfightsListComponent extends AppComponentBase implements OnInit {
     mindfights: any;
     @Input() type: string;
+    playerInfo: PlayerDto;
 
     constructor(
         injector: Injector,
-        private mindfightService: MindfightServiceProxy) {
+        private mindfightService: MindfightServiceProxy,
+        private playerService: PlayerServiceProxy
+    ) {
         super(injector);
     }
 
@@ -25,13 +28,18 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
         }
     }
 
+    getPlayerInfo(): void {
+        this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
+            this.playerInfo = result;
+        });
+    };
+
     getUpcomingMindfights(): void {
         this.mindfightService.getUpcomingMindfights().subscribe((result) => {
             this.mindfights = result;
         });
     }
-
-
+    
     getMyCreatedMindfights(): void {
         this.mindfightService.getMyCreatedMindfights().subscribe((result) => {
             this.mindfights = result;

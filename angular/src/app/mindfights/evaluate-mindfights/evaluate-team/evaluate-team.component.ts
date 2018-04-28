@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import {
     PlayerServiceProxy, TeamAnswerDto, QuestionDto,
     TeamAnswerServiceProxy, TeamServiceProxy, TeamDto,
-    MindfightServiceProxy, MindfightDto
+    MindfightServiceProxy, MindfightDto, ResultServiceProxy, MindfightResultDto
 } from 'shared/service-proxies/service-proxies';
 import { Location } from '@angular/common';
 import { AppComponentBase } from 'shared/app-component-base';
@@ -19,13 +19,16 @@ export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
     teamId: number;
     team: TeamDto;
     mindfight: MindfightDto;
+    evaluatedTeamAnswers: number = 0;
     teamAnswers: TeamAnswerDto[] = [];
+    mindfightResult: MindfightResultDto;
 
     constructor(
         injector: Injector,
         private teamAnswerService: TeamAnswerServiceProxy,
         private teamService: TeamServiceProxy,
         private mindfightService: MindfightServiceProxy,
+        private resultService: ResultServiceProxy,
         private activatedRoute: ActivatedRoute,
         private location: Location,
         private router: Router
@@ -40,6 +43,7 @@ export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
             this.getTeamAnswers(this.mindfightId, this.teamId);
             this.getTeam(this.teamId);
             this.getMindfight(this.mindfightId);
+            this.getMindfightResult(this.mindfightId, this.teamId);
         });
     }
 
@@ -47,24 +51,41 @@ export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
         this.routeSubscriber.unsubscribe();
     }
 
-    getTeamAnswers = function (mindfightId, teamId) {
+    getMindfightResult(mindfightId, teamId) {
+        this.resultService.getMindfightTeamResult(mindfightId, teamId).subscribe((result) => {
+            this.mindfightResult = result;
+        });
+    }
+
+    getTeamAnswers(mindfightId, teamId) {
         this.teamAnswerService.getAllTeamAnswers(this.mindfightId, this.teamId).subscribe((result) => {
             this.teamAnswers = result;
+            result.forEach((answer) => {
+                if (answer.isEvaluated) {
+                    this.evaluatedTeamAnswers += 1;
+                }
+            });
             console.log(result);
         });
     }
 
-    getTeam = function (teamId) {
+    getTeam(teamId) {
         this.teamService.getTeam(teamId).subscribe((result) => {
             this.team = result;
             console.log(result);
         });
     }
 
-    getMindfight = function (mindfightId) {
+    getMindfight (mindfightId) {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
             console.log(result);
+        });
+    }
+
+    completeEvaluate() {
+        this.resultService.updateResult(this.mindfightId, this.teamId).subscribe(() => {
+            this.notify.success("Sėkmingai baigta vertinti komandą.", "Atlikta!");
         });
     }
 }

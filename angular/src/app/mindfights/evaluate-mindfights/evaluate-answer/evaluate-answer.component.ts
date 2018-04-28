@@ -15,8 +15,6 @@ export class EvaluateAnswerComponent extends AppComponentBase implements OnInit 
     questionId: number;
     teamAnswer: TeamAnswerDto;
     question: QuestionDto;
-    evaluatorComment: string;
-    earnedPoints: number;
 
     constructor(
         injector: Injector,
@@ -56,8 +54,8 @@ export class EvaluateAnswerComponent extends AppComponentBase implements OnInit 
         this.teamAnswerService.updateIsEvaluated(
             this.questionId,
             this.teamId,
-            this.evaluatorComment,
-            this.earnedPoints,
+            this.teamAnswer.evaluatorComment,
+            this.teamAnswer.earnedPoints,
             true
         ).subscribe(() => {
             this.notify.success("Atsakymas sėkmingai įvertintas!", "Atlikta");

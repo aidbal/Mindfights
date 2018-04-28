@@ -38,7 +38,7 @@ export class QuestionCardComponent extends AppComponentBase implements OnInit {
         this.questionService.updateOrderNumber(this.question.id, newOrderNumber).subscribe(
             () => {
                 this.orderChangeObject.newOrderNumber = newOrderNumber;
-                abp.message.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
+                this.notify.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
                 this.notifyOrderChange.emit(this.orderChangeObject);
                 this.saving = false;
             });
@@ -52,7 +52,7 @@ export class QuestionCardComponent extends AppComponentBase implements OnInit {
             this.questionService.updateOrderNumber(this.question.id, newOrderNumber).subscribe(
                 () => {
                     this.orderChangeObject.newOrderNumber = newOrderNumber;
-                    abp.message.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
+                    this.notify.success("Eilės numeris sėkmingai atnaujintas!", "Atlikta");
                     this.notifyOrderChange.emit(this.orderChangeObject);
                     this.saving = false;
                 });

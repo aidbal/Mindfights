@@ -271,7 +271,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (currentMindfight.CreatorId != _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights"))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new UserFriendlyException("You are not creator of this mindfight!");
 
             currentMindfight.IsFinished = isFinished;
@@ -289,7 +289,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
+            if (!(currentMindfight.CreatorId != _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var evaluators = await _userManager.Users.IgnoreQueryFilters()

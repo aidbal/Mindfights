@@ -30,7 +30,7 @@ export class CreateTeamComponent extends AppComponentBase implements OnInit {
         this.saving = true;
         console.log(this.team);
         this.teamService.createTeam(this.team).subscribe(() => {
-            abp.message.success("Komanda sėkmingai sukurta!", "Atlikta");
+            this.notify.success("Komanda sėkmingai sukurta!", "Atlikta");
             this.router.navigate(['../'], { relativeTo: this.route });
             this.saving = false;
         });
