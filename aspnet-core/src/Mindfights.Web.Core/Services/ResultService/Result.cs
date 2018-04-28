@@ -21,6 +21,7 @@ namespace Mindfights.Services.ResultService
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<MindfightResult, long> _resultRepository;
         private readonly IRepository<Question, long> _questionRepository;
+        private readonly IRepository<Tour, long> _tourRepository;
         private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
         private readonly IRepository<Registration, long> _registrationRepository;
         private readonly IPermissionChecker _permissionChecker;
@@ -31,6 +32,7 @@ namespace Mindfights.Services.ResultService
             IRepository<Team, long> teamRepository,
             IRepository<MindfightResult, long> resultRepository,
             IRepository<Question, long> questionRepository,
+            IRepository<Tour, long> tourRepository,
             IRepository<TeamAnswer, long> teamAnswerRepository,
             IRepository<Registration, long> registrationRepository,
             IPermissionChecker permissionChecker,
@@ -40,13 +42,14 @@ namespace Mindfights.Services.ResultService
             _teamRepository = teamRepository;
             _resultRepository = resultRepository;
             _questionRepository = questionRepository;
+            _tourRepository = tourRepository;
             _teamAnswerRepository = teamAnswerRepository;
             _registrationRepository = registrationRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
 
-        public async Task CreateResult(long mindfightId, long tourId, long teamId)
+        public async Task UpdateResult(long mindfightId, long teamId)
         {
             var currentMindfight = await _mindfightRepository
                 .GetAll()
@@ -55,52 +58,83 @@ namespace Mindfights.Services.ResultService
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
+            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")))
+                  || _permissionChecker.IsGranted("ManageMindfights")))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions to create result!");
+            }
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
             if (currentMindfight.Registrations.Any(x => x.TeamId == teamId && x.IsConfirmed))
+            {
                 throw new UserFriendlyException("Team is not allowed to play this mindfight!");
+            }
 
             var teamRegistration = _registrationRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.TeamId == teamId && x.MindfightId == mindfightId);
 
             if (teamRegistration == null)
+            {
                 throw new UserFriendlyException("Team was not registered to play!");
+            }
 
             var teamResult = await _resultRepository
                 .GetAllIncluding(x => x.Team)
                 .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
 
-            if (teamResult != null)
-                throw new UserFriendlyException("Result was already created for this team!");
+            if (teamResult == null)
+            {
+                throw new UserFriendlyException("Team has not yet finished mindfight!");
+            }
+
+            var mindfightTours = await _tourRepository
+                .GetAll()
+                .Where(tour => tour.MindfightId == currentMindfight.Id)
+                .ToListAsync();
+
+            if (mindfightTours.Count <= 0)
+            {
+                throw new UserFriendlyException("Protmūšis neturi nei vieno turo!");
+            }
 
             var questions = await _questionRepository
                 .GetAll()
-                .Where(x => x.TourId == tourId)
+                .Where(question => mindfightTours.Any(tour => tour.Id == question.TourId))
                 .OrderByDescending(x => x.OrderNumber)
                 .ToListAsync();
+
+            if (questions.Count <= 0)
+            {
+                throw new UserFriendlyException("Protmūšis neturi nei vieno klausimo!");
+            }
 
             var teamAnswers = await _teamAnswerRepository
                 .GetAll()
                 .Where(x => questions.Any(y => y.Id == x.QuestionId))
                 .ToListAsync();
-
+            
             if (questions.Count != teamAnswers.Count)
+            {
                 throw new UserFriendlyException("Team has not yet finished mindfight!");
+            }
 
             if (teamAnswers.Any(x => !x.IsEvaluated))
+            {
                 throw new UserFriendlyException("Not all team answers has been evaluated!");
+            }
 
             var earnedPoints = teamAnswers.Sum(teamAnswer => teamAnswer.EarnedPoints);
 
@@ -111,7 +145,7 @@ namespace Mindfights.Services.ResultService
                 .ToListAsync();
 
             var mindfightResult = new MindfightResult(earnedPoints, true, currentTeam, currentMindfight);
-            _resultRepository.InsertOrUpdate(mindfightResult);
+            await _resultRepository.InsertOrUpdateAsync(mindfightResult);
 
             await UpdateMindfightPlaces(mindfightId);
 
@@ -166,14 +200,9 @@ namespace Mindfights.Services.ResultService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            var registeredTeams = await _registrationRepository
-                .GetAll()
-                .Where(x => x.MindfightId == mindfightId)
-                .ToListAsync();
-
             var registeredTeamResults = await _resultRepository
                 .GetAllIncluding(x => x.Team)
-                .Where(x => x.MindfightId == mindfightId && registeredTeams.Any(y => y.TeamId == x.TeamId))
+                .Where(x => x.MindfightId == mindfightId)
                 .ToListAsync();
 
             var teamResultsDto = new List<MindfightResultDto>();

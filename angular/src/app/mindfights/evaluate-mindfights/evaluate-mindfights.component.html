@@ -1,11 +1,8 @@
-<div class="col-md-12">
+<div class="col-md-12" *ngFor="let mindfight of mindfights">
     <div class="card" *ngIf="mindfight">
         <div class="header">
             <h2>
                 {{mindfight.title}}
-                <small class="event-description description">
-                        {{mindfight.description}}
-                </small>
             </h2>
             <ul class="header-dropdown m-r-0">
                 <li>
@@ -16,19 +13,10 @@
                 </li>
             </ul>
             <hr />
-            <app-register [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
             <div class="row display-flex align-vertical-center">
                 <div class="col-md-6">
-                    <small *ngIf="mindfight.registeredTeamsCount < mindfight.teamsLimit">
-                        {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo.
-                    </small>
-                    <small *ngIf="mindfight.teamsLimit > 0 && mindfight.registeredTeamsCount >= mindfight.teamsLimit">
-                        {{mindfight.registeredTeamsCount}} iš {{mindfight.teamsLimit}} užsiregistravo. Registracija baigta.
-                    </small>
-                    <small *ngIf="mindfight.teamsLimit <= 0">
-                        {{mindfight.registeredTeamsCount}} užsiregistravo. Registracija neribota.
-                        <br />
-                        <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
+                    <small *ngIf="mindfightResults">
+                        Įvertinta komandų {{evaluatedCount}} / {{mindfightResults.length}}
                     </small>
                 </div>
                 <div class="col-md-6">

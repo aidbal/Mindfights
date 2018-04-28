@@ -18,9 +18,7 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
     }
 
     ngOnInit() {
-        if (this.type === 'evaluating') {
-            this.getAllowedToEvaluateMindfights();
-        } else if (this.type === 'created') {
+        if (this.type === 'created') {
             this.getMyCreatedMindfights();
         } else if (this.type === 'upcoming') {
             this.getUpcomingMindfights();
@@ -33,11 +31,6 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
         });
     }
 
-    getAllowedToEvaluateMindfights(): void {
-        this.mindfightService.getAllowedToEvaluateMindfights().subscribe((result) => {
-            this.mindfights = result;
-        });
-    }
 
     getMyCreatedMindfights(): void {
         this.mindfightService.getMyCreatedMindfights().subscribe((result) => {

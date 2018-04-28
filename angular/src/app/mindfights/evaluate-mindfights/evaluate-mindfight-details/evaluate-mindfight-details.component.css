@@ -1,0 +1,20 @@
+.margin-bottom-medium {
+    margin-bottom: 20px;
+}
+
+.navigate-button {
+    background-color: white;
+    min-width: 150px;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.gray {
+    color: gray;
+}

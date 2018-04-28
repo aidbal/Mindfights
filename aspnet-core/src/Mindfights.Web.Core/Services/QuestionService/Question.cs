@@ -25,7 +25,7 @@ namespace Mindfights.Services.QuestionService
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
-        private const int BufferSeconds = 5;
+        private const int BufferSeconds = 2;
 
         public Question(
             IRepository<Models.Question, long> questionRepository, 
@@ -105,31 +105,6 @@ namespace Mindfights.Services.QuestionService
             return question;
         }
 
-        //public async Task<QuestionDto> GetQuestion(long tourId, int orderNumber)
-        //{            
-        //    var currentTour = await _tourRepository
-        //        .GetAll()
-        //        .Include(x => x.Mindfight)
-        //        .ThenInclude(x => x.Evaluators)
-        //        .FirstOrDefaultAsync(x => x.Id == tourId);
-
-        //    if (currentTour == null)
-        //        throw new UserFriendlyException("Tour with specified id does not exist!");
-
-        //    if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-        //        || _permissionChecker.IsGranted("ManageMindfights")
-        //        || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
-        //        throw new AbpAuthorizationException("Insufficient permissions to get this question!");
-
-        //    var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.OrderNumber == orderNumber && x.TourId == tourId);
-        //    if (currentQuestion == null)
-        //        throw new UserFriendlyException("Question with specified order number does not exist!");
-
-        //    var question = new QuestionDto();
-        //    currentQuestion.MapTo(question);
-        //    return question;
-        //}
-
         public async Task<QuestionDto> GetNextQuestion(long mindfightId, long teamId)
         {
             var currentMindfight = await _mindfightRepository
@@ -170,12 +145,10 @@ namespace Mindfights.Services.QuestionService
             }
 
             Models.Question currentQuestion;
-            var isFirstQuestion = false;
 
             if (teamMindfightState.CurrentQuestionId == null)
             {
                 currentQuestion = await GetFirstTourQuestion(teamMindfightState.CurrentTourId);
-                isFirstQuestion = true;
             }
             else
             {
@@ -191,7 +164,7 @@ namespace Mindfights.Services.QuestionService
             var nextQuestionOrderNumber = currentQuestion.OrderNumber;
 
             if ((Clock.Now - teamMindfightState.ChangeTime).TotalSeconds >
-                currentQuestion.TimeToAnswerInSeconds - BufferSeconds)
+                currentQuestion.TimeToAnswerInSeconds - BufferSeconds + currentTour.IntroTimeInSeconds)
             {
                 nextQuestionOrderNumber += 1;
             }
@@ -208,7 +181,7 @@ namespace Mindfights.Services.QuestionService
             }
 
             var questionToReturn = mindfightQuestions.First();
-            if (currentQuestion.OrderNumber != nextQuestionOrderNumber || isFirstQuestion)
+            if (currentQuestion.OrderNumber != nextQuestionOrderNumber)
             {
                 currentMindfight.MindfightStates.Remove(teamMindfightState);
                 teamMindfightState.CurrentQuestionId = questionToReturn.Id;

@@ -57,6 +57,12 @@ import { TeamComponent } from './team/team.component';
 import { CreateTeamComponent } from './team/create-team/create-team.component';
 import { EditTeamComponent } from './team/edit-team/edit-team.component';
 import { RegisterComponent } from './mindfights/register/register.component';
+import { PlayMindfightComponent } from './mindfights/play-mindfight/play-mindfight.component';
+import { MindfightResultComponent } from './mindfights/mindfight-result/mindfight-result.component';
+import { EvaluateMindfightsComponent } from 'app/mindfights/evaluate-mindfights/evaluate-mindfights.component';
+import { EvaluateMindfightDetailsComponent } from './mindfights/evaluate-mindfights/evaluate-mindfight-details/evaluate-mindfight-details.component';
+import { EvaluateTeamComponent } from './mindfights/evaluate-mindfights/evaluate-team/evaluate-team.component';
+import { EvaluateAnswerComponent } from './mindfights/evaluate-mindfights/evaluate-answer/evaluate-answer.component';
 
 @NgModule({
     declarations: [
@@ -98,7 +104,13 @@ import { RegisterComponent } from './mindfights/register/register.component';
         TeamComponent,
         CreateTeamComponent,
         EditTeamComponent,
-        RegisterComponent
+        RegisterComponent,
+        PlayMindfightComponent,
+        MindfightResultComponent,
+        EvaluateMindfightsComponent,
+        EvaluateMindfightDetailsComponent,
+        EvaluateTeamComponent,
+        EvaluateAnswerComponent
     
     ],
     imports: [

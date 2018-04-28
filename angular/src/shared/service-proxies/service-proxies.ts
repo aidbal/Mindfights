@@ -981,12 +981,12 @@ export class QuestionServiceProxy {
     /**
      * @return Success
      */
-    getNextQuestion(tourId: number, teamId: number): Observable<QuestionDto> {
+    getNextQuestion(mindfightId: number, teamId: number): Observable<QuestionDto> {
         let url_ = this.baseUrl + "/api/services/mindfights/Question/GetNextQuestion?";
-        if (tourId === undefined || tourId === null)
-            throw new Error("The parameter 'tourId' must be defined and cannot be null.");
+        if (mindfightId === undefined || mindfightId === null)
+            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
-            url_ += "tourId=" + encodeURIComponent("" + tourId) + "&"; 
+            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
         if (teamId === undefined || teamId === null)
             throw new Error("The parameter 'teamId' must be defined and cannot be null.");
         else
@@ -1629,16 +1629,12 @@ export class ResultServiceProxy {
     /**
      * @return Success
      */
-    createResult(mindfightId: number, tourId: number, teamId: number): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Result/CreateResult?";
+    updateResult(mindfightId: number, teamId: number): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Result/UpdateResult?";
         if (mindfightId === undefined || mindfightId === null)
             throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
             url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
-        if (tourId === undefined || tourId === null)
-            throw new Error("The parameter 'tourId' must be defined and cannot be null.");
-        else
-            url_ += "tourId=" + encodeURIComponent("" + tourId) + "&"; 
         if (teamId === undefined || teamId === null)
             throw new Error("The parameter 'teamId' must be defined and cannot be null.");
         else
@@ -1646,18 +1642,18 @@ export class ResultServiceProxy {
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
-            method: "post",
+            method: "put",
             headers: new Headers({
                 "Content-Type": "application/json", 
             })
         };
 
         return this.http.request(url_, options_).flatMap((response_ : any) => {
-            return this.processCreateResult(response_);
+            return this.processUpdateResult(response_);
         }).catch((response_: any) => {
             if (response_ instanceof Response) {
                 try {
-                    return this.processCreateResult(<any>response_);
+                    return this.processUpdateResult(<any>response_);
                 } catch (e) {
                     return <Observable<void>><any>Observable.throw(e);
                 }
@@ -1666,7 +1662,7 @@ export class ResultServiceProxy {
         });
     }
 
-    protected processCreateResult(response: Response): Observable<void> {
+    protected processUpdateResult(response: Response): Observable<void> {
         const status = response.status;
 
         let _headers: any = response.headers ? response.headers.toJSON() : {};
@@ -2818,24 +2814,21 @@ export class TeamAnswerServiceProxy {
     }
 
     /**
-     * @enteredAnswer (optional) 
+     * @teamAnswers (optional) 
      * @return Success
      */
-    createTeamAnswer(enteredAnswer: string, questionId: number, teamId: number): Observable<number> {
+    createTeamAnswer(teamAnswers: TeamAnswerDto[], mindfightId: number): Observable<number[]> {
         let url_ = this.baseUrl + "/api/services/mindfights/TeamAnswer/CreateTeamAnswer?";
-        if (enteredAnswer !== undefined)
-            url_ += "enteredAnswer=" + encodeURIComponent("" + enteredAnswer) + "&"; 
-        if (questionId === undefined || questionId === null)
-            throw new Error("The parameter 'questionId' must be defined and cannot be null.");
+        if (mindfightId === undefined || mindfightId === null)
+            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
-            url_ += "questionId=" + encodeURIComponent("" + questionId) + "&"; 
-        if (teamId === undefined || teamId === null)
-            throw new Error("The parameter 'teamId' must be defined and cannot be null.");
-        else
-            url_ += "teamId=" + encodeURIComponent("" + teamId) + "&"; 
+            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(teamAnswers);
+
         let options_ : any = {
+            body: content_,
             method: "post",
             headers: new Headers({
                 "Content-Type": "application/json", 
@@ -2850,14 +2843,14 @@ export class TeamAnswerServiceProxy {
                 try {
                     return this.processCreateTeamAnswer(<any>response_);
                 } catch (e) {
-                    return <Observable<number>><any>Observable.throw(e);
+                    return <Observable<number[]>><any>Observable.throw(e);
                 }
             } else
-                return <Observable<number>><any>Observable.throw(response_);
+                return <Observable<number[]>><any>Observable.throw(response_);
         });
     }
 
-    protected processCreateTeamAnswer(response: Response): Observable<number> {
+    protected processCreateTeamAnswer(response: Response): Observable<number[]> {
         const status = response.status;
 
         let _headers: any = response.headers ? response.headers.toJSON() : {};
@@ -2865,13 +2858,17 @@ export class TeamAnswerServiceProxy {
             const _responseText = response.text();
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(item);
+            }
             return Observable.of(result200);
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.text();
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Observable.of<number>(<any>null);
+        return Observable.of<number[]>(<any>null);
     }
 
     /**
@@ -2931,12 +2928,12 @@ export class TeamAnswerServiceProxy {
     /**
      * @return Success
      */
-    getAllTeamAnswers(tourId: number, teamId: number): Observable<TeamAnswerDto[]> {
+    getAllTeamAnswers(mindfightId: number, teamId: number): Observable<TeamAnswerDto[]> {
         let url_ = this.baseUrl + "/api/services/mindfights/TeamAnswer/GetAllTeamAnswers?";
-        if (tourId === undefined || tourId === null)
-            throw new Error("The parameter 'tourId' must be defined and cannot be null.");
+        if (mindfightId === undefined || mindfightId === null)
+            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
         else
-            url_ += "tourId=" + encodeURIComponent("" + tourId) + "&"; 
+            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
         if (teamId === undefined || teamId === null)
             throw new Error("The parameter 'teamId' must be defined and cannot be null.");
         else
@@ -5075,7 +5072,7 @@ export class MindfightResultDto implements IMindfightResultDto {
     earnedPoints: number;
     isEvaluated: boolean;
     creationTime: moment.Moment;
-    isWinner: boolean;
+    place: number;
 
     constructor(data?: IMindfightResultDto) {
         if (data) {
@@ -5099,7 +5096,7 @@ export class MindfightResultDto implements IMindfightResultDto {
             this.earnedPoints = data["earnedPoints"];
             this.isEvaluated = data["isEvaluated"];
             this.creationTime = data["creationTime"] ? moment(data["creationTime"].toString()) : <any>undefined;
-            this.isWinner = data["isWinner"];
+            this.place = data["place"];
         }
     }
 
@@ -5123,7 +5120,7 @@ export class MindfightResultDto implements IMindfightResultDto {
         data["earnedPoints"] = this.earnedPoints;
         data["isEvaluated"] = this.isEvaluated;
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["isWinner"] = this.isWinner;
+        data["place"] = this.place;
         return data; 
     }
 
@@ -5147,7 +5144,7 @@ export interface IMindfightResultDto {
     earnedPoints: number;
     isEvaluated: boolean;
     creationTime: moment.Moment;
-    isWinner: boolean;
+    place: number;
 }
 
 export class LeaderBoardDto implements ILeaderBoardDto {
@@ -5868,12 +5865,12 @@ export interface ITeamPlayerDto {
 
 export class TeamAnswerDto implements ITeamAnswerDto {
     enteredAnswer: string;
-    elapsedTimeInSeconds: number;
     earnedPoints: number;
     isEvaluated: boolean;
     isCurrentlyEvaluated: boolean;
     creationTime: moment.Moment;
     evaluatorComment: string;
+    questionTitle: string;
     teamId: number;
     questionId: number;
     userId: number;
@@ -5890,12 +5887,12 @@ export class TeamAnswerDto implements ITeamAnswerDto {
     init(data?: any) {
         if (data) {
             this.enteredAnswer = data["enteredAnswer"];
-            this.elapsedTimeInSeconds = data["elapsedTimeInSeconds"];
             this.earnedPoints = data["earnedPoints"];
             this.isEvaluated = data["isEvaluated"];
             this.isCurrentlyEvaluated = data["isCurrentlyEvaluated"];
             this.creationTime = data["creationTime"] ? moment(data["creationTime"].toString()) : <any>undefined;
             this.evaluatorComment = data["evaluatorComment"];
+            this.questionTitle = data["questionTitle"];
             this.teamId = data["teamId"];
             this.questionId = data["questionId"];
             this.userId = data["userId"];
@@ -5912,12 +5909,12 @@ export class TeamAnswerDto implements ITeamAnswerDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["enteredAnswer"] = this.enteredAnswer;
-        data["elapsedTimeInSeconds"] = this.elapsedTimeInSeconds;
         data["earnedPoints"] = this.earnedPoints;
         data["isEvaluated"] = this.isEvaluated;
         data["isCurrentlyEvaluated"] = this.isCurrentlyEvaluated;
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         data["evaluatorComment"] = this.evaluatorComment;
+        data["questionTitle"] = this.questionTitle;
         data["teamId"] = this.teamId;
         data["questionId"] = this.questionId;
         data["userId"] = this.userId;
@@ -5934,12 +5931,12 @@ export class TeamAnswerDto implements ITeamAnswerDto {
 
 export interface ITeamAnswerDto {
     enteredAnswer: string;
-    elapsedTimeInSeconds: number;
     earnedPoints: number;
     isEvaluated: boolean;
     isCurrentlyEvaluated: boolean;
     creationTime: moment.Moment;
     evaluatorComment: string;
+    questionTitle: string;
     teamId: number;
     questionId: number;
     userId: number;
@@ -6378,6 +6375,7 @@ export class TourDto implements ITourDto {
     title: string;
     description: string;
     timeToEnterAnswersInSeconds: number;
+    introTimeInSeconds: number;
     totalPoints: number;
     orderNumber: number;
     questionsCount: number;
@@ -6398,6 +6396,7 @@ export class TourDto implements ITourDto {
             this.title = data["title"];
             this.description = data["description"];
             this.timeToEnterAnswersInSeconds = data["timeToEnterAnswersInSeconds"];
+            this.introTimeInSeconds = data["introTimeInSeconds"];
             this.totalPoints = data["totalPoints"];
             this.orderNumber = data["orderNumber"];
             this.questionsCount = data["questionsCount"];
@@ -6418,6 +6417,7 @@ export class TourDto implements ITourDto {
         data["title"] = this.title;
         data["description"] = this.description;
         data["timeToEnterAnswersInSeconds"] = this.timeToEnterAnswersInSeconds;
+        data["introTimeInSeconds"] = this.introTimeInSeconds;
         data["totalPoints"] = this.totalPoints;
         data["orderNumber"] = this.orderNumber;
         data["questionsCount"] = this.questionsCount;
@@ -6438,6 +6438,7 @@ export interface ITourDto {
     title: string;
     description: string;
     timeToEnterAnswersInSeconds: number;
+    introTimeInSeconds: number;
     totalPoints: number;
     orderNumber: number;
     questionsCount: number;

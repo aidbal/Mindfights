@@ -1,0 +1,99 @@
+<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+        [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/']" title="Grįžti į turus">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Turai
+</button>
+<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+        [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + teamId]" title="Grįžti į turą">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
+</button>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">
+                    <span>Įvertinti atsakymą</span>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content">
+            <form *ngIf="teamAnswer && question" #evaluateAnswerForm="ngForm" novalidate (ngSubmit)="evaluateAnswer()">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <b>Klausimas: </b> {{question.title}}
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <b>Klausimo aprašymas: </b> {{question.description}}
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <b>Klausimo laikas: </b> {{question.timeToAnswerInSeconds}}
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <b>Klausimo taškai: </b> {{question.points}}
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <b>Komandos atsakymas: </b> {{teamAnswer.enteredAnswer}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="earnedPoints"
+                                           placeholder="Skiriamų taškų kiekis (maksimalus kiekis: {{question.points}})"
+                                           name="earnedPoints"
+                                           type="number" max="{{question.points}}" required>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="evaluatorComment"
+                                              placeholder="Komentaras"
+                                              name="Comment"
+                                              type="text"
+                                              minRows="5"
+                                              maxlength="2550">
+                                    </textarea>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gray">
+                                <p>
+                                    <!--Turo eilės numeris: <b>{{tour.orderNumber}}</b>-->
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="display-flex flex-end">
+                        <button [disabled]="!evaluateAnswerForm.form.valid || !evaluateAnswerForm.form.dirty || saving" type="submit" class="btn btn-primary green">
+                            Atnaujinti <i class="fa fa-check fa-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

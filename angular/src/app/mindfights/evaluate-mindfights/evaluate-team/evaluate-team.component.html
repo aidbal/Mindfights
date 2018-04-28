@@ -1,0 +1,56 @@
+<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+        [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details']" title="Komandų vertinimas">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Komandų vertinimas
+</button>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">
+                    <span>Įvertinti komandos atsakymus</span>
+                </h4>
+                <span *ngIf="mindfight">Protmūšis: <b>{{mindfight.title}}</b></span>
+                <br />
+                <span *ngIf="team">Komanda: <b>{{team.name}}</b></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div class="card" *ngIf="teamAnswers.length > 0">
+        <div class="header">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Įvertinta</th>
+                        <th>Klausimas</th>
+                        <th>Vertintojo komentaras</th>
+                        <th>Paskirti taškai</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let answer of teamAnswers; let i = index">
+                        <td>
+                            <input type="checkbox" id="isAnswerEvaluated{{i}}" disabled
+                                   [ngModel]="answer.isEvaluated">
+                            <label [attr.for]="'isAnswerEvaluated'+i" title="Įvertinimo statusas"></label>
+                        </td>
+                        <td>{{answer.questionTitle}}</td>
+                        <td>{{answer.evaluatorComment}}</td>
+                        <td>{{answer.earnedPoints}}</td>
+                        <td>
+                            <div class="display-flex flex-end">
+                                <button *ngIf="!answer.isEvaluated" type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                        [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/team/' + teamId + '/question/' + answer.questionId]">
+                                    <span>Įvertinti</span>
+                                    <i class="fa fa-arrow-circle-right"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+.display-flex {
+    display: flex;
+}
+
+.flex-center {
+    justify-content: center;
+}
+
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.navigate-button {
+    background-color: white;
+    min-width: 150px;
+}
+
+.margin-bottom-medium {
+    margin-bottom: 20px;
+}

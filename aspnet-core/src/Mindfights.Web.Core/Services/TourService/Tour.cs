@@ -24,7 +24,7 @@ namespace Mindfights.Services.TourService
         private readonly IRepository<Question, long> _questionRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
-        private const int BufferSeconds = 5;
+        private const int BufferSeconds = 2;
 
         public Tour(
             IRepository<Mindfight, long> mindfightRepository,
@@ -165,8 +165,9 @@ namespace Mindfights.Services.TourService
                 }
 
                 nextTourOrderNumber = currentTour.OrderNumber;
-                var questionsTotalTime = await GetTourQuestionsTotalTime(currentTour);
-                var tourTotalTime = questionsTotalTime + currentTour.TimeToEnterAnswersInSeconds;
+
+                var lastQuestionTime = await GetLastQuestionTime(currentTour);
+                var tourTotalTime = lastQuestionTime + currentTour.TimeToEnterAnswersInSeconds;
 
                 if ((Clock.Now - teamMindfightState.ChangeTime).TotalSeconds >
                     tourTotalTime - BufferSeconds)
@@ -200,6 +201,7 @@ namespace Mindfights.Services.TourService
             {
                 currentMindfight.MindfightStates.Remove(teamMindfightState);
                 teamMindfightState.CurrentTourId = tourToReturn.Id;
+                teamMindfightState.CurrentQuestionId = null;
                 teamMindfightState.ChangeTime = Clock.Now;
                 currentMindfight.MindfightStates.Add(teamMindfightState);
             }
@@ -208,7 +210,9 @@ namespace Mindfights.Services.TourService
             tourToReturn.MapTo(tourDto);
 
             if (mindfightTours.Count == 1)
+            {
                 tourDto.IsLastTour = true;
+            }
 
             return tourDto;
         }
@@ -370,20 +374,21 @@ namespace Mindfights.Services.TourService
             return mindfightTours.First();
         }
 
-        private async Task<int> GetTourQuestionsTotalTime(Models.Tour tour)
+        private async Task<int> GetLastQuestionTime(Models.Tour tour)
         {
-            var tourQuestions = await _questionRepository
+            var lastTourQuestion = await _questionRepository
                 .GetAll()
+                .OrderByDescending(question => question.OrderNumber)
                 .Where(question => question.TourId == tour.Id)
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
-            if (tourQuestions.Count < 1)
+            if (lastTourQuestion == null)
             {
                 throw new UserFriendlyException("Tour has no questions!");
             }
 
-            var totalTime = tourQuestions.Sum(question => question.TimeToAnswerInSeconds);
-            return totalTime;
+            var questionTime = lastTourQuestion.TimeToAnswerInSeconds;
+            return questionTime;
         }
     }
 }

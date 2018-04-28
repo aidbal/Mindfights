@@ -21,6 +21,7 @@ namespace Mindfights.Services.TeamAnswerService
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<Tour, long> _tourRepository;
+        private readonly IRepository<MindfightResult, long> _resultRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
@@ -30,6 +31,7 @@ namespace Mindfights.Services.TeamAnswerService
             IRepository<Mindfight, long> mindfightRepository,
             IRepository<Team, long> teamRepository,
             IRepository<Tour, long> tourRepository,
+            IRepository<MindfightResult, long> resultRepository,
             IPermissionChecker permissionChecker,
             UserManager userManager)
         {
@@ -38,34 +40,25 @@ namespace Mindfights.Services.TeamAnswerService
             _mindfightRepository = mindfightRepository;
             _teamRepository = teamRepository;
             _tourRepository = tourRepository;
+            _resultRepository = resultRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
 
-        public async Task<long> CreateTeamAnswer(string enteredAnswer, long questionId, long teamId)
+        public async Task<List<long>> CreateTeamAnswer(List<TeamAnswerDto> teamAnswers, long mindfightId)
         {
-            var currentQuestion = await _questionRepository
-                .FirstOrDefaultAsync(x => x.Id == questionId);
-
-            if (currentQuestion == null)
-                throw new UserFriendlyException("Question with specified id does not exist!");
-
-            var teamAnswer = await _teamAnswerRepository
-                .GetAll()
-                .Where(x => questionId == x.QuestionId)
-                .FirstOrDefaultAsync();
-
-            if (teamAnswer != null)
-                throw new UserFriendlyException("Team has already entered an answer to this question!");
-
+            var insertedTeamAnswerIds = new List<long>();
             var currentMindfight = await _mindfightRepository
                 .GetAll()
                 .Include(x => x.Registrations)
                 .ThenInclude(x => x.Team)
-                .FirstOrDefaultAsync(x => x.Id == currentQuestion.TourId);
+                .FirstOrDefaultAsync(x => x.Id == mindfightId);
+
 
             if (currentMindfight == null)
+            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
 
             var user = await _userManager.Users
                 .IgnoreQueryFilters()
@@ -73,23 +66,56 @@ namespace Mindfights.Services.TeamAnswerService
                 .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
 
             if (user == null)
+            {
                 throw new UserFriendlyException("User does not exist!");
+            }
 
             if (user.Team == null)
+            {
                 throw new UserFriendlyException("User does not have a team!");
+            }
 
             var currentTeam = await _teamRepository
                 .GetAll()
-                .FirstOrDefaultAsync(x => x.Id == teamId);
+                .FirstOrDefaultAsync(x => x.Id == user.Team.Id);
 
             if (currentTeam.LeaderId != _userManager.AbpSession.UserId)
+            {
                 throw new UserFriendlyException("User is not leader of the team!");
+            }
 
-            if (currentMindfight.Registrations.Any(x => x.TeamId != user.Team.Id && x.IsConfirmed))
+            if (!currentMindfight.Registrations.Any(x => x.TeamId == user.Team.Id && x.IsConfirmed))
+            {
                 throw new UserFriendlyException("User's team is not confirmed to play this mindfight!");
+            }
 
-            var teamAnswerToInsert = new Models.TeamAnswer(currentQuestion, user.Team, enteredAnswer, false);
-            return await _teamAnswerRepository.InsertAndGetIdAsync(teamAnswerToInsert);
+            foreach (var answer in teamAnswers)
+            {
+                var currentQuestion = await _questionRepository
+                    .FirstOrDefaultAsync(x => x.Id == answer.QuestionId);
+                if (currentQuestion == null) continue;
+
+                var teamAnswer = await _teamAnswerRepository
+                    .GetAll()
+                    .Where(x => answer.QuestionId == x.QuestionId)
+                    .FirstOrDefaultAsync();
+                if (teamAnswer != null) continue;
+
+                var teamAnswerToInsert = new Models.TeamAnswer(currentQuestion, user.Team, answer.EnteredAnswer, false);
+                var insertedTeamAnswerId = await _teamAnswerRepository.InsertAndGetIdAsync(teamAnswerToInsert);
+                insertedTeamAnswerIds.Add(insertedTeamAnswerId);
+            }
+
+            var currentMindfightResult = await _resultRepository
+                .FirstOrDefaultAsync(result => result.TeamId == currentTeam.Id && result.MindfightId == currentMindfight.Id);
+
+            if (currentMindfightResult == null)
+            {
+                var mindfightResult = new MindfightResult(0, false, currentTeam, currentMindfight);
+                await _resultRepository.InsertOrUpdateAsync(mindfightResult);
+            }
+
+            return insertedTeamAnswerIds;
         }
 
         public async Task<TeamAnswerDto> GetTeamAnswer(long questionId, long teamId)
@@ -136,42 +162,43 @@ namespace Mindfights.Services.TeamAnswerService
             return teamAnswerDto;
         }
 
-        public async Task<List<TeamAnswerDto>> GetAllTeamAnswers(long tourId, long teamId)
+        public async Task<List<TeamAnswerDto>> GetAllTeamAnswers(long mindfightId, long teamId)
         {
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
-            var currentTour = await _tourRepository
+            var currentMindfight = await _mindfightRepository
+                .FirstOrDefaultAsync(mindfight => mindfight.Id == mindfightId);
+
+            if (currentMindfight == null)
+            {
+                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
+
+            var currentTours = await _tourRepository
                 .GetAll()
                 .Include(x => x.Mindfight)
                 .ThenInclude(x => x.Evaluators)
-                .FirstOrDefaultAsync(x => x.Id == tourId);
-
-            if (currentTour == null)
-                throw new UserFriendlyException("Tour with specified id does not exist!");
-
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .Include(x => x.Team)
-                .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
+                .Where(tour => tour.MindfightId == mindfightId)
+                .ToListAsync();
 
             var currentQuestions = await _questionRepository
                 .GetAll()
-                .Where(x => x.TourId == tourId)
+                .Where(question => currentTours.Any(tour => question.TourId == tour.Id))
                 .ToListAsync();
 
-            if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")
-                || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)
-                || user.TeamId == teamId))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId
+                  || _permissionChecker.IsGranted("ManageMindfights")
+                  || currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
+            }
 
             var teamAnswers = await _teamAnswerRepository.GetAll()
                 .Where(x => currentQuestions.Any(y => y.Id == x.QuestionId) && x.TeamId == teamId)
@@ -227,7 +254,7 @@ namespace Mindfights.Services.TeamAnswerService
             await _teamAnswerRepository.UpdateAsync(teamAnswer);
         }
 
-        public async Task UpdateIsEvaluated(long questionId, long teamId, 
+        public async Task UpdateIsEvaluated(long questionId, long teamId,
             string evaluatorComment, int earnedPoints, bool isEvaluated)
         {
             var currentQuestion = await _questionRepository

@@ -23,6 +23,11 @@ import { EditQuestionComponent } from 'app/questions/edit-question/edit-question
 import { TeamComponent } from 'app/team/team.component';
 import { CreateTeamComponent } from 'app/team/create-team/create-team.component';
 import { EditTeamComponent } from 'app/team/edit-team/edit-team.component';
+import { PlayMindfightComponent } from 'app/mindfights/play-mindfight/play-mindfight.component';
+import { EvaluateMindfightsComponent } from 'app/mindfights/evaluate-mindfights/evaluate-mindfights.component';
+import { EvaluateMindfightDetailsComponent } from 'app/mindfights/evaluate-mindfights/evaluate-mindfight-details/evaluate-mindfight-details.component';
+import { EvaluateTeamComponent } from 'app/mindfights/evaluate-mindfights/evaluate-team/evaluate-team.component';
+import { EvaluateAnswerComponent } from 'app/mindfights/evaluate-mindfights/evaluate-answer/evaluate-answer.component';
 
 @NgModule({
     imports: [
@@ -34,7 +39,12 @@ import { EditTeamComponent } from 'app/team/edit-team/edit-team.component';
                     { path: 'home', component: HomeComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/create', component: CreateMindfightComponent },
                     { path: 'mindfights/administrate', component: AdministrateMindfightsComponent },
+                    { path: 'mindfights/evaluate', component: EvaluateMindfightsComponent },
+                    { path: 'mindfights/evaluate/:mindfightId/details', component: EvaluateMindfightDetailsComponent },
+                    { path: 'mindfights/evaluate/:mindfightId/team/:teamId', component: EvaluateTeamComponent },
+                    { path: 'mindfights/evaluate/:mindfightId/team/:teamId/question/:questionId', component: EvaluateAnswerComponent },
                     { path: 'mindfights/:mindfightId', component: MindfightDetailsComponent },
+                    { path: 'mindfights/:mindfightId/play', component: PlayMindfightComponent },
                     { path: 'mindfights/:mindfightId/edit', component: EditMindfightComponent },
                     { path: 'mindfights/:mindfightId/edit/tours', component: ToursComponent },
                     { path: 'mindfights/:mindfightId/edit/tours/create', component: CreateTourComponent },

@@ -1,3 +1,11 @@
 .description {
     white-space: pre-wrap;
 }
+
+.display-flex {
+    display: flex;
+}
+
+.align-vertical-center {
+    align-items: center;
+}
