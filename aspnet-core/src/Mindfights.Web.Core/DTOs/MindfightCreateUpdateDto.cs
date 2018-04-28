@@ -20,10 +20,7 @@ namespace Mindfights.DTOs
         public string Description { get; set; }
         [Required]
         public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public int? PrepareTime { get; set; }
-        [Required]
-        public int TotalTimeLimitInMinutes { get; set; }
+        public int PrepareTime { get; set; }
         [Required]
         public int TeamsLimit { get; set; }
         public List<long> UsersAllowedToEvaluateIds { get; set; }

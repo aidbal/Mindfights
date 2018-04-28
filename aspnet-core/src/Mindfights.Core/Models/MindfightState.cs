@@ -10,7 +10,6 @@ namespace Mindfights.Models
         public Mindfight Mindfight { get; set; }
         public long CurrentTourId { get; set; }
         public long? CurrentQuestionId { get; set; }
-        public bool IsCompleted { get; set; } = false;
         public DateTime ChangeTime { get; set; }
 
         public MindfightState(Mindfight mindfight, Team team)

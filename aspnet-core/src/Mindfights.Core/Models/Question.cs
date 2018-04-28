@@ -13,7 +13,6 @@ namespace Mindfights.Models
         public string Answer { get; set; }
         public int Points { get; set; }
         public int TimeToAnswerInSeconds { get; set; }
-        public string AttachmentLocation { get; set; }
         public int OrderNumber { get; set; }
         public long TourId { get; set; }
         public Tour Tour { get; set; }
@@ -23,7 +22,7 @@ namespace Mindfights.Models
         public ICollection<TeamAnswer> TeamAnswers { get; set; }
 
         public Question(Tour tour, string title, string description, string answer,
-            int timeToAnswerInSeconds, int points, int orderNumber, string attachmentLocation) : this()
+            int timeToAnswerInSeconds, int points, int orderNumber) : this()
         {
             TourId = tour.Id;
             Tour = tour;
@@ -33,7 +32,6 @@ namespace Mindfights.Models
             TimeToAnswerInSeconds = timeToAnswerInSeconds;
             Points = points;
             OrderNumber = orderNumber;
-            AttachmentLocation = attachmentLocation;
         }
 
         private Question()

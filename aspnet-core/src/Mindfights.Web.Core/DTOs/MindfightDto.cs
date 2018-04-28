@@ -20,13 +20,11 @@ namespace Mindfights.DTOs
         public string Description { get; set; }
         [Required]
         public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public int? PrepareTime { get; set; }
+        public bool IsFinished { get; set; }
+        public int PrepareTime { get; set; }
         public int? ToursCount { get; set; }
         public long? CreatorId { get; set; }
         public string CreatorEmail { get; set; }
-        [Required]
-        public int? TotalTimeLimitInMinutes { get; set; }
         [Required]
         public int TeamsLimit { get; set; }
         public int RegisteredTeamsCount { get; set; }

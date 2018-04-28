@@ -10,10 +10,9 @@ namespace Mindfights.Models
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public int TotalPoints { get; set; }
         public int OrderNumber { get; set; }
-        public int QuestionsCount { get; set; }
         public int TimeToEnterAnswersInSeconds { get; set; }
+
         public int IntroTimeInSeconds { get; set; }
         public long MindfightId { get; set; }
         public Mindfight Mindfight { get; set; }
@@ -21,7 +20,6 @@ namespace Mindfights.Models
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public ICollection<Question> Questions { get; set; }
-        public ICollection<TeamAnswer> TeamAnswers { get; set; }
 
         public Tour(Mindfight mindfight, string title, string description,
             int timeToEnterAnswersInSeconds, int introTimeInSeconds, int orderNumber) : this()
@@ -37,10 +35,7 @@ namespace Mindfights.Models
 
         private Tour()
         {
-            QuestionsCount = 0;
-            TotalPoints = 0;
             Questions = new List<Question>();
-            TeamAnswers = new List<TeamAnswer>();
             CreationTime = Clock.Now;
             IsActive = true;
         }

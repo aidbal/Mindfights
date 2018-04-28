@@ -11,7 +11,6 @@ namespace Mindfights.Models
         public string EnteredAnswer { get; set; }
         public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
-        public bool IsCurrentlyEvaluated { get; set; }
         public string EvaluatorComment { get; set; }
 
         public DateTime CreationTime { get; set; }
@@ -36,7 +35,6 @@ namespace Mindfights.Models
 
         private TeamAnswer()
         {
-            IsCurrentlyEvaluated = false;
             CreationTime = Clock.Now;
             EarnedPoints = 0;
         }

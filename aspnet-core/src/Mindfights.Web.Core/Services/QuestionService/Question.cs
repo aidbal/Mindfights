@@ -55,12 +55,16 @@ namespace Mindfights.Services.QuestionService
                 .FirstOrDefaultAsync(x => x.Id == tourId);
 
             if (currentTour == null)
+            {
                 throw new UserFriendlyException("Tour with specified id does not exist!");
-            
+            }
+
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")
-                || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+                  || _permissionChecker.IsGranted("ManageMindfights")
+                  || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions to get this question!");
+            }
 
             var questionsDto = new List<QuestionDto>();
             var questions = await _questionRepository
@@ -98,7 +102,9 @@ namespace Mindfights.Services.QuestionService
             if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")
                   || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions to get this question!");
+            }
 
             var question = new QuestionDto();
             currentQuestion.MapTo(question);
@@ -130,11 +136,6 @@ namespace Mindfights.Services.QuestionService
             if (teamMindfightState == null)
             {
                 throw new UserFriendlyException("Team must first start tour!");
-            }
-
-            if (teamMindfightState.IsCompleted)
-            {
-                throw new UserFriendlyException("This team has already finished mindfight!");
             }
 
             var currentTour = await _tourRepository
@@ -207,17 +208,19 @@ namespace Mindfights.Services.QuestionService
                 .Include(x => x.Mindfight)
                 .FirstOrDefaultAsync(x => x.Id == tourId);
             if (currentTour == null)
+            {
                 throw new UserFriendlyException("Tour with specified id does not exist!");
+            }
 
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")))
+                  || _permissionChecker.IsGranted("ManageMindfights")))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions to create question!");
+            }
 
             question.OrderNumber = await GetLastOrderNumber(tourId);
             question.OrderNumber = question.OrderNumber == 0 ? 1 : question.OrderNumber + 1;
-            currentTour.QuestionsCount += 1;
             var points = question.Points >= 1 ? question.Points : 1;
-            currentTour.TotalPoints += points;
 
             var questionToCreate = new Models.Question(
                 currentTour,
@@ -226,8 +229,7 @@ namespace Mindfights.Services.QuestionService
                 question.Answer,
                 question.TimeToAnswerInSeconds,
                 points,
-                question.OrderNumber, 
-                question.AttachmentLocation);
+                question.OrderNumber);
             return await _questionRepository.InsertAndGetIdAsync(questionToCreate);
         }
 
@@ -255,15 +257,6 @@ namespace Mindfights.Services.QuestionService
             {
                 throw new AbpAuthorizationException("Insufficient permissions to update question!");
             }
-            if (question.Points > 1)
-            {
-                currentTour.TotalPoints -= questionToUpdate.Points;
-                currentTour.TotalPoints += question.Points;
-            }
-            else
-            {
-                currentTour.TotalPoints -= questionToUpdate.Points;
-            }
             question.OrderNumber = questionToUpdate.OrderNumber;
             question.MapTo(questionToUpdate);
             questionToUpdate.Id = questionId;
@@ -287,12 +280,7 @@ namespace Mindfights.Services.QuestionService
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                 || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to delete question!");
-
-            currentTour.QuestionsCount -= 1;
-            if (questionToDelete.Points > 1)
-            {
-                currentTour.TotalPoints -= questionToDelete.Points;
-            }
+            
             var orderNumber = questionToDelete.OrderNumber;
             await UpdateOrderNumbers(orderNumber, questionToDelete.Id, currentTour.Id);
             await _questionRepository.DeleteAsync(questionToDelete);

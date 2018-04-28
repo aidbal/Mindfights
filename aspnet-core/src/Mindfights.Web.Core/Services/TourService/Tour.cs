@@ -152,11 +152,6 @@ namespace Mindfights.Services.TourService
             }
             else
             {
-                if (teamMindfightState.IsCompleted)
-                {
-                    throw new UserFriendlyException("This team has already finished mindfight!");
-                }
-
                 currentTour = await _tourRepository
                     .FirstOrDefaultAsync(tour => tour.Id == teamMindfightState.CurrentTourId);
                 if (currentTour == null)
@@ -235,7 +230,6 @@ namespace Mindfights.Services.TourService
 
             tour.OrderNumber = await GetLastOrderNumber(mindfightId);
             tour.OrderNumber = tour.OrderNumber == 0 ? 1 : tour.OrderNumber + 1;
-            currentMindfight.ToursCount += 1;
 
             var tourToCreate = new Models.Tour(
                 currentMindfight,
@@ -289,8 +283,7 @@ namespace Mindfights.Services.TourService
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId
                 || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("Insufficient permissions to delete tour!");
-
-            currentMindfight.ToursCount -= 1;
+            
             var orderNumber = tourToDelete.OrderNumber;
             await UpdateOrderNumbers(orderNumber, tourToDelete.Id, currentMindfight.Id);
             await _tourRepository.DeleteAsync(tourToDelete);

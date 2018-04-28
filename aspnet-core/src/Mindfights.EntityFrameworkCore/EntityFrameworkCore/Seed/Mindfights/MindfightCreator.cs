@@ -95,8 +95,6 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
                         "Demo description",
                         10,
                         Clock.Now,
-                        null,
-                        null,
                         20
                     );
 
@@ -125,7 +123,7 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
             var question = _context.Questions.IgnoreQueryFilters().FirstOrDefault(t => t.Title == "DemoQuestion");
             if (tour != null && question == null)
             {
-                question = new Question(tour, "DemoQuestion", "DemoDescription", "DemoAnswer", 10, 10, 1, null);
+                question = new Question(tour, "DemoQuestion", "DemoDescription", "DemoAnswer", 10, 10, 1);
 
                 _context.Questions.Add(question);
                 _context.SaveChanges();

@@ -56,15 +56,17 @@ namespace Mindfights.Services.TeamService
 
         public async Task<TeamDto> GetTeam(long teamId)
         {
-            var team = await _teamRepository.FirstOrDefaultAsync(x => x.Id == teamId);
-            if (team == null)
+            var currentTeam = await _teamRepository
+                .GetAllIncluding(team => team.Players)
+                .FirstOrDefaultAsync(x => x.Id == teamId);
+            if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 
             var teamDto = new TeamDto();
-            team.MapTo(teamDto);
-            var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == team.LeaderId);
+            currentTeam.MapTo(teamDto);
+            var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentTeam.LeaderId);
             teamDto.LeaderName = leader.Name;
-            teamDto.UsersCount = team.UsersCount;
+            teamDto.PlayersCount = currentTeam.Players.Count;
             return teamDto;
         }
 
@@ -96,7 +98,7 @@ namespace Mindfights.Services.TeamService
 
         public async Task DeleteTeam(long teamId)
         {
-            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 
@@ -131,7 +133,7 @@ namespace Mindfights.Services.TeamService
             if (currentUser.Team == null)
                 throw new UserFriendlyException("User is not in a team!");
 
-            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == currentUser.Team.Id);
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == currentUser.Team.Id);
             if (currentTeam == null)
                 throw new UserFriendlyException("User is in another team!");
 
@@ -148,7 +150,7 @@ namespace Mindfights.Services.TeamService
 
         public async Task InsertUser(long teamId, string username)
         {
-            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
             {
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
@@ -178,15 +180,14 @@ namespace Mindfights.Services.TeamService
                 throw new UserFriendlyException("User already has a team!");
             }
 
-            currentTeam.Users.Add(currentUser);
-            currentTeam.UsersCount += 1;
+            currentTeam.Players.Add(currentUser);
             currentUser.IsActiveInTeam = false;
             await _teamRepository.UpdateAsync(currentTeam);
         }
 
         public async Task RemoveUser(long teamId, long userId)
         {
-            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 
@@ -204,9 +205,8 @@ namespace Mindfights.Services.TeamService
             if (currentUser.Team == null)
                 throw new UserFriendlyException("User does not have any team!");
 
-            if (currentTeam.Users.Remove(currentUser))
+            if (currentTeam.Players.Remove(currentUser))
             {
-                currentTeam.UsersCount -= 1;
                 currentUser.IsActiveInTeam = false;
                 await _teamRepository.UpdateAsync(currentTeam);
             }
@@ -214,7 +214,7 @@ namespace Mindfights.Services.TeamService
 
         public async Task<List<TeamPlayerDto>> GetAllTeamPlayers(long teamId)
         {
-            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 
@@ -231,7 +231,7 @@ namespace Mindfights.Services.TeamService
 
         public async Task ChangeTeamLeader(long teamId, long newLeaderId)
         {
-            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Users).FirstOrDefaultAsync(x => x.Id == teamId);
+            var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
                 throw new UserFriendlyException("Specified team does not exist or is deleted!");
 

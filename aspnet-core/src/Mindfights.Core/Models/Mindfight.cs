@@ -12,17 +12,13 @@ namespace Mindfights.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public int? PrepareTime { get; set; }
-        public int ToursCount { get; set; }
-        public int TotalPoints { get; set; }
-        public int PlayersLimit { get; set; }
+        public int PrepareTime { get; set; }
+        public int TeamsLimit { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsConfirmed { get; set; }
         public bool IsFinished { get; set; }
-        public int TotalTimeLimitInMinutes { get; set; }
         public long CreatorId { get; set; }
         public User Creator { get; set; }
         public ICollection<MindfightEvaluator> Evaluators { get; set; }
@@ -30,17 +26,15 @@ namespace Mindfights.Models
         public ICollection<Tour> Tours { get; set; }
         public ICollection<MindfightState> MindfightStates { get; set; }
 
-        public Mindfight(User creator, string title, string description, int playersLimit, DateTime startTime,
-            DateTime? endTime, int? prepareTime, int totalTimeLimitInMinutes) : this()
+        public Mindfight(User creator, string title, string description, int teamsLimit, 
+            DateTime startTime, int prepareTime) : this()
         {
             Title = title;
             Description = description;
             CreatorId = creator.Id;
-            PlayersLimit = playersLimit;
+            TeamsLimit = teamsLimit;
             StartTime = startTime;
-            EndTime = endTime;
             PrepareTime = prepareTime;
-            TotalTimeLimitInMinutes = totalTimeLimitInMinutes;
         }
 
         private Mindfight()
@@ -50,8 +44,6 @@ namespace Mindfights.Models
             Registrations = new List<Registration>();
             MindfightStates = new List<MindfightState>();
             CreationTime = Clock.Now;
-            TotalPoints = 0;
-            ToursCount = 0;
             IsActive = true;
             IsConfirmed = false;
             IsFinished = false;

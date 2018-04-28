@@ -16,7 +16,7 @@ namespace Mindfights.DTOs
         public string Description { get; set; }
         public long LeaderId { get; set; }
         public string LeaderName { get; set; }
-        public int? UsersCount { get; set; }
+        public int? PlayersCount { get; set; }
         public int? GamePoints { get; set; }
     }
 }

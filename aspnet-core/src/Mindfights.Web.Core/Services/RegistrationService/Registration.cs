@@ -45,9 +45,6 @@ namespace Mindfights.Services.RegistrationService
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
 
-            //if (currentMindfight.StartTime < Clock.Now)
-                //throw new UserFriendlyException("Mindfight has already started!");
-
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);

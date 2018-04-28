@@ -126,7 +126,9 @@ namespace Mindfights.Services.TeamAnswerService
                 .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
 
             if (user == null)
+            {
                 throw new UserFriendlyException("User does not exist!");
+            }
 
             var currentQuestion = await _questionRepository
                 .GetAll()
@@ -136,29 +138,39 @@ namespace Mindfights.Services.TeamAnswerService
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)
+            {
                 throw new UserFriendlyException("Question with specified id does not exist!");
+            }
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
             if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")
-                || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)
-                || user.TeamId == teamId))
+                  || _permissionChecker.IsGranted("ManageMindfights")
+                  || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)
+                  || user.TeamId == teamId))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
+            }
 
-            var teamAnswer = await _teamAnswerRepository.GetAll()
+            var teamAnswer = await _teamAnswerRepository
+                .GetAllIncluding(answer => answer.Evaluator)
                 .FirstOrDefaultAsync(x => x.QuestionId == questionId && x.TeamId == teamId);
 
             if (teamAnswer == null)
+            {
                 throw new UserFriendlyException("Team answer does not exist!");
+            }
 
             var teamAnswerDto = new TeamAnswerDto();
             teamAnswer.MapTo(teamAnswerDto);
+            teamAnswerDto.Evaluator = teamAnswer.Evaluator.EmailAddress.ToLower();
             return teamAnswerDto;
         }
 
@@ -200,7 +212,8 @@ namespace Mindfights.Services.TeamAnswerService
                 throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
             }
 
-            var teamAnswers = await _teamAnswerRepository.GetAll()
+            var teamAnswers = await _teamAnswerRepository
+                .GetAllIncluding(answer => answer.Evaluator)
                 .Where(x => currentQuestions.Any(y => y.Id == x.QuestionId) && x.TeamId == teamId)
                 .ToListAsync();
 
@@ -209,49 +222,10 @@ namespace Mindfights.Services.TeamAnswerService
             {
                 var teamAnswerDto = new TeamAnswerDto();
                 teamAnswer.MapTo(teamAnswerDto);
+                teamAnswerDto.Evaluator = teamAnswer.Evaluator.EmailAddress.ToLower();
                 teamAnswersDto.Add(teamAnswerDto);
             }
             return teamAnswersDto;
-        }
-
-        public async Task UpdateIsCurrentlyEvaluated(long questionId, long teamId, bool isCurrentlyEvaluated)
-        {
-            var currentQuestion = await _questionRepository
-                .GetAll()
-                .Include(x => x.Tour)
-                .ThenInclude(x => x.Mindfight)
-                .FirstOrDefaultAsync(x => x.Id == questionId);
-            if (currentQuestion == null)
-                throw new UserFriendlyException("Question with specified id does not exist!");
-
-            var currentTeam = await _teamRepository
-                .GetAll()
-                .FirstOrDefaultAsync(x => x.Id == teamId);
-
-            if (currentTeam == null)
-                throw new UserFriendlyException("Team with specified id does not exist!");
-
-            var user = await _userManager.Users
-                .IgnoreQueryFilters()
-                .Include(x => x.Team)
-                .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
-
-            if (user == null)
-                throw new UserFriendlyException("User does not exist!");
-
-            var teamAnswer = await _teamAnswerRepository.GetAll()
-                .FirstOrDefaultAsync(x => x.QuestionId == questionId && x.TeamId == teamId);
-
-            if (teamAnswer == null)
-                throw new UserFriendlyException("Team answer does not exist!");
-
-            if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")
-                || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
-                throw new AbpAuthorizationException("Insufficient permissions!");
-
-            teamAnswer.IsCurrentlyEvaluated = isCurrentlyEvaluated;
-            await _teamAnswerRepository.UpdateAsync(teamAnswer);
         }
 
         public async Task UpdateIsEvaluated(long questionId, long teamId,
@@ -265,7 +239,9 @@ namespace Mindfights.Services.TeamAnswerService
                 .FirstOrDefaultAsync(x => x.Id == questionId);
 
             if (currentQuestion == null)
+            {
                 throw new UserFriendlyException("Question with specified id does not exist!");
+            }
 
             var evaluator = await _userManager.Users
                 .IgnoreQueryFilters()
@@ -273,26 +249,33 @@ namespace Mindfights.Services.TeamAnswerService
                 .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
 
             if (evaluator == null)
+            {
                 throw new UserFriendlyException("User does not exist!");
+            }
 
             if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
-                || _permissionChecker.IsGranted("ManageMindfights")
-                || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+                  || _permissionChecker.IsGranted("ManageMindfights")
+                  || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+            {
                 throw new AbpAuthorizationException("Insufficient permissions!");
+            }
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
             var teamAnswer = await _teamAnswerRepository.GetAll()
                 .FirstOrDefaultAsync(x => x.QuestionId == questionId && x.TeamId == teamId);
 
             if (teamAnswer == null)
+            {
                 throw new UserFriendlyException("Team answer does not exist!");
-
+            }
 
             teamAnswer.IsEvaluated = isEvaluated;
             teamAnswer.Evaluator = evaluator;

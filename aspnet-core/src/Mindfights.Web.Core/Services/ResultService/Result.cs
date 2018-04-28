@@ -77,7 +77,7 @@ namespace Mindfights.Services.ResultService
                 throw new UserFriendlyException("Team with specified id does not exist!");
             }
 
-            if (currentMindfight.Registrations.Any(x => x.TeamId == teamId && x.IsConfirmed))
+            if (!currentMindfight.Registrations.Any(x => x.TeamId == teamId && x.IsConfirmed))
             {
                 throw new UserFriendlyException("Team is not allowed to play this mindfight!");
             }
@@ -144,14 +144,28 @@ namespace Mindfights.Services.ResultService
                 .Where(u => u.TeamId == teamId)
                 .ToListAsync();
 
-            var mindfightResult = new MindfightResult(earnedPoints, true, currentTeam, currentMindfight);
-            await _resultRepository.InsertOrUpdateAsync(mindfightResult);
+            var currentResult = await _resultRepository
+                .FirstOrDefaultAsync(result => result.TeamId == currentTeam.Id && result.MindfightId == currentMindfight.Id);
+
+            if (currentResult != null)
+            {
+                currentResult.EarnedPoints = earnedPoints;
+                currentResult.Team = currentTeam;
+                currentResult.Mindfight = currentMindfight;
+                currentResult.IsEvaluated = true;
+            }
+            else
+            {
+                currentResult = new MindfightResult(earnedPoints, true, currentTeam, currentMindfight);
+            }
+            
+            await _resultRepository.InsertOrUpdateAsync(currentResult);
 
             await UpdateMindfightPlaces(mindfightId);
 
             foreach (var member in teamMembers)
             {
-                var userMindfightResult = new UserMindfightResult(member, mindfightResult);
+                var userMindfightResult = new UserMindfightResult(member, currentResult);
                 member.MindfightResults.Add(userMindfightResult);
             }
         }
@@ -159,35 +173,48 @@ namespace Mindfights.Services.ResultService
         public async Task<MindfightResultDto> GetMindfightTeamResult(long mindfightId, long teamId)
         {
             var currentMindfight = await _mindfightRepository
+                .GetAllIncluding(mindfight => mindfight.Tours)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
+            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
             var currentResult = await _resultRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
 
             if (currentResult == null)
+            {
                 throw new UserFriendlyException("Mindfight result for this team does not exist!");
+            }
+
+            var mindfightQuestions = await _questionRepository
+                .GetAllIncluding(question => question.Tour)
+                .Where(question => question.Tour.MindfightId == mindfightId)
+                .ToListAsync();
+
+            var totalPoints = mindfightQuestions.Sum(question => question.Points);
 
             var resultDto = new MindfightResultDto();
             currentResult.MapTo(resultDto);
-            resultDto.MindfightEndTime = currentMindfight.EndTime;
             resultDto.MindfightStartTime = currentMindfight.StartTime;
             resultDto.MindfightName = currentMindfight.Title;
             resultDto.MindfightId = mindfightId;
             resultDto.TeamId = teamId;
-            resultDto.ToursCount = currentMindfight.ToursCount;
+            resultDto.ToursCount = currentMindfight.Tours.Count;
             resultDto.TeamName = currentTeam.Name;
-            resultDto.TotalPoints = currentMindfight.TotalPoints;
+            resultDto.TotalPoints = totalPoints;
 
             return resultDto;
         }
@@ -195,10 +222,20 @@ namespace Mindfights.Services.ResultService
         public async Task<List<MindfightResultDto>> GetMindfightResults(long mindfightId)
         {
             var currentMindfight = await _mindfightRepository
+                .GetAllIncluding(mindfight => mindfight.Tours)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
+            {
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
+            }
+
+            var mindfightQuestions = await _questionRepository
+                .GetAllIncluding(question => question.Tour)
+                .Where(question => question.Tour.MindfightId == mindfightId)
+                .ToListAsync();
+
+            var totalPoints = mindfightQuestions.Sum(question => question.Points);
 
             var registeredTeamResults = await _resultRepository
                 .GetAllIncluding(x => x.Team)
@@ -211,16 +248,17 @@ namespace Mindfights.Services.ResultService
             {
                 var resultDto = new MindfightResultDto();
                 teamResult.MapTo(resultDto);
-                resultDto.MindfightEndTime = currentMindfight.EndTime;
                 resultDto.MindfightStartTime = currentMindfight.StartTime;
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = mindfightId;
                 resultDto.TeamId = teamResult.TeamId;
-                resultDto.ToursCount = currentMindfight.ToursCount;
+                resultDto.ToursCount = currentMindfight.Tours.Count;
                 resultDto.TeamName = teamResult.Team.Name;
-                resultDto.TotalPoints = currentMindfight.TotalPoints;
+                resultDto.TotalPoints = totalPoints;
                 teamResultsDto.Add(resultDto);
             }
+
+            teamResultsDto.Sort((x, y) => x.Place.CompareTo(y.Place));
 
             return teamResultsDto;
         }
@@ -232,7 +270,9 @@ namespace Mindfights.Services.ResultService
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Team with specified id does not exist!");
+            }
 
             var registeredTeamResults = await _resultRepository
                 .GetAllIncluding(x => x.Team)
@@ -244,20 +284,27 @@ namespace Mindfights.Services.ResultService
             foreach (var teamResult in registeredTeamResults)
             {
                 var currentMindfight = await _mindfightRepository
-                    .GetAll()
+                    .GetAllIncluding(mindfight => mindfight.Tours)
                     .FirstOrDefaultAsync(x => x.Id == teamResult.MindfightId);
 
                 if (currentMindfight == null) continue;
+
+                var mindfightQuestions = await _questionRepository
+                    .GetAllIncluding(question => question.Tour)
+                    .Where(question => question.Tour.MindfightId == currentMindfight.Id)
+                    .ToListAsync();
+
+                var totalPoints = mindfightQuestions.Sum(question => question.Points);
+
                 var resultDto = new MindfightResultDto();
                 teamResult.MapTo(resultDto);
-                resultDto.MindfightEndTime = currentMindfight.EndTime;
                 resultDto.MindfightStartTime = currentMindfight.StartTime;
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = currentMindfight.Id;
                 resultDto.TeamId = teamResult.TeamId;
-                resultDto.ToursCount = currentMindfight.ToursCount;
+                resultDto.ToursCount = currentMindfight.Tours.Count;
                 resultDto.TeamName = teamResult.Team.Name;
-                resultDto.TotalPoints = currentMindfight.TotalPoints;
+                resultDto.TotalPoints = totalPoints;
                 teamResultsDto.Add(resultDto);
             }
             return teamResultsDto;
