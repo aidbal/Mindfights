@@ -47,7 +47,7 @@
                 </div>
                 <div>
                     <p>
-                        Komandos narių kiekis: <b>{{team.usersCount}}</b>
+                        Komandos narių kiekis: <b>{{team.playersCount}}</b>
                     </p>
                 </div>
                 <table *ngIf="activeTeamPlayers" class="table table-hover">
@@ -131,3 +131,15 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card main-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">
+                    <span>Komandos protmūšių istorija</span>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+<app-mindfights-history *ngIf="team" [teamId]="team.id"></app-mindfights-history>

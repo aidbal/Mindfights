@@ -102,6 +102,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 if (result.isLastTour) {
                     this.currentTourIsLast = true;
                 }
+            },
+            () => {
+                this.notify.error("Gaunant sekantį turą!", "Klaida");
+                this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
         );
     }
@@ -125,6 +129,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 if (result.isLastQuestion) {
                     this.currentQuestionIsLast = true;
                 }
+            },
+            () => {
+                this.notify.error("Gaunant sekantį klausimą!", "Klaida");
+                this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
         );
     }
@@ -149,12 +157,18 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.playerService.getPlayerInfo(userId).subscribe((result) => {
             this.playerInfo = result;
             if (result.teamId !== null) {
-                this.getRegistration(result.teamId);
-                if (result.isTeamLeader) {
-                    this.isTeamLeader = true;
+                if (!result.isActiveInTeam) {
+                    this.notify.error("Jūs neaktyvus komandoje!", "Klaida");
+                    this.router.navigate(['../'], { relativeTo: this.activatedRoute });
+                } else {
+                    this.getRegistration(result.teamId);
+                    if (result.isTeamLeader) {
+                        this.isTeamLeader = true;
+                    }
                 }
             } else {
-                console.log("No team - redirecting");
+                this.notify.error("Jūs neturite komandos!", "Klaida");
+                this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
             console.log(result);
         });
@@ -254,6 +268,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 that.teamAnswerService.createTeamAnswer(that.teamAnswers, that.mindfightId).subscribe(
                     () => {
                         that.notify.success("Atsakymai išsaugoti sėkmingai!");
+                    },
+                    () => {
+                        that.notify.error("Klaida išsaugojant atsakymus!", "Klaida");
+                        that.router.navigate(['../'], { relativeTo: that.activatedRoute });
                     }
                 );
                 if (that.currentQuestionIsLast && that.currentTourIsLast) {

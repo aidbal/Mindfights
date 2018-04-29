@@ -59,7 +59,7 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
             const currentRegistrationIndex =
                 this.registrations.findIndex(registration => registration.teamId === that.playerInfo.teamId);
             if (currentRegistrationIndex >= 0) {
-                if (this.registrations[currentRegistrationIndex].isConfirmed) {
+                if (this.registrations[currentRegistrationIndex].isConfirmed && this.playerInfo.isActiveInTeam) {
                     this.showPlayButton = true;
                 }
             }
