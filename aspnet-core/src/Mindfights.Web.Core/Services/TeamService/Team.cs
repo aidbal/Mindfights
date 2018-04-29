@@ -67,6 +67,7 @@ namespace Mindfights.Services.TeamService
             var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentTeam.LeaderId);
             teamDto.LeaderName = leader.Name;
             teamDto.PlayersCount = currentTeam.Players.Count;
+            teamDto.GamePoints = currentTeam.Players.Sum(player => player.Points);
             return teamDto;
         }
 

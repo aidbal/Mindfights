@@ -1791,6 +1791,60 @@ export class ResultServiceProxy {
     /**
      * @return Success
      */
+    getUserResults(userId: number): Observable<MindfightResultDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Result/GetUserResults?";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetUserResults(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetUserResults(<any>response_);
+                } catch (e) {
+                    return <Observable<MindfightResultDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<MindfightResultDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetUserResults(response: Response): Observable<MindfightResultDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(MindfightResultDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<MindfightResultDto[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
     getMonthlyLeaderBoard(): Observable<LeaderBoardDto[]> {
         let url_ = this.baseUrl + "/api/services/mindfights/Result/GetMonthlyLeaderBoard";
         url_ = url_.replace(/[?&]$/, "");
@@ -4732,6 +4786,7 @@ export class PlayerDto implements IPlayerDto {
     teamId: number;
     teamName: string;
     isTeamLeader: boolean;
+    isActiveInTeam: boolean;
 
     constructor(data?: IPlayerDto) {
         if (data) {
@@ -4752,6 +4807,7 @@ export class PlayerDto implements IPlayerDto {
             this.teamId = data["teamId"];
             this.teamName = data["teamName"];
             this.isTeamLeader = data["isTeamLeader"];
+            this.isActiveInTeam = data["isActiveInTeam"];
         }
     }
 
@@ -4772,6 +4828,7 @@ export class PlayerDto implements IPlayerDto {
         data["teamId"] = this.teamId;
         data["teamName"] = this.teamName;
         data["isTeamLeader"] = this.isTeamLeader;
+        data["isActiveInTeam"] = this.isActiveInTeam;
         return data; 
     }
 
@@ -4792,6 +4849,7 @@ export interface IPlayerDto {
     teamId: number;
     teamName: string;
     isTeamLeader: boolean;
+    isActiveInTeam: boolean;
 }
 
 export class QuestionDto implements IQuestionDto {
@@ -4952,6 +5010,7 @@ export class MindfightResultDto implements IMindfightResultDto {
     isEvaluated: boolean;
     creationTime: moment.Moment;
     place: number;
+    isMindfightFinished: boolean;
 
     constructor(data?: IMindfightResultDto) {
         if (data) {
@@ -4975,6 +5034,7 @@ export class MindfightResultDto implements IMindfightResultDto {
             this.isEvaluated = data["isEvaluated"];
             this.creationTime = data["creationTime"] ? moment(data["creationTime"].toString()) : <any>undefined;
             this.place = data["place"];
+            this.isMindfightFinished = data["isMindfightFinished"];
         }
     }
 
@@ -4998,6 +5058,7 @@ export class MindfightResultDto implements IMindfightResultDto {
         data["isEvaluated"] = this.isEvaluated;
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         data["place"] = this.place;
+        data["isMindfightFinished"] = this.isMindfightFinished;
         return data; 
     }
 
@@ -5021,6 +5082,7 @@ export interface IMindfightResultDto {
     isEvaluated: boolean;
     creationTime: moment.Moment;
     place: number;
+    isMindfightFinished: boolean;
 }
 
 export class LeaderBoardDto implements ILeaderBoardDto {

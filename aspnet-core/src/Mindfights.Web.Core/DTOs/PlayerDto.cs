@@ -14,5 +14,6 @@ namespace Mindfights.DTOs
         public long? TeamId { get; set; }
         public string TeamName { get; set; }
         public bool IsTeamLeader { get; set; }
+        public bool IsActiveInTeam { get; set; }
     }
 }

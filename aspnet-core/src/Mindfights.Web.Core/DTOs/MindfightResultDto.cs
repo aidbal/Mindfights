@@ -18,5 +18,6 @@ namespace Mindfights.DTOs
         public bool IsEvaluated { get; set; }
         public DateTime CreationTime { get; set; }
         public int Place { get; set; }
+        public bool IsMindfightFinished { get; set; }
     }
 }

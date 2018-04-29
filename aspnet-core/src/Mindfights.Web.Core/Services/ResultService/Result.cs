@@ -138,7 +138,7 @@ namespace Mindfights.Services.ResultService
 
             var earnedPoints = teamAnswers.Sum(teamAnswer => teamAnswer.EarnedPoints);
 
-            var teamMembers = await _userManager.Users
+            var teamPlayers = await _userManager.Users
                 .IgnoreQueryFilters()
                 .Include(x => x.Team)
                 .Where(u => u.TeamId == teamId)
@@ -163,10 +163,11 @@ namespace Mindfights.Services.ResultService
 
             await UpdateMindfightPlaces(mindfightId);
 
-            foreach (var member in teamMembers)
+            foreach (var player in teamPlayers)
             {
-                var userMindfightResult = new UserMindfightResult(member, currentResult);
-                member.MindfightResults.Add(userMindfightResult);
+                var userMindfightResult = new UserMindfightResult(player, currentResult);
+                player.MindfightResults.Add(userMindfightResult);
+                player.Points += currentResult.EarnedPoints;
             }
         }
 
@@ -215,7 +216,7 @@ namespace Mindfights.Services.ResultService
             resultDto.ToursCount = currentMindfight.Tours.Count;
             resultDto.TeamName = currentTeam.Name;
             resultDto.TotalPoints = totalPoints;
-
+            resultDto.IsMindfightFinished = currentMindfight.IsFinished;
             return resultDto;
         }
 
@@ -255,6 +256,7 @@ namespace Mindfights.Services.ResultService
                 resultDto.ToursCount = currentMindfight.Tours.Count;
                 resultDto.TeamName = teamResult.Team.Name;
                 resultDto.TotalPoints = totalPoints;
+                resultDto.IsMindfightFinished = currentMindfight.IsFinished;
                 teamResultsDto.Add(resultDto);
             }
 
@@ -275,7 +277,8 @@ namespace Mindfights.Services.ResultService
             }
 
             var registeredTeamResults = await _resultRepository
-                .GetAllIncluding(x => x.Team)
+                .GetAllIncluding(result => result.Team, result => result.Mindfight)
+                .OrderByDescending(result => result.Mindfight.StartTime)
                 .Where(x => x.TeamId == teamId)
                 .ToListAsync();
 
@@ -305,9 +308,56 @@ namespace Mindfights.Services.ResultService
                 resultDto.ToursCount = currentMindfight.Tours.Count;
                 resultDto.TeamName = teamResult.Team.Name;
                 resultDto.TotalPoints = totalPoints;
+                resultDto.IsMindfightFinished = currentMindfight.IsFinished;
                 teamResultsDto.Add(resultDto);
             }
             return teamResultsDto;
+        }
+
+        public async Task<List<MindfightResultDto>> GetUserResults(long userId)
+        {
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                throw new UserFriendlyException("User does not exist!");
+            }
+
+            var mindfightResults = await _resultRepository
+                .GetAllIncluding(result => result.Team, result => result.Mindfight)
+                .OrderByDescending(result => result.Mindfight.StartTime)
+                .Where(x => x.Users.Any(player => player.UserId == userId))
+                .ToListAsync();
+
+            var resultsDto = new List<MindfightResultDto>();
+
+            foreach (var result in mindfightResults)
+            {
+                var currentMindfight = await _mindfightRepository
+                    .GetAllIncluding(mindfight => mindfight.Tours)
+                    .FirstOrDefaultAsync(x => x.Id == result.MindfightId);
+
+                if (currentMindfight == null) continue;
+
+                var mindfightQuestions = await _questionRepository
+                    .GetAllIncluding(question => question.Tour)
+                    .Where(question => question.Tour.MindfightId == currentMindfight.Id)
+                    .ToListAsync();
+
+                var totalPoints = mindfightQuestions.Sum(question => question.Points);
+
+                var resultDto = new MindfightResultDto();
+                result.MapTo(resultDto);
+                resultDto.MindfightStartTime = currentMindfight.StartTime;
+                resultDto.MindfightName = currentMindfight.Title;
+                resultDto.MindfightId = currentMindfight.Id;
+                resultDto.TeamId = result.TeamId;
+                resultDto.ToursCount = currentMindfight.Tours.Count;
+                resultDto.TeamName = result.Team.Name;
+                resultDto.TotalPoints = totalPoints;
+                resultDto.IsMindfightFinished = currentMindfight.IsFinished;
+                resultsDto.Add(resultDto);
+            }
+            return resultsDto;
         }
 
         public async Task<List<LeaderBoardDto>> GetMonthlyLeaderBoard()
