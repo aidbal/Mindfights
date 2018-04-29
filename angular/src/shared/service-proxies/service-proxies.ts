@@ -5749,6 +5749,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
     evaluator: string;
     teamId: number;
     questionId: number;
+    tourOrderNumber: number;
     userId: number;
 
     constructor(data?: ITeamAnswerDto) {
@@ -5771,6 +5772,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
             this.evaluator = data["evaluator"];
             this.teamId = data["teamId"];
             this.questionId = data["questionId"];
+            this.tourOrderNumber = data["tourOrderNumber"];
             this.userId = data["userId"];
         }
     }
@@ -5793,6 +5795,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
         data["evaluator"] = this.evaluator;
         data["teamId"] = this.teamId;
         data["questionId"] = this.questionId;
+        data["tourOrderNumber"] = this.tourOrderNumber;
         data["userId"] = this.userId;
         return data; 
     }
@@ -5815,6 +5818,7 @@ export interface ITeamAnswerDto {
     evaluator: string;
     teamId: number;
     questionId: number;
+    tourOrderNumber: number;
     userId: number;
 }
 
@@ -6252,6 +6256,7 @@ export class TourDto implements ITourDto {
     description: string;
     timeToEnterAnswersInSeconds: number;
     introTimeInSeconds: number;
+    questionsCount: number;
     totalPoints: number;
     orderNumber: number;
     isLastTour: boolean;
@@ -6272,6 +6277,7 @@ export class TourDto implements ITourDto {
             this.description = data["description"];
             this.timeToEnterAnswersInSeconds = data["timeToEnterAnswersInSeconds"];
             this.introTimeInSeconds = data["introTimeInSeconds"];
+            this.questionsCount = data["questionsCount"];
             this.totalPoints = data["totalPoints"];
             this.orderNumber = data["orderNumber"];
             this.isLastTour = data["isLastTour"];
@@ -6292,6 +6298,7 @@ export class TourDto implements ITourDto {
         data["description"] = this.description;
         data["timeToEnterAnswersInSeconds"] = this.timeToEnterAnswersInSeconds;
         data["introTimeInSeconds"] = this.introTimeInSeconds;
+        data["questionsCount"] = this.questionsCount;
         data["totalPoints"] = this.totalPoints;
         data["orderNumber"] = this.orderNumber;
         data["isLastTour"] = this.isLastTour;
@@ -6312,6 +6319,7 @@ export interface ITourDto {
     description: string;
     timeToEnterAnswersInSeconds: number;
     introTimeInSeconds: number;
+    questionsCount: number;
     totalPoints: number;
     orderNumber: number;
     isLastTour: boolean;

@@ -62,7 +62,7 @@ namespace Mindfights.Services.TourService
 
             var toursDto = new List<TourDto>();
             var tours = await _tourRepository
-                .GetAll()
+                .GetAllIncluding(tour => tour.Questions)
                 .Where(x => x.MindfightId == mindfightId)
                 .OrderBy(x => x.OrderNumber)
                 .ToListAsync();
@@ -71,6 +71,7 @@ namespace Mindfights.Services.TourService
             {
                 var tourDto = new TourDto();
                 tour.MapTo(tourDto);
+                tourDto.QuestionsCount = tour.Questions.Count;
                 toursDto.Add(tourDto);
             }
             if (toursDto.Count > 0)
@@ -100,9 +101,10 @@ namespace Mindfights.Services.TourService
                 || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
                 throw new AbpAuthorizationException("Insufficient permissions to get this tour!");
 
-            var tour = new TourDto();
-            currentTour.MapTo(tour);
-            return tour;
+            var tourDto = new TourDto();
+            currentTour.MapTo(tourDto);
+            tourDto.QuestionsCount = currentTour.Questions.Count;
+            return tourDto;
         }
 
         public async Task<TourDto> GetNextTour(long mindfightId, long teamId)
@@ -172,7 +174,7 @@ namespace Mindfights.Services.TourService
             }
 
             var mindfightTours = await _tourRepository
-                .GetAll()
+                .GetAllIncluding(tour => tour.Questions)
                 .OrderBy(x => x.OrderNumber)
                 .Where(x => x.MindfightId == mindfightId && x.OrderNumber >= nextTourOrderNumber)
                 .ToListAsync();
@@ -203,6 +205,7 @@ namespace Mindfights.Services.TourService
 
             var tourDto = new TourDto();
             tourToReturn.MapTo(tourDto);
+            tourDto.QuestionsCount = tourToReturn.Questions.Count;
 
             if (mindfightTours.Count == 1)
             {

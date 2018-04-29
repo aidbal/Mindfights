@@ -112,6 +112,7 @@ namespace Mindfights.Services.RegistrationService
 
             return currentRegistrations.Select(registration => new RegistrationDto
                 {
+                    Id = registration.Id,
                     MindfightId = registration.MindfightId,
                     CreationTime = registration.CreationTime,
                     MindfightName = registration.Mindfight.Title,

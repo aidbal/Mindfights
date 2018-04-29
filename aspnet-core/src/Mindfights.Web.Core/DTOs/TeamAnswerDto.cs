@@ -1,14 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Abp.AutoMapper;
+﻿using Abp.AutoMapper;
 using Mindfights.Models;
+using System;
 
 namespace Mindfights.DTOs
 {
     [AutoMapFrom(typeof(TeamAnswer))]
     public class TeamAnswerDto
     {
-        [Required]
         public string EnteredAnswer { get; set; }
         public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
@@ -18,6 +16,7 @@ namespace Mindfights.DTOs
         public string Evaluator { get; set; }
         public long TeamId { get; set; }
         public long QuestionId { get; set; }
+        public int TourOrderNumber { get; set; }
         public long UserId { get; set; }
     }
 }

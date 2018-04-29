@@ -160,7 +160,10 @@ namespace Mindfights.Services.TeamAnswerService
             }
 
             var teamAnswer = await _teamAnswerRepository
-                .GetAllIncluding(answer => answer.Evaluator)
+                .GetAll()
+                .Include(answer => answer.Evaluator)
+                .Include(answer => answer.Question)
+                .ThenInclude(question => question.Tour)
                 .FirstOrDefaultAsync(x => x.QuestionId == questionId && x.TeamId == teamId);
 
             if (teamAnswer == null)
@@ -170,12 +173,23 @@ namespace Mindfights.Services.TeamAnswerService
 
             var teamAnswerDto = new TeamAnswerDto();
             teamAnswer.MapTo(teamAnswerDto);
-            teamAnswerDto.Evaluator = teamAnswer.Evaluator.EmailAddress.ToLower();
+            teamAnswerDto.Evaluator = teamAnswer.Evaluator?.EmailAddress.ToLower();
+            teamAnswerDto.TourOrderNumber = teamAnswer.Question.Tour.OrderNumber;
             return teamAnswerDto;
         }
 
         public async Task<List<TeamAnswerDto>> GetAllTeamAnswers(long mindfightId, long teamId)
         {
+            var user = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Include(x => x.Team)
+                .FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
+
+            if (user == null)
+            {
+                throw new UserFriendlyException("User does not exist!");
+            }
+
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
@@ -205,15 +219,22 @@ namespace Mindfights.Services.TeamAnswerService
                 .Where(question => currentTours.Any(tour => question.TourId == tour.Id))
                 .ToListAsync();
 
-            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId
+            if (!(
+                currentMindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")
-                  || currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
+                  || currentMindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)
+                  || user.TeamId == teamId
+                  ))
             {
                 throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
             }
 
             var teamAnswers = await _teamAnswerRepository
-                .GetAllIncluding(answer => answer.Evaluator)
+                .GetAll()
+                .Include(answer => answer.Evaluator)
+                .Include(answer => answer.Question)
+                .ThenInclude(question => question.Tour)
+                .OrderBy(answer => answer.Question.Tour.OrderNumber)
                 .Where(x => currentQuestions.Any(y => y.Id == x.QuestionId) && x.TeamId == teamId)
                 .ToListAsync();
 
@@ -222,7 +243,8 @@ namespace Mindfights.Services.TeamAnswerService
             {
                 var teamAnswerDto = new TeamAnswerDto();
                 teamAnswer.MapTo(teamAnswerDto);
-                teamAnswerDto.Evaluator = teamAnswer.Evaluator.EmailAddress.ToLower();
+                teamAnswerDto.Evaluator = teamAnswer.Evaluator?.EmailAddress.ToLower();
+                teamAnswerDto.TourOrderNumber = teamAnswer.Question.Tour.OrderNumber;
                 teamAnswersDto.Add(teamAnswerDto);
             }
             return teamAnswersDto;

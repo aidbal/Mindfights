@@ -10,6 +10,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.Timing;
 
 namespace Mindfights.Services.MindfightService
 {
@@ -100,7 +101,7 @@ namespace Mindfights.Services.MindfightService
                 throw new UserFriendlyException("Mindfight with the same title already exists!");
             }
 
-            var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.TeamsLimit, 
+            var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.TeamsLimit,
                 mindfight.StartTime, mindfight.PrepareTime);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
         }
@@ -172,8 +173,10 @@ namespace Mindfights.Services.MindfightService
                 throw new UserFriendlyException("There was a problem getting current user!");
             }
             var mindfights = await _mindfightRepository
-                .GetAllIncluding(x => x.Registrations)
+                .GetAllIncluding(mindfight => mindfight.Registrations)
+                .OrderBy(mindfight => mindfight.StartTime)
                 .Where(x => x.CreatorId == user.Id).ToListAsync();
+
             var mindfightsDto = new List<MindfightDto>();
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
@@ -194,8 +197,10 @@ namespace Mindfights.Services.MindfightService
             }
 
             var mindfights = await _mindfightRepository
-                .GetAllIncluding(x => x.Registrations, x => x.Evaluators)
+                .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Evaluators)
+                .OrderBy(mindfight => mindfight.StartTime)
                 .Where(x => x.Evaluators.Any(y => y.UserId == user.Id) && x.CreatorId != user.Id).ToListAsync();
+
             var mindfightsDto = new List<MindfightDto>();
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
@@ -210,8 +215,16 @@ namespace Mindfights.Services.MindfightService
         public async Task<List<MindfightPublicDto>> GetUpcomingMindfights()
         {
             var mindfights = await _mindfightRepository
-                .GetAllIncluding(x => x.Registrations)
-                .Where(x => x.IsActive && x.IsConfirmed && !x.IsFinished).ToListAsync();
+                .GetAllIncluding(mindfight => mindfight.Registrations)
+                .OrderBy(mindfight => mindfight.StartTime)
+                .Where(
+                    mindfight =>
+                        mindfight.IsActive
+                        && mindfight.IsConfirmed
+                        && !mindfight.IsFinished
+                        && mindfight.StartTime > Clock.Now.AddHours(-1))
+                .ToListAsync();
+
             var mindfightsDto = new List<MindfightPublicDto>();
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
