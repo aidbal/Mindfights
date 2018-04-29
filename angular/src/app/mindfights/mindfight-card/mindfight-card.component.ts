@@ -18,6 +18,7 @@ export class MindfightCardComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
+        console.log(this.mindfight);
         this.canEditMindfight();
         this.canEvaluateMindfight();
     }
@@ -41,15 +42,18 @@ export class MindfightCardComponent extends AppComponentBase implements OnInit {
     }
 
     canEvaluateMindfight() {
+        var that = this;
         if (this.canEditMindfight()) {
             this.canEvaluate = true;
         } else {
-            this.mindfight.usersAllowedToEvaluate.forEach((userEmail) => {
-                if (userEmail.toUpperCase() === this.playerInfo.emailAddress.toUpperCase()) {
-                    this.canEvaluate = true;
-                    return false;
-                }
-            });
+            if (this.mindfight.usersAllowedToEvaluate) {
+                this.mindfight.usersAllowedToEvaluate.forEach((userEmail) => {
+                    if (userEmail.toUpperCase() === that.playerInfo.emailAddress.toUpperCase()) {
+                        that.canEvaluate = true;
+                        return false;
+                    }
+                });
+            }
         }
     }
 }

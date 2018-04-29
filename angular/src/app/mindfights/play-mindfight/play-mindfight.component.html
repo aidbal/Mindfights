@@ -1,118 +1,171 @@
-<button type="button" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        (click)="goBack()" title="Grįžti į ankstesnį puslapį">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Grįžti
-</button>
-<div class="row display-flex flex-end">
-    <div class="col-xs-3">
-        <div class="card main-content">
-            <div class="modal-header">
-                <h4 class="modal-title">
-                    <span>
-                        Liko laiko:
-                        <b *ngIf="secondsLeftToStartMindfight > 0">{{timeLeftToStartMindfight}}</b>
-                        <b *ngIf="secondsLeftToStartTour > 0">{{timeLeftToStartTour}}</b>
-                        <b *ngIf="secondsLeftToStartQuestion > 0">{{timeLeftToStartQuestion}}</b>
-                        <b *ngIf="secondsLeftToEnterAnswers > 0">{{timeLeftToEnterAnswers}}</b>
-                    </span>
-                </h4>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title">
-                    <span *ngIf="secondsLeftToStartMindfight > 0">Protmūšis</span>
-                    <span *ngIf="currentTour && (showTourLabel || currentQuestion && showQuestionLabel)"><b>{{currentTour.orderNumber}}</b> turas</span>
-                    <br />
-                    <span *ngIf="currentQuestion && showQuestionLabel"><b>{{currentQuestion.orderNumber}}</b> klausimas</span>
-                    <span *ngIf="showAnswersLabel"><b>Atsakymų suvedimas</b></span>
-                </h4>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row clearfix" *ngIf="secondsLeftToStartMindfight > 0">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card" *ngIf="mindfight">
-            <div class="header">
-                <div>
-                    <div class="col-md-6">
-                        <h2>{{mindfight.title}}</h2>
-                    </div>
-                    <div class="col-md-6 display-flex flex-end">
-                        <h2>
-                            <span>
-                                <i class="fa fa-calendar"></i> <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span>
-                                <br />
-                                <small>Pasiruošimo laikas: {{mindfight.prepareTime}} min.</small>
-                            </span>
-                        </h2>
-                    </div>
+<div *ngIf="mindfight">
+    <div class="row display-flex flex-end">
+        <div class="col-xs-3">
+            <div class="card margin-bottom-small">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span>
+                            Liko laiko:
+                            <b *ngIf="secondsLeftToStartMindfight > 0">{{timeLeftToStartMindfight}}</b>
+                            <b *ngIf="secondsLeftToStartTour > 0">{{timeLeftToStartTour}}</b>
+                            <b *ngIf="secondsLeftToStartQuestion > 0">{{timeLeftToStartQuestion}}</b>
+                            <b *ngIf="secondsLeftToEnterAnswers > 0">{{timeLeftToEnterAnswers}}</b>
+                        </span>
+                    </h4>
                 </div>
             </div>
-            <div class="body">
-                <br />
-                <div class="modal-body text-center">
-                    <div>
-                        <span>Iki protmūšio pradžios liko: <b>{{ timeLeftToStartMindfight }}</b></span>
+        </div>
+    </div>
+    <div class="row display-flex flex-end" *ngIf="mindfight">
+        <div class="col-xs-3">
+            <div class="card margin-bottom-small">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="currentTour && secondsLeftToStartMindfight <= 0">
+                            Turas: <b>{{currentTour.orderNumber}} / {{mindfight.toursCount}}</b>
+                        </span>
+                        <span *ngIf="secondsLeftToStartMindfight > 0">
+                            Turų kiekis: <b>{{mindfight.toursCount}}</b>
+                        </span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row display-flex flex-end" *ngIf="mindfight && currentTour && secondsLeftToStartMindfight <= 0">
+        <div class="col-xs-3">
+            <div class="card margin-bottom-small">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span *ngIf="secondsLeftToStartTour > 0">
+                            Klausimų kiekis: <b>{{currentTour.questionsCount}}</b>
+                        </span>
+                        <span *ngIf="currentQuestion && secondsLeftToStartTour <= 0">
+                            Klausimas: <b>{{currentQuestion.orderNumber}} / {{currentTour.questionsCount}}</b>
+                        </span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span *ngIf="secondsLeftToStartMindfight > 0">Protmūšis</span>
+                        <span *ngIf="currentTour && (showTourLabel || currentQuestion && showQuestionLabel)"><b>{{currentTour.orderNumber}}</b> turas</span>
                         <br />
-                        <span><small>Protmūšis prasidės automatiškai</small></span>
-                    </div>
+                        <span *ngIf="currentQuestion && showQuestionLabel"><b>{{currentQuestion.orderNumber}}</b> klausimas</span>
+                        <span *ngIf="showAnswersLabel"><b>Atsakymų suvedimas</b></span>
+                    </h4>
                 </div>
-                <hr />
             </div>
         </div>
     </div>
-</div>
-<div class="row clearfix" *ngIf="currentTour && showTourLabel">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="header">
-                <div>
-                    <div class="display-flex flex-center">
-                        <h2>{{currentTour.title}}</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="body">
-                <br />
-                <div class="modal-body text-center">
-                    <div class="display-flex flex-center">
-                        <p>{{currentTour.description}}</p>
-                    </div>
-                </div>
-                <div>
-                    <p>Klausimų kiekis: <b>{{currentTour.questionsCount}}</b></p>
-                </div>
-                <hr />
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row clearfix">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="modal-body">
-                <div class="row" *ngFor="let teamAnswer of teamAnswers; let i = index">
-                    <div class="col-sm-12">
-                        Klausimas
-                        <br/>
-                        <b>{{i+1}}</b>. {{teamAnswer.questionTitle}}
-                        <div class="form-group">
-                            <mat-form-field>
-                                <input matInput class="form-control" [(ngModel)]="teamAnswer.enteredAnswer"
-                                       placeholder="Atsakymas"
-                                       name="Answer"
-                                       type="text"
-                                       maxlength="1024" minlength="2">
-                            </mat-form-field>
+    <div class="row clearfix" *ngIf="secondsLeftToStartMindfight > 0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card" *ngIf="mindfight">
+                <div class="header">
+                    <div>
+                        <div class="col-md-6">
+                            <h2>{{mindfight.title}}</h2>
+                        </div>
+                        <div class="col-md-6 display-flex flex-end">
+                            <h2>
+                                <span>
+                                    <i class="fa fa-calendar"></i> <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span>
+                                    <br />
+                                    <small>Pasiruošimo laikas: {{mindfight.prepareTime}} min.</small>
+                                </span>
+                            </h2>
                         </div>
                     </div>
                 </div>
-                <div class="row display-flex flex-center"><small>Atsakymai bus išsaugoti automatiškai</small></div>
+                <div class="body">
+                    <br />
+                    <div class="modal-body text-center">
+                        <div>
+                            <span>Iki protmūšio pradžios liko: <b>{{ timeLeftToStartMindfight }}</b></span>
+                            <br />
+                            <span><small>Protmūšis prasidės automatiškai</small></span>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix" *ngIf="currentTour && showTourLabel">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <div>
+                        <div class="display-flex flex-center">
+                            <h2>{{currentTour.title}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <br />
+                    <div class="modal-body text-center">
+                        <div class="display-flex flex-center">
+                            <p>{{currentTour.description}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>Klausimų kiekis: <b>{{currentTour.questionsCount}}</b></p>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix" *ngIf="currentQuestion && showQuestionLabel">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="header">
+                    <div>
+                        <div class="display-flex flex-center">
+                            <h2>{{currentQuestion.title}}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="body">
+                    <div class="modal-body text-center">
+                        <div class="display-flex flex-center">
+                            <p>{{currentQuestion.description}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix" *ngIf="showAnswersLabel">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="modal-body" *ngIf="isTeamLeader">
+                    <div class="row" *ngFor="let teamAnswer of teamAnswers; let i = index">
+                        <div class="col-sm-12">
+                            Klausimas
+                            <br />
+                            <b>{{i+1}}</b>. {{teamAnswer.questionTitle}}
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="teamAnswer.enteredAnswer"
+                                           placeholder="Atsakymas"
+                                           name="Answer"
+                                           type="text"
+                                           maxlength="1024" minlength="2">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row display-flex flex-center"><small>Atsakymai bus išsaugoti automatiškai</small></div>
+                </div>
+                <div class="modal-body" *ngIf="!isTeamLeader">
+                    <div class="row display-flex flex-center"><small>Tik komandos kapitonas gali įvesti atsakymus!</small></div>
+                </div>
             </div>
         </div>
     </div>

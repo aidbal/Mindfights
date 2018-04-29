@@ -104,8 +104,7 @@
                     <button (click)="deleteMindfight()" class="btn btn-danger left-align">
                         Ištrinti <i class="fa fa-times fa-xs"></i>
                     </button>
-                    <button (click)="goBack()" class="btn"><i class="fa fa-arrow-circle-left fa-xs"></i> Atšaukti</button>
-                    <button [disabled]="!editMindfightForm.form.dirty || !editMindfightForm.form.valid || saving" (click)="updateMindfight()" class="btn btn-primary green">
+                    <button [disabled]="!editMindfightForm.form.valid || saving" (click)="updateMindfight()" class="btn btn-primary green">
                         Išsaugoti <i class="fa fa-check fa-xs"></i>
                     </button>
                 </div>

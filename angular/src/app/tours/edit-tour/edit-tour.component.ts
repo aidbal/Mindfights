@@ -48,7 +48,7 @@ export class EditTourComponent extends AppComponentBase implements OnInit {
         this.saving = true;
         this.tourService.updateTour(this.tour, this.tourId).subscribe(() => {
             this.notify.success("Turas sėkmingai atnaujintas!", "Atlikta");
-            //this.router.navigate(['../'], { relativeTo: this.route });
+            this.router.navigate(['../'], { relativeTo: this.route });
             this.saving = false;
         });
     }

@@ -63,6 +63,7 @@ import { EvaluateMindfightsComponent } from 'app/mindfights/evaluate-mindfights/
 import { EvaluateMindfightDetailsComponent } from './mindfights/evaluate-mindfights/evaluate-mindfight-details/evaluate-mindfight-details.component';
 import { EvaluateTeamComponent } from './mindfights/evaluate-mindfights/evaluate-team/evaluate-team.component';
 import { EvaluateAnswerComponent } from './mindfights/evaluate-mindfights/evaluate-answer/evaluate-answer.component';
+import { TeamAnswersComponent } from './mindfights/mindfight-result/team-answers/team-answers.component';
 
 @NgModule({
     declarations: [
@@ -110,7 +111,8 @@ import { EvaluateAnswerComponent } from './mindfights/evaluate-mindfights/evalua
         EvaluateMindfightsComponent,
         EvaluateMindfightDetailsComponent,
         EvaluateTeamComponent,
-        EvaluateAnswerComponent
+        EvaluateAnswerComponent,
+        TeamAnswersComponent
     
     ],
     imports: [

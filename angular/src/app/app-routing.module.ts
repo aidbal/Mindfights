@@ -28,6 +28,8 @@ import { EvaluateMindfightsComponent } from 'app/mindfights/evaluate-mindfights/
 import { EvaluateMindfightDetailsComponent } from 'app/mindfights/evaluate-mindfights/evaluate-mindfight-details/evaluate-mindfight-details.component';
 import { EvaluateTeamComponent } from 'app/mindfights/evaluate-mindfights/evaluate-team/evaluate-team.component';
 import { EvaluateAnswerComponent } from 'app/mindfights/evaluate-mindfights/evaluate-answer/evaluate-answer.component';
+import { MindfightResultComponent } from 'app/mindfights/mindfight-result/mindfight-result.component';
+import { TeamAnswersComponent } from 'app/mindfights/mindfight-result/team-answers/team-answers.component';
 
 @NgModule({
     imports: [
@@ -44,6 +46,8 @@ import { EvaluateAnswerComponent } from 'app/mindfights/evaluate-mindfights/eval
                     { path: 'mindfights/evaluate/:mindfightId/team/:teamId', component: EvaluateTeamComponent },
                     { path: 'mindfights/evaluate/:mindfightId/team/:teamId/question/:questionId', component: EvaluateAnswerComponent },
                     { path: 'mindfights/:mindfightId', component: MindfightDetailsComponent },
+                    { path: 'mindfights/:mindfightId/results', component: MindfightResultComponent },
+                    { path: 'mindfights/:mindfightId/results/team/:teamId', component: TeamAnswersComponent },
                     { path: 'mindfights/:mindfightId/play', component: PlayMindfightComponent },
                     { path: 'mindfights/:mindfightId/edit', component: EditMindfightComponent },
                     { path: 'mindfights/:mindfightId/edit/tours', component: ToursComponent },

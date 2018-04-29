@@ -24,6 +24,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     currentTour: TourDto;
     currentQuestion: QuestionDto;
     playerInfo: PlayerDto;
+    isTeamLeader = false;
     registration: RegistrationDto;
     teamAnswers: TeamAnswerDto[] = [];
 
@@ -41,6 +42,11 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     showAnswersLabel = false;
     currentTourIsLast = false;
     currentQuestionIsLast = false;
+
+    tourCountDownSubscriber: any;
+    mindfightCountDownSubscriber: any;
+    questionCountDownSubscriber: any;
+    answersCountDownSubscriber: any;
 
     constructor(
         injector: Injector,
@@ -63,6 +69,22 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
             this.getMindfight(this.mindfightId);
         });
         this.timeLeftToStartMindfight = "00:00";
+    }
+
+    ngOnDestroy() {
+        this.routeSubscriber.unsubscribe();
+        if (this.mindfightCountDownSubscriber) {
+            this.mindfightCountDownSubscriber.unsubscribe();
+        }
+        if (this.tourCountDownSubscriber) {
+            this.tourCountDownSubscriber.unsubscribe();
+        }
+        if (this.questionCountDownSubscriber) {
+            this.questionCountDownSubscriber.unsubscribe();
+        }
+        if (this.answersCountDownSubscriber) {
+            this.answersCountDownSubscriber.unsubscribe();
+        }
     }
 
     getNextTour(mindfightId, teamId): void {
@@ -107,10 +129,6 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         );
     }
 
-    ngOnDestroy() {
-        this.routeSubscriber.unsubscribe();
-    }
-
     getMindfight(mindfightId): void {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
@@ -118,7 +136,8 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
             if (this.secondsLeftToStartMindfight > 0) {
                 this.startMindfightCountdownTimer();
             } else {
-                //Get next tour
+                this.notify.error("Protmūšis jau prasidėjo!", "Klaida");
+                this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
             console.log(result);
             this.getPlayerInfo();
@@ -129,8 +148,11 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         let userId = abp.session.userId;
         this.playerService.getPlayerInfo(userId).subscribe((result) => {
             this.playerInfo = result;
-            if (result.teamId !== null && this.secondsLeftToStartMindfight <= 0) {
+            if (result.teamId !== null) {
                 this.getRegistration(result.teamId);
+                if (result.isTeamLeader) {
+                    this.isTeamLeader = true;
+                }
             } else {
                 console.log("No team - redirecting");
             }
@@ -153,11 +175,11 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     }
 
     startMindfightCountdownTimer(): void {
-        let countDown = Observable.timer(0, 1000)
+        let mindfightCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToStartMindfight)
             .map(() => --this.secondsLeftToStartMindfight);
 
-        countDown.subscribe(
+        this.mindfightCountDownSubscriber = mindfightCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartMindfight = this.getMinutesAndSecondsString(seconds);
                 console.log(seconds);
@@ -171,11 +193,11 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     }
 
     startTourCountdownTimer(): void {
-        let countDown = Observable.timer(0, 1000)
+        let tourCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToStartTour)
             .map(() => --this.secondsLeftToStartTour);
 
-        countDown.subscribe(
+        this.tourCountDownSubscriber = tourCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartTour = this.getMinutesAndSecondsString(seconds);
                 console.log(seconds);
@@ -189,11 +211,11 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     }
 
     startQuestionCountdownTimer(): void {
-        let countDown = Observable.timer(0, 1000)
+        let questionCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToStartQuestion)
             .map(() => --this.secondsLeftToStartQuestion);
 
-        countDown.subscribe(
+        this.questionCountDownSubscriber = questionCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartQuestion = this.getMinutesAndSecondsString(seconds);
                 console.log(seconds);
@@ -215,29 +237,31 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     }
 
     startAnswersCountdownTimer(): void {
+        let that = this;
         console.log(this.teamAnswers);
-        let countDown = Observable.timer(0, 1000)
+        let answersCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToEnterAnswers)
             .map(() => --this.secondsLeftToEnterAnswers);
 
-        countDown.subscribe(
+        this.answersCountDownSubscriber = answersCountDown.subscribe(
             (seconds) => {
-                this.timeLeftToEnterAnswers = this.getMinutesAndSecondsString(seconds);
+                that.timeLeftToEnterAnswers = that.getMinutesAndSecondsString(seconds);
                 console.log(seconds);
             },
             () => { },
             () => {
-                console.log(this.teamAnswers);
-                this.teamAnswerService.createTeamAnswer(this.teamAnswers, this.mindfightId).subscribe(
-                    (result) => {
-                        this.notify.success("Atsakymai išsaugoti sėkmingai!");
+                console.log(that.teamAnswers);
+                that.teamAnswerService.createTeamAnswer(that.teamAnswers, that.mindfightId).subscribe(
+                    () => {
+                        that.notify.success("Atsakymai išsaugoti sėkmingai!");
                     }
                 );
-                if (this.currentQuestionIsLast && this.currentTourIsLast) {
+                if (that.currentQuestionIsLast && that.currentTourIsLast) {
                     // team finished mindfight
-                    console.log("team finished mindfight");
+                    that.notify.success("Protmūšis sėkmingai pabaigtas!", "Sveikiname");
+                    that.router.navigate(['../results'], { relativeTo: that.activatedRoute });
                 } else {
-                    this.getNextTour(this.mindfightId, this.playerInfo.teamId);
+                    that.getNextTour(that.mindfightId, that.playerInfo.teamId);
                 }
                 console.log("completed");
             }

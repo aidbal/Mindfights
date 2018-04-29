@@ -5,3 +5,12 @@
 .description {
     white-space: pre-wrap;
 }
+
+.margin-bottom-medium {
+    margin-bottom: 20px;
+}
+
+.navigate-button {
+    background-color: white;
+    min-width: 150px;
+}

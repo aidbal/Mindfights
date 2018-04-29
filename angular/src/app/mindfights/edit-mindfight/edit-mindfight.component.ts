@@ -128,7 +128,7 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
                 }
                 let registrationIndex = this.registrations.findIndex(i => i.mindfightId === registration.mindfightId &&
                     i.teamId === registration.teamId);
-                if (registrationIndex) {
+                if (registrationIndex >= 0) {
                     this.registrations[registrationIndex].isConfirmed = !registration.isConfirmed;
                 }
             },

@@ -29,6 +29,7 @@ export class CreateTourComponent extends AppComponentBase implements OnInit {
             this.mindfightId = +params['mindfightId']; // (+) converts string 'id' to a number
         });
         this.tour.timeToEnterAnswersInSeconds = 300;
+        this.tour.introTimeInSeconds = 20;
     }
 
     ngOnDestroy() {
@@ -36,11 +37,12 @@ export class CreateTourComponent extends AppComponentBase implements OnInit {
     }
 
     createTour(): void {
+        let that = this;
         this.saving = true;
-        this.tourService.createTour(this.tour, this.mindfightId).subscribe(() => {
-            this.notify.success("Turas sėkmingai sukurtas!", "Atlikta");
-            this.router.navigate(['../'], { relativeTo: this.route });
-            this.saving = false;
+        this.tourService.createTour(this.tour, this.mindfightId).subscribe((createdTourId) => {
+            that.notify.success("Turas sėkmingai sukurtas!", "Atlikta");
+            that.router.navigate(['../' + createdTourId], { relativeTo: that.route });
+            that.saving = false;
         });
     }
 }

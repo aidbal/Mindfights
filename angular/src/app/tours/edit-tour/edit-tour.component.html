@@ -66,6 +66,18 @@
                     </div>
                     <div class="row">
                         <div class="col-sm-12">
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="tour.introTimeInSeconds"
+                                           placeholder="Turo pasiruošimo laikas (sekundės)"
+                                           name="IntroTimeInSeconds"
+                                           type="number" required>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
                             <div class="gray">
                                 <p>
                                     Turo eilės numeris: <b>{{tour.orderNumber}}</b>

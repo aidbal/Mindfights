@@ -6,6 +6,7 @@ import {
 import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
+import * as moment from 'moment';
 
 @Component({
     selector: 'app-mindfight-details',
@@ -20,6 +21,8 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     private routeSubscriber: any;
     canEvaluate = false;
     canEdit = false;
+    hasMindfightStarted = false;
+    showPlayButton = false;
 
     constructor(
         injector: Injector,
@@ -36,14 +39,37 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     ngOnInit() {
         this.getPlayerInfo();
         this.routeSubscriber = this.activatedRoute.params.subscribe(params => {
-            this.mindfightId = +params['mindfightId']; // (+) converts string 'id' to a number
+            this.mindfightId = +params['mindfightId'];
             this.getMindfight(this.mindfightId);
-            this.getRegistrations(this.mindfightId);
         });
     }
 
     ngOnDestroy() {
         this.routeSubscriber.unsubscribe();
+    }
+
+    checkShowPlayButton(): void {
+        var that = this;
+        this.showPlayButton = false;
+        if (
+            !this.mindfight.isFinished
+            && moment(this.mindfight.startTime).diff(moment().add(10, 'minutes')) <= 0
+            && moment(this.mindfight.startTime).add(this.mindfight.prepareTime, 'minutes').diff(moment()) >= 0
+            ) {
+            const currentRegistrationIndex =
+                this.registrations.findIndex(registration => registration.teamId === that.playerInfo.teamId);
+            if (currentRegistrationIndex >= 0) {
+                if (this.registrations[currentRegistrationIndex].isConfirmed) {
+                    this.showPlayButton = true;
+                }
+            }
+        }
+    }
+
+    checkMindfightStarted(): void {
+        if (moment(this.mindfight.startTime).add(this.mindfight.prepareTime, 'minutes').diff(moment()) <= 0) {
+            this.hasMindfightStarted = true;
+        }
     }
 
     onRegisterChange(registrationChangeObject): void {
@@ -52,9 +78,10 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         } else {
             const currentRegistrationIndex =
                 this.registrations.findIndex(registration => registration.id === registrationChangeObject.registrationId);
-            if (currentRegistrationIndex > 0) {
+            if (currentRegistrationIndex >= 0) {
                 this.registrations.splice(currentRegistrationIndex, 1);
             }
+            this.checkShowPlayButton();
         }
     }
 
@@ -70,12 +97,15 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
             console.log(result);
             this.canEditMindfight();
             this.canEvaluateMindfight();
+            this.checkMindfightStarted();
+            this.getRegistrations(mindfightId);
         });
     }
 
     getRegistrations(mindfightId): void {
         this.registrationService.getMindfightRegistrations(mindfightId).subscribe((result) => {
             this.registrations = result;
+            this.checkShowPlayButton();
         });
     }
 
@@ -100,15 +130,18 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     }
 
     canEvaluateMindfight() {
+        var that = this;
         if (this.canEditMindfight()) {
             this.canEvaluate = true;
         } else {
-            this.mindfight.usersAllowedToEvaluate.forEach((userEmail) => {
-                if (userEmail.toUpperCase() === this.playerInfo.emailAddress.toUpperCase()) {
-                    this.canEvaluate = true;
-                    return false;
-                }
-            });
+            if (this.mindfight.usersAllowedToEvaluate && that.playerInfo) {
+                this.mindfight.usersAllowedToEvaluate.forEach((userEmail) => {
+                    if (userEmail.toUpperCase() === that.playerInfo.emailAddress.toUpperCase()) {
+                        that.canEvaluate = true;
+                        return false;
+                    }
+                });
+            }
         }
     }
 

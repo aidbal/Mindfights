@@ -65,7 +65,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
         this.teamService.updateUserActiveStatus(player.id, !player.isActiveInTeam).subscribe(() => {
             this.notify.success("Žaidėjo '" + player.userName + "' statusas sėkmingai pakeistas!");
             let playerIndex = this.teamPlayers.findIndex(i => i.id === player.id);
-            if (playerIndex) {
+            if (playerIndex >= 0) {
                 this.teamPlayers[playerIndex].isActiveInTeam = !player.isActiveInTeam;
             }
         },
@@ -115,7 +115,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
                         () => {
                             this.notify.success("Žaidėjas '" + username + "' sėkmingai pašalintas!", "Atlikta");
                             let playerIndex = this.teamPlayers.findIndex(i => i.id === playerId);
-                            if (playerIndex) {
+                            if (playerIndex >= 0) {
                                 this.teamPlayers.splice(playerIndex, 1);
                             }
                         }

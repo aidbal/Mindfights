@@ -1,3 +1,7 @@
+<button type="button" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+        (click)="goBack()" title="Grįžti į ankstesnį puslapį">
+    <i class="fa fa-arrow-circle-left fa-xs"></i> Grįžti
+</button>
 <div class="row clearfix">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card main-content" *ngIf="mindfight">
@@ -8,19 +12,25 @@
                 <ul class="header-dropdown m-r--5">
                     <li>
                         <div>
-                            <button type="button" (click)="goBack()"
-                                    class="btn bg-black waves-effect waves-light">
-                                <i class="fa fa-arrow-circle-left"></i> Atgal
+                            <button *ngIf="showPlayButton" type="button"
+                                    class="btn bg-green waves-effect waves-light"
+                                    [routerLink]="['/app/mindfights/' + mindfightId + '/play']">
+                                Žaisti protmūšį
+                            </button>
+                            <button *ngIf="hasMindfightStarted" type="button"
+                                    class="btn bg-green waves-effect waves-light"
+                                    [routerLink]="['/app/mindfights/' + mindfightId + '/results']">
+                                Protmūšio rezultatai
                             </button>
                             <button *ngIf="canEvaluate" type="button"
                                     class="btn bg-orange waves-effect waves-light"
                                     [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details/']">
-                                <i class="fa fa-edit"></i> Vertinti atsakymus
+                                Vertinti atsakymus
                             </button>
                             <button *ngIf="canEdit" type="button"
                                     class="btn bg-red waves-effect waves-light"
                                     [routerLink]="['/app/mindfights/' + mindfightId + '/edit/']">
-                                <i class="fa fa-edit"></i>Redaguoti
+                                Redaguoti
                             </button>
                         </div>
                     </li>
@@ -35,7 +45,7 @@
                 </div>
                 <br />
                 <br />
-                <app-register *ngIf="!canEvaluate || !canEdit" [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
+                <app-register *ngIf="!canEvaluate && !canEdit && !hasMindfightStarted" [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
                 <div>
                     <b>
                         <small *ngIf="mindfight.registeredTeamsCount < mindfight.teamsLimit">

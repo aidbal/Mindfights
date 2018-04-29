@@ -4,7 +4,7 @@
             <h2>
                 {{mindfight.title}}
                 <small class="event-description description">
-                        {{mindfight.description}}
+                    {{mindfight.description}}
                 </small>
             </h2>
             <ul class="header-dropdown m-r-0">
@@ -16,7 +16,7 @@
                 </li>
             </ul>
             <hr />
-            <app-register *ngIf="!canEvaluate || !canEdit" [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
+            <app-register *ngIf="!canEvaluate && !canEdit" [mindfight]="mindfight" (notifyRegisterChange)="onRegisterChange($event)"></app-register>
             <div class="row display-flex align-vertical-center">
                 <div class="col-md-6">
                     <small *ngIf="mindfight.registeredTeamsCount < mindfight.teamsLimit">

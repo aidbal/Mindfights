@@ -17,6 +17,7 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
     singleDatepickerOptions: any;
     rangeDatepickerOptions: any;
     selectedMindfightType: string;
+    saving = false;
 
     constructor(
         injector: Injector,
@@ -41,10 +42,14 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
     }
 
     createMindfight(): void {
-        this.mindfight.startTime = this.selectedDate.startDate;
-        this.mindfightService.createMindfight(this.mindfight).subscribe(() => {
-            this.notify.success("Protmūšis sėkmingai sukurtas!");
-            this.router.navigate(['../administrate'], { relativeTo: this.route });
+        var that = this;
+        this.mindfight.startTime = moment.utc(this.selectedDate.startDate.format('YYYY-MM-DD HH:mm'),
+            'YYYY-MM-DD HH:mm');
+        that.saving = true;
+        this.mindfightService.createMindfight(this.mindfight).subscribe((createdMindfightId) => {
+            that.notify.success("Protmūšis sėkmingai sukurtas!");
+            that.router.navigate(['../' + createdMindfightId + '/edit'], { relativeTo: that.route });
+            that.saving = false;
         });
         console.log(this.mindfight);
     }
