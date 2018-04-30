@@ -1,6 +1,24 @@
 <div [@routerTransition]>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Mano vertinami protmūšiai</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col-md-12" *ngFor="let mindfight of mindfights">
         <div class="card" *ngIf="mindfight">
+            <div class="row" *ngIf="mindfight.isFinished">
+                <div class="display-flex flex-end">
+                    <div class="completed-label">
+                        <span>Protmūšis pabaigtas </span><i class="fa fa-check"></i>
+                    </div>
+                </div>
+            </div>
             <div class="header">
                 <h2>
                     {{mindfight.title}}
@@ -31,6 +49,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row" *ngIf="!mindfights || mindfights.length <= 0">
+        <div class="col-md-12 display-flex flex-center">
+            <span>Protmūšių sąrašas tuščias</span>
         </div>
     </div>
 </div>

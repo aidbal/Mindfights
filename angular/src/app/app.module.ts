@@ -66,6 +66,8 @@ import { EvaluateAnswerComponent } from './mindfights/evaluate-mindfights/evalua
 import { TeamAnswersComponent } from './mindfights/mindfight-result/team-answers/team-answers.component';
 import { MindfightsHistoryComponent } from './mindfights/mindfights-history/mindfights-history.component';
 import { PlayerDetailsComponent } from './player/player-details/player-details.component';
+import { RegisteredMindfightsComponent } from './mindfights/registered-mindfights/registered-mindfights.component';
+import { MindfightStatusLabelComponent } from './mindfights/mindfight-status-label/mindfight-status-label.component';
 
 @NgModule({
     declarations: [
@@ -116,7 +118,9 @@ import { PlayerDetailsComponent } from './player/player-details/player-details.c
         EvaluateAnswerComponent,
         TeamAnswersComponent,
         MindfightsHistoryComponent,
-        PlayerDetailsComponent
+        PlayerDetailsComponent,
+        RegisteredMindfightsComponent,
+        MindfightStatusLabelComponent
     
     ],
     imports: [

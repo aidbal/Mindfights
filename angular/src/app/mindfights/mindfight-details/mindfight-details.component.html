@@ -6,6 +6,7 @@
     <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card main-content" *ngIf="mindfight">
+                <app-mindfight-status-label [canEdit]="canEdit" [mindfight]="mindfight"></app-mindfight-status-label>
                 <div class="header">
                     <h2>
                         {{mindfight.title}} <span class="event-detail-header"><i class="fa fa-calendar"></i> <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span></span>
@@ -57,8 +58,6 @@
                             </small>
                             <small *ngIf="mindfight.teamsLimit <= 0">
                                 {{mindfight.registeredTeamsCount}} užsiregistravo. Registracija neribota.
-                                <br />
-                                <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                             </small>
                         </b>
                         <br />

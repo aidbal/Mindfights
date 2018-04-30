@@ -93,7 +93,6 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.tourService.getNextTour(mindfightId, teamId).subscribe(
             (result) => {
                 this.currentTour = result;
-                console.log(result);
                 this.showTourLabel = true;
                 this.showQuestionLabel = false;
                 this.showAnswersLabel = false;
@@ -116,7 +115,6 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.questionService.getNextQuestion(mindfightId, teamId).subscribe(
             (result) => {
                 this.currentQuestion = result;
-                console.log(result);
                 this.showTourLabel = false;
                 this.showQuestionLabel = true;
                 this.showAnswersLabel = false;
@@ -149,7 +147,6 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 this.notify.error("Protmūšis jau prasidėjo!", "Klaida");
                 this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
-            console.log(result);
             this.getPlayerInfo();
         });
     }
@@ -172,7 +169,6 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 this.notify.error("Jūs neturite komandos!", "Klaida");
                 this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
-            console.log(result);
         });
     };
 
@@ -182,10 +178,12 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
             if (result.teamId === teamId) {
                 this.registration = result;
                 if (!result.isConfirmed) {
-                    console.log("Registration not confirmed - redirect");
+                    this.notify.error("Komandos registracija nepatvirtinta!", "Klaida");
+                    this.router.navigate(['../'], { relativeTo: this.activatedRoute });
                 }
             } else {
-                console.log("No registration - redirect");
+                this.notify.error("Jūs neturite registracijos į protmūšį!", "Klaida");
+                this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
         });
     }
@@ -198,12 +196,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.mindfightCountDownSubscriber = mindfightCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartMindfight = this.getMinutesAndSecondsString(seconds);
-                console.log(seconds);
             },
             () => { },
             () => {
                 this.getNextTour(this.mindfightId, this.playerInfo.teamId);
-                console.log("completed");
             }
         );
     }
@@ -216,12 +212,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.tourCountDownSubscriber = tourCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartTour = this.getMinutesAndSecondsString(seconds);
-                console.log(seconds);
             },
             () => { },
             () => {
                 this.getNextQuestion(this.mindfightId, this.playerInfo.teamId);
-                console.log("completed");
             }
         );
     }
@@ -234,12 +228,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.questionCountDownSubscriber = questionCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartQuestion = this.getMinutesAndSecondsString(seconds);
-                console.log(seconds);
             },
             () => { },
             () => {
                 if (this.currentQuestionIsLast) {
-                    console.log("team finished tour");
                     this.startAnswersCountdownTimer();
                     this.showAnswersLabel = true;
                     this.showQuestionLabel = false;
@@ -247,14 +239,12 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 } else {
                     this.getNextQuestion(this.mindfightId, this.playerInfo.teamId);
                 }
-                console.log("completed");
             }
         );
     }
 
     startAnswersCountdownTimer(): void {
         let that = this;
-        console.log(this.teamAnswers);
         let answersCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToEnterAnswers)
             .map(() => --this.secondsLeftToEnterAnswers);
@@ -262,28 +252,26 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.answersCountDownSubscriber = answersCountDown.subscribe(
             (seconds) => {
                 that.timeLeftToEnterAnswers = that.getMinutesAndSecondsString(seconds);
-                console.log(seconds);
             },
             () => { },
             () => {
-                console.log(that.teamAnswers);
-                that.teamAnswerService.createTeamAnswer(that.teamAnswers, that.mindfightId).subscribe(
-                    () => {
-                        that.notify.success("Atsakymai išsaugoti sėkmingai!");
-                    },
-                    () => {
-                        that.notify.error("Klaida išsaugojant atsakymus!", "Klaida");
-                        that.router.navigate(['../'], { relativeTo: that.activatedRoute });
-                    }
-                );
+                if (this.isTeamLeader) {
+                    that.teamAnswerService.createTeamAnswer(that.teamAnswers, that.mindfightId).subscribe(
+                        () => {
+                            that.notify.success("Atsakymai išsaugoti sėkmingai!");
+                        },
+                        () => {
+                            that.notify.error("Klaida išsaugojant atsakymus!", "Klaida");
+                            that.router.navigate(['../'], { relativeTo: that.activatedRoute });
+                        }
+                    );
+                }
                 if (that.currentQuestionIsLast && that.currentTourIsLast) {
-                    // team finished mindfight
                     that.notify.success("Protmūšis sėkmingai pabaigtas!", "Sveikiname");
                     that.router.navigate(['../results'], { relativeTo: that.activatedRoute });
                 } else {
                     that.getNextTour(that.mindfightId, that.playerInfo.teamId);
                 }
-                console.log("completed");
             }
         );
     }

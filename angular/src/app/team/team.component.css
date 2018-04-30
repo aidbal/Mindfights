@@ -6,8 +6,7 @@
     justify-content: flex-end;
 }
 
-.center {
-    align-items: center;
+.flex-center {
     justify-content: center;
 }
 
@@ -42,4 +41,21 @@
 
 .vertical-align {
     vertical-align: middle;
+}
+
+.white-bg {
+    background-color: white;
+}
+
+.leave-button {
+    background-color: #ff6f77;
+    color: white;
+    transition: all .2s ease-out;
+    -moz-transition: all .2s ease-out;
+    -webkit-transition: all .2s ease-out;
+    -o-transition: all .2s ease-out;
+}
+
+.leave-button:hover {
+    background-color: #e6000d;
 }

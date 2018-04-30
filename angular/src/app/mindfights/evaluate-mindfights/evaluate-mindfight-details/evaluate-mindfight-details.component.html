@@ -21,16 +21,23 @@
                 <div class="row" *ngIf="!mindfight.isFinished && overallCount > 0">
                     <div class="display-flex flex-end">
                         <button type="button" class="btn bg-green waves-effect btn-sm"
-                        [disabled]="overallCount != evaluatedCount"
-                        (click)="completeMindfight()">
-                        <span>Baigti protmūšio vertinimą</span>
-                        <i class="fa fa-check"></i>
+                                [disabled]="overallCount != evaluatedCount"
+                                (click)="completeMindfight()">
+                            <span>Baigti protmūšio vertinimą</span>
+                            <i class="fa fa-check"></i>
                         </button>
                     </div>
                     <div class="display-flex flex-end margin-bottom-medium">
                         <small *ngIf="overallCount <= 0 || overallCount != evaluatedCount">
                             Norint baigti vertinti protmūšį, reikia įvertinti visas komandas
                         </small>
+                    </div>
+                </div>
+                <div class="row" *ngIf="mindfight.isFinished">
+                    <div class="display-flex flex-end">
+                        <div class="completed-label">
+                            <span>Protmūšis pabaigtas </span><i class="fa fa-check"></i>
+                        </div>
                     </div>
                 </div>
                 <div>

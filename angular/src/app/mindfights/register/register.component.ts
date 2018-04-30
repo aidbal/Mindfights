@@ -1,8 +1,6 @@
 import { Component, OnInit, Injector, Input, EventEmitter, Output } from '@angular/core';
-import { MindfightDto, RegistrationDto, MindfightServiceProxy, RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
+import { MindfightDto, RegistrationDto, RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-register',

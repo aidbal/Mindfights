@@ -14,3 +14,22 @@
     background-color: white;
     min-width: 150px;
 }
+
+.status-label {
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    color: white;
+    margin: 10px 20px 30px 0;
+}
+
+.inactive-color {
+    background-color: #e0ad00;
+}
+
+.active-color {
+    background-color: #96bdff;
+}
+
+.completed-color {
+    background-color: #4CAF50;
+}

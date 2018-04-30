@@ -61,6 +61,8 @@ namespace Mindfights.Services.MindfightService
                 Description = currentMindfight.Description,
                 StartTime = currentMindfight.StartTime,
                 TeamsLimit = currentMindfight.TeamsLimit,
+                IsActive = currentMindfight.IsActive,
+                IsFinished = currentMindfight.IsFinished,
                 CreatorId = creator.Id,
                 CreatorEmail = creator.EmailAddress,
                 PrepareTime = currentMindfight.PrepareTime,
@@ -94,13 +96,6 @@ namespace Mindfights.Services.MindfightService
                 throw new UserFriendlyException("User does not exist!");
             }
 
-            var mindfightWithSameName = await _mindfightRepository
-                .FirstOrDefaultAsync(x => string.CompareOrdinal(x.Title.ToUpper(), mindfight.Title.ToUpper()) == 0);
-            if (mindfightWithSameName != null)
-            {
-                throw new UserFriendlyException("Mindfight with the same title already exists!");
-            }
-
             var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.TeamsLimit,
                 mindfight.StartTime, mindfight.PrepareTime);
             return await _mindfightRepository.InsertAndGetIdAsync(newMindfight);
@@ -124,13 +119,6 @@ namespace Mindfights.Services.MindfightService
                   _permissionChecker.IsGranted("ManageMindfights")))
             {
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
-            }
-
-            var mindfightWithSameName = await _mindfightRepository
-                .FirstOrDefaultAsync(x => string.CompareOrdinal(x.Title.ToUpper(), mindfight.Title.ToUpper()) == 0 && x.Id != mindfight.Id);
-            if (mindfightWithSameName != null)
-            {
-                throw new UserFriendlyException("Mindfight with the same title already exists!");
             }
 
             currentMindfight.Title = mindfight.Title;
@@ -172,18 +160,22 @@ namespace Mindfights.Services.MindfightService
             {
                 throw new UserFriendlyException("There was a problem getting current user!");
             }
+
+            var isMindfightsManager = _permissionChecker.IsGranted("ManageMindfights");
+
             var mindfights = await _mindfightRepository
-                .GetAllIncluding(mindfight => mindfight.Registrations)
-                .OrderBy(mindfight => mindfight.StartTime)
-                .Where(x => x.CreatorId == user.Id).ToListAsync();
+                .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Creator)
+                .OrderBy(mindfight => !mindfight.IsFinished)
+                .ThenBy(mindfight => mindfight.StartTime)
+                .Where(x => isMindfightsManager || x.CreatorId == user.Id).ToListAsync();
 
             var mindfightsDto = new List<MindfightDto>();
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
-                mindfightsDto[i].CreatorId = user.Id;
-                mindfightsDto[i].CreatorEmail = user.EmailAddress;
+                mindfightsDto[i].CreatorId = mindfights[i].CreatorId;
+                mindfightsDto[i].CreatorEmail = mindfights[i].Creator.EmailAddress;
             }
             return mindfightsDto;
         }
@@ -197,17 +189,44 @@ namespace Mindfights.Services.MindfightService
             }
 
             var mindfights = await _mindfightRepository
-                .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Evaluators)
+                .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Evaluators, mindfight => mindfight.Creator)
                 .OrderBy(mindfight => mindfight.StartTime)
-                .Where(x => x.Evaluators.Any(y => y.UserId == user.Id) && x.CreatorId != user.Id).ToListAsync();
+                .Where(x => x.Evaluators.Any(y => y.UserId == user.Id) && x.CreatorId != user.Id && !x.IsFinished).ToListAsync();
 
             var mindfightsDto = new List<MindfightDto>();
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
-                var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == mindfights[i].CreatorId);
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
-                mindfightsDto[i].CreatorEmail = creator.EmailAddress;
+                mindfightsDto[i].CreatorEmail = mindfights[i].Creator.EmailAddress;
+            }
+            return mindfightsDto;
+        }
+
+        public async Task<List<MindfightDto>> GetRegisteredMindfights()
+        {
+            var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
+            if (user == null)
+            {
+                throw new UserFriendlyException("Problema gaunant vartotoją!");
+            }
+
+            var mindfights = await _mindfightRepository
+                .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Creator)
+                .OrderBy(mindfight => mindfight.StartTime)
+                .Where(mindfight =>
+                    mindfight.Registrations.Any(registration => registration.TeamId == user.TeamId) 
+                    && mindfight.IsConfirmed 
+                    && !mindfight.IsFinished
+                    && mindfight.StartTime > Clock.Now.AddHours(-1)
+                ).ToListAsync();
+
+            var mindfightsDto = new List<MindfightDto>();
+            mindfights.MapTo(mindfightsDto);
+            for (var i = 0; i < mindfights.Count; i++)
+            {
+                mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
+                mindfightsDto[i].CreatorEmail = mindfights[i].Creator.EmailAddress;
             }
             return mindfightsDto;
         }
@@ -215,7 +234,7 @@ namespace Mindfights.Services.MindfightService
         public async Task<List<MindfightPublicDto>> GetUpcomingMindfights()
         {
             var mindfights = await _mindfightRepository
-                .GetAllIncluding(mindfight => mindfight.Registrations)
+                .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Creator)
                 .OrderBy(mindfight => mindfight.StartTime)
                 .Where(
                     mindfight =>
@@ -229,10 +248,9 @@ namespace Mindfights.Services.MindfightService
             mindfights.MapTo(mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
-                var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == mindfights[i].CreatorId);
                 mindfightsDto[i].TeamsLimit = mindfights[i].TeamsLimit;
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
-                mindfightsDto[i].CreatorEmail = creator.EmailAddress;
+                mindfightsDto[i].CreatorEmail = mindfights[i].Creator.EmailAddress;
             }
             return mindfightsDto;
         }
@@ -276,6 +294,7 @@ namespace Mindfights.Services.MindfightService
         public async Task UpdateFinishedStatus(long mindfightId, bool isFinished)
         {
             var currentMindfight = await _mindfightRepository
+                .GetAllIncluding(mindfight => mindfight.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
                 throw new UserFriendlyException("Mindfight with specified id does not exist!");
@@ -284,8 +303,10 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new UserFriendlyException("You are not creator of this mindfight!");
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId 
+                || _permissionChecker.IsGranted("ManageMindfights")
+                || currentMindfight.Evaluators.Any(y => y.UserId == user.Id)))
+                throw new UserFriendlyException("You are not allowed to finish this mindfight!");
 
             currentMindfight.IsFinished = isFinished;
             await _mindfightRepository.UpdateAsync(currentMindfight);
@@ -302,7 +323,7 @@ namespace Mindfights.Services.MindfightService
             if (user == null)
                 throw new UserFriendlyException("User does not exist!");
 
-            if (!(currentMindfight.CreatorId != _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
                 throw new AbpAuthorizationException("You are not creator of this mindfight!");
 
             var evaluators = await _userManager.Users.IgnoreQueryFilters()

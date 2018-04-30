@@ -31,7 +31,6 @@ export class EvaluateMindfightsComponent extends AppComponentBase implements OnI
     getAllowedToEvaluateMindfights(): void {
         this.mindfightService.getAllowedToEvaluateMindfights().subscribe((result) => {
             this.mindfights = result;
-            console.log(result);
         });
     }
 

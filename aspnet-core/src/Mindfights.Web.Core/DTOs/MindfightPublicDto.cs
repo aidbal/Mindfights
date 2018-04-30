@@ -15,6 +15,8 @@ namespace Mindfights.DTOs
         [Required]
         [MaxLength(2550)]
         public string Description { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsFinished { get; set; }
         public DateTime StartTime { get; set; }
         public int TeamsLimit { get; set; }
         public int RegisteredTeamsCount { get; set; }

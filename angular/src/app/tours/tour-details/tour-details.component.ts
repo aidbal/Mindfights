@@ -36,14 +36,12 @@ export class TourDetailsComponent extends AppComponentBase implements OnInit {
         this.tourService.getTour(this.tourId).subscribe(
             (result) => {
                 this.tour = result;
-                console.log(this.tour);
             }
         );
 
         this.questionService.getAllTourQuestions(this.tourId).subscribe(
             (result) => {
                 this.questions = result;
-                console.log(this.questions);
             }
         );
     }

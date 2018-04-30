@@ -253,5 +253,39 @@ namespace Mindfights.Services.TeamService
             currentLeader.IsActiveInTeam = false;
             await _teamRepository.UpdateAsync(currentTeam);
         }
+
+        public async Task LeaveCurrentTeam()
+        {
+            var currentUser = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == _userManager.AbpSession.UserId);
+            if (currentUser == null)
+            {
+                throw new UserFriendlyException("Problema gaunant vartotoją!");
+            }
+
+            if (currentUser.TeamId == null)
+            {
+                throw new UserFriendlyException("Vartotojas neturi komandos!");
+            }
+
+            var currentTeam = await _teamRepository
+                .GetAllIncluding(x => x.Players)
+                .FirstOrDefaultAsync(x => x.Id == currentUser.TeamId);
+
+            if (currentTeam == null)
+            {
+                throw new UserFriendlyException("Problema gaunant komandą!");
+            }
+
+            if (currentUser.Id == currentTeam.LeaderId)
+            {
+                throw new UserFriendlyException("Vartotojas yra komandos kapitonas!");
+            }
+
+            if (currentTeam.Players.Remove(currentUser))
+            {
+                currentUser.IsActiveInTeam = false;
+                await _teamRepository.UpdateAsync(currentTeam);
+            }
+        }
     }
 }

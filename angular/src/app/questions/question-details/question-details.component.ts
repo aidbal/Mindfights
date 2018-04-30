@@ -39,7 +39,6 @@ export class QuestionDetailsComponent extends AppComponentBase implements OnInit
         this.questionService.getQuestion(questionId).subscribe(
             (result) => {
                 this.question = result;
-                console.log(this.question);
             }
         );
     }

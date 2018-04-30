@@ -37,7 +37,6 @@ export class EditTourComponent extends AppComponentBase implements OnInit {
     getTour(tourId) {
         this.tourService.getTour(tourId).subscribe((result) => {
             this.tour = result;
-            console.log(this.tour);
         }
         );
     }

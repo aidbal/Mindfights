@@ -55,14 +55,12 @@ export class TeamAnswersComponent extends AppComponentBase implements OnInit {
     getTeamAnswers(mindfightId, teamId) {
         this.teamAnswerService.getAllTeamAnswers(this.mindfightId, this.teamId).subscribe((result) => {
             this.teamAnswers = result;
-            console.log(result);
         });
     }
 
     getMindfight(mindfightId) {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
-            console.log(result);
         });
     }
 }

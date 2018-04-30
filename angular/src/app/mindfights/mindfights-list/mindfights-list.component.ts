@@ -27,6 +27,8 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
             this.getMyCreatedMindfights();
         } else if (this.type === 'upcoming') {
             this.getUpcomingMindfights();
+        } else if (this.type === 'registered') {
+            this.getRegisteredMindfights();
         }
     }
 
@@ -44,6 +46,12 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
 
     getMyCreatedMindfights(): void {
         this.mindfightService.getMyCreatedMindfights().subscribe((result) => {
+            this.mindfights = result;
+        });
+    }
+
+    getRegisteredMindfights(): void {
+        this.mindfightService.getRegisteredMindfights().subscribe((result) => {
             this.mindfights = result;
         });
     }

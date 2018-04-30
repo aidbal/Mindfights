@@ -41,14 +41,12 @@ export class EvaluateAnswerComponent extends AppComponentBase implements OnInit 
     getQuestion = function (questionId) {
         this.questionService.getQuestion(questionId).subscribe((result) => {
             this.question = result
-            console.log(result);
         });
     }
 
     getTeamAnswer = function (questionId, teamId) {
         this.teamAnswerService.getTeamAnswer(questionId, teamId).subscribe((result) => {
             this.teamAnswer = result
-            console.log(result);
         });
     }
 

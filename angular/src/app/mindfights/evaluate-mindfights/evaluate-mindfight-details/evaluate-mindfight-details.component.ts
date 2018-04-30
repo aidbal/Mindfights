@@ -45,7 +45,6 @@ export class EvaluateMindfightDetailsComponent extends AppComponentBase implemen
     getMindfight(mindfightId): void {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
-            console.log(result);
         });
     }
 
@@ -58,7 +57,6 @@ export class EvaluateMindfightDetailsComponent extends AppComponentBase implemen
                 }
                 this.overallCount += 1;
             });
-            console.log(result);
         });
     }
 

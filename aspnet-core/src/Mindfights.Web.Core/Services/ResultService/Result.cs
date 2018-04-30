@@ -141,7 +141,7 @@ namespace Mindfights.Services.ResultService
             var teamPlayers = await _userManager.Users
                 .IgnoreQueryFilters()
                 .Include(x => x.Team)
-                .Where(u => u.TeamId == teamId)
+                .Where(u => u.TeamId == teamId && u.IsActiveInTeam)
                 .ToListAsync();
 
             var currentResult = await _resultRepository

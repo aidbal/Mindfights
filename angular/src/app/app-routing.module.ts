@@ -31,6 +31,7 @@ import { EvaluateAnswerComponent } from 'app/mindfights/evaluate-mindfights/eval
 import { MindfightResultComponent } from 'app/mindfights/mindfight-result/mindfight-result.component';
 import { TeamAnswersComponent } from 'app/mindfights/mindfight-result/team-answers/team-answers.component';
 import { PlayerDetailsComponent } from 'app/player/player-details/player-details.component';
+import { RegisteredMindfightsComponent } from 'app/mindfights/registered-mindfights/registered-mindfights.component';
 
 @NgModule({
     imports: [
@@ -40,7 +41,8 @@ import { PlayerDetailsComponent } from 'app/player/player-details/player-details
                 component: AppComponent,
                 children: [
                     { path: 'home', component: HomeComponent, canActivate: [AppRouteGuard] },
-                    { path: 'mindfights/player', component: PlayerDetailsComponent, canActivate: [AppRouteGuard] },
+                    { path: 'player', component: PlayerDetailsComponent, canActivate: [AppRouteGuard] },
+                    { path: 'mindfights/registered', component: RegisteredMindfightsComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/create', component: CreateMindfightComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/administrate', component: AdministrateMindfightsComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/evaluate', component: EvaluateMindfightsComponent, canActivate: [AppRouteGuard] },

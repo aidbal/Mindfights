@@ -499,6 +499,56 @@ export class MindfightServiceProxy {
     /**
      * @return Success
      */
+    getRegisteredMindfights(): Observable<MindfightDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/GetRegisteredMindfights";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetRegisteredMindfights(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetRegisteredMindfights(<any>response_);
+                } catch (e) {
+                    return <Observable<MindfightDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<MindfightDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetRegisteredMindfights(response: Response): Observable<MindfightDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(MindfightDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<MindfightDto[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
     getUpcomingMindfights(): Observable<MindfightPublicDto[]> {
         let url_ = this.baseUrl + "/api/services/mindfights/Mindfight/GetUpcomingMindfights";
         url_ = url_.replace(/[?&]$/, "");
@@ -2804,6 +2854,48 @@ export class TeamServiceProxy {
         }
         return Observable.of<void>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    leaveCurrentTeam(): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Team/LeaveCurrentTeam";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "post",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processLeaveCurrentTeam(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processLeaveCurrentTeam(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<void>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processLeaveCurrentTeam(response: Response): Observable<void> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            return Observable.of<void>(<any>null);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<void>(<any>null);
+    }
 }
 
 @Injectable()
@@ -4517,6 +4609,7 @@ export class MindfightDto implements IMindfightDto {
     title: string;
     description: string;
     startTime: moment.Moment;
+    isActive: boolean;
     isFinished: boolean;
     prepareTime: number;
     toursCount: number;
@@ -4542,6 +4635,7 @@ export class MindfightDto implements IMindfightDto {
             this.title = data["title"];
             this.description = data["description"];
             this.startTime = data["startTime"] ? moment(data["startTime"].toString()) : <any>undefined;
+            this.isActive = data["isActive"];
             this.isFinished = data["isFinished"];
             this.prepareTime = data["prepareTime"];
             this.toursCount = data["toursCount"];
@@ -4575,6 +4669,7 @@ export class MindfightDto implements IMindfightDto {
         data["title"] = this.title;
         data["description"] = this.description;
         data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
+        data["isActive"] = this.isActive;
         data["isFinished"] = this.isFinished;
         data["prepareTime"] = this.prepareTime;
         data["toursCount"] = this.toursCount;
@@ -4608,6 +4703,7 @@ export interface IMindfightDto {
     title: string;
     description: string;
     startTime: moment.Moment;
+    isActive: boolean;
     isFinished: boolean;
     prepareTime: number;
     toursCount: number;
@@ -4710,6 +4806,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
     id: number;
     title: string;
     description: string;
+    isActive: boolean;
+    isFinished: boolean;
     startTime: moment.Moment;
     teamsLimit: number;
     registeredTeamsCount: number;
@@ -4730,6 +4828,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
             this.id = data["id"];
             this.title = data["title"];
             this.description = data["description"];
+            this.isActive = data["isActive"];
+            this.isFinished = data["isFinished"];
             this.startTime = data["startTime"] ? moment(data["startTime"].toString()) : <any>undefined;
             this.teamsLimit = data["teamsLimit"];
             this.registeredTeamsCount = data["registeredTeamsCount"];
@@ -4750,6 +4850,8 @@ export class MindfightPublicDto implements IMindfightPublicDto {
         data["id"] = this.id;
         data["title"] = this.title;
         data["description"] = this.description;
+        data["isActive"] = this.isActive;
+        data["isFinished"] = this.isFinished;
         data["startTime"] = this.startTime ? this.startTime.toISOString() : <any>undefined;
         data["teamsLimit"] = this.teamsLimit;
         data["registeredTeamsCount"] = this.registeredTeamsCount;
@@ -4770,6 +4872,8 @@ export interface IMindfightPublicDto {
     id: number;
     title: string;
     description: string;
+    isActive: boolean;
+    isFinished: boolean;
     startTime: moment.Moment;
     teamsLimit: number;
     registeredTeamsCount: number;

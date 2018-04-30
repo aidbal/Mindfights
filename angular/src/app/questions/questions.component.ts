@@ -45,7 +45,6 @@ export class QuestionsComponent extends AppComponentBase implements OnInit {
         this.questionService.getAllTourQuestions(tourId).subscribe(
             (result) => {
                 this.questions = result;
-                console.log(this.questions);
             }
         );
     }

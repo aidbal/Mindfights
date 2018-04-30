@@ -96,7 +96,6 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     getMindfight(mindfightId): void {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
-            console.log(result);
             this.canEditMindfight();
             this.canEvaluateMindfight();
             this.checkMindfightStarted();

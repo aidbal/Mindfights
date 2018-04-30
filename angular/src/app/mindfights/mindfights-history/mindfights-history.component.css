@@ -13,3 +13,7 @@
 .white {
     background-color: white;
 }
+
+.flex-center {
+    justify-content: center;
+}

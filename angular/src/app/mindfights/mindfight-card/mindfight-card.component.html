@@ -1,5 +1,6 @@
 <div class="col-md-12" [@routerTransition]>
     <div class="card" *ngIf="mindfight">
+        <app-mindfight-status-label [canEdit]="canEdit" [mindfight]="mindfight"></app-mindfight-status-label>
         <div class="header">
             <h2>
                 {{mindfight.title}}
@@ -27,9 +28,9 @@
                     </small>
                     <small *ngIf="mindfight.teamsLimit <= 0">
                         {{mindfight.registeredTeamsCount}} užsiregistravo. Registracija neribota.
-                        <br />
-                        <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                     </small>
+                    <br />
+                    <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                 </div>
                 <div class="col-md-6">
                     <div class="text-right">

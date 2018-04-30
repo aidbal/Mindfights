@@ -15,7 +15,6 @@ namespace Mindfights.EntityFrameworkCore.Seed.Host
         {
             return new List<ApplicationLanguage>
             {
-                new ApplicationLanguage(null, "en", "English", "famfamfam-flags gb"),
                 new ApplicationLanguage(null, "lt", "Lietuvių", "famfamfam-flags lt")
             };
         }

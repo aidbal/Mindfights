@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
+import { AppComponentBase } from '@shared/app-component-base';
 
 @Component({
     selector: 'app-mindfights',
@@ -7,7 +8,14 @@ import { appModuleAnimation } from '@shared/animations/routerTransition';
     styleUrls: ['./mindfights.component.css'],
     animations: [appModuleAnimation()]
 })
-export class MindfightsComponent implements OnInit {
+export class MindfightsComponent extends AppComponentBase implements OnInit {
+
+    constructor(
+        injector: Injector
+    ) {
+        super(injector);
+    }
+
     ngOnInit() {
     }
 }

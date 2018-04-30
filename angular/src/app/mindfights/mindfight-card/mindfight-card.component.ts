@@ -20,7 +20,6 @@ export class MindfightCardComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
-        console.log(this.mindfight);
         this.canEditMindfight();
         this.canEvaluateMindfight();
     }

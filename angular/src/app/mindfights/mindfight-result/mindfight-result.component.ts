@@ -72,14 +72,12 @@ export class MindfightResultComponent extends AppComponentBase implements OnInit
     getMindfight(mindfightId): void {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
-            console.log(result);
         });
     }
 
     getMindfightResults(mindfightId): void {
         this.mindfightResultService.getMindfightResults(mindfightId).subscribe((result) => {
             this.mindfightResults = result;
-            console.log(result);
         });
     }
 }

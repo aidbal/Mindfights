@@ -18,6 +18,7 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     activeTeamPlayers: TeamPlayerDto[] = [];
     passiveTeamPlayers: TeamPlayerDto[] = [];
     playerInfo: PlayerDto;
+    isTeamLeader = false;
 
     constructor(
         injector: Injector,
@@ -33,12 +34,35 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.getPlayerInfo();
     }
 
+    leaveCurrentTeam() {
+        abp.message.confirm(
+            'Paliksite šią komandą.',
+            'Are Jūs esate tikri?',
+            isConfirmed => {
+                if (isConfirmed) {
+                    this.teamService.leaveCurrentTeam().subscribe(
+                        () => {
+                            this.notify.success('Sėkmingai palikote komandą!', 'Atlikta');
+                            this.team = null;
+                        },
+                        () => {
+                            this.notify.error('Komandos palikti nepavyko!', 'Klaida');
+                        }
+                    );
+                }
+            }
+        );
+    }
+
     getPlayerInfo(): void {
         this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
             this.playerInfo = result;
             if (this.playerInfo.teamId != null) {
                 this.teamId = this.playerInfo.teamId;
                 this.getPlayerTeam(this.playerInfo.teamId);
+            }
+            if (result.isTeamLeader) {
+                this.isTeamLeader = true;
             }
         });
     };
@@ -47,7 +71,6 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.teamService.getTeam(teamId).subscribe(
             (result) => {
                 this.team = result;
-                console.log(this.team);
                 this.getAllTeamPlayers(this.playerInfo.teamId);
             }
         );

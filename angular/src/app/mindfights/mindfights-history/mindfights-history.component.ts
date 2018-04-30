@@ -35,14 +35,12 @@ export class MindfightsHistoryComponent extends AppComponentBase implements OnIn
     getTeamMindfightResults(teamId) {
         this.mindfightResultService.getTeamResults(teamId).subscribe((result) => {
             this.mindfightResults = result;
-            console.log(result);
         });
     }
 
     getUserMindfightResults(userId) {
         this.mindfightResultService.getUserResults(userId).subscribe((result) => {
             this.mindfightResults = result;
-            console.log(result);
         });
     }
 }

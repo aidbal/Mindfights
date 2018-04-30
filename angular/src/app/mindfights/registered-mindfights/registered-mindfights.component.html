@@ -1,25 +1,22 @@
-<div [@routerTransition]>
+<div class="block-header" [@routerTransition]>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card main-content">
                 <div class="modal-header text-center">
                     <h4 class="modal-title">
-                        <span>Protmūšių valdymas</span>
+                        <span>Mano komandos artėjantys protmūšiai</span>
                     </h4>
                 </div>
             </div>
         </div>
     </div>
-    <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-medium"
-            [routerLink]="['/app/mindfights/create']" title="Sukurti naują protmūšį">
-        <i class="material-icons">add</i>
-    </button>
     <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="main-content">
                 <div class="body">
                     <div class="row">
-                        <app-mindfights-list [type]="'created'"></app-mindfights-list>
+                        <app-mindfights-list *ngIf="playerInfo && playerInfo.teamId" [type]="'registered'"></app-mindfights-list>
+                        <div *ngIf="!playerInfo || (playerInfo && !playerInfo.teamId)" class="display-flex flex-center">Žaidėjo komanda nerasta</div>
                     </div>
                 </div>
             </div>

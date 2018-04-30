@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { PermissionCheckerService } from "@abp/auth/permission-checker.service";
 import { AppSessionService } from '../session/app-session.service';
 
@@ -49,6 +49,6 @@ export class AppRouteGuard implements CanActivate, CanActivateChild {
             return '/app/admin/users';
         }
 
-        return '/app/home';
+        return '/app/mindfights';
     }
 }

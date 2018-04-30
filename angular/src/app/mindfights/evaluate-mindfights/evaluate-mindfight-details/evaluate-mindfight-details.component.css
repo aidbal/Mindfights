@@ -18,3 +18,11 @@
 .gray {
     color: gray;
 }
+
+.completed-label {
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    margin: 10px 20px 30px 0;
+}

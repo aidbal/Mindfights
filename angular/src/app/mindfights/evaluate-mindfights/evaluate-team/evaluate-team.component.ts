@@ -67,21 +67,18 @@ export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
                     this.evaluatedTeamAnswers += 1;
                 }
             });
-            console.log(result);
         });
     }
 
     getTeam(teamId) {
         this.teamService.getTeam(teamId).subscribe((result) => {
             this.team = result;
-            console.log(result);
         });
     }
 
     getMindfight (mindfightId) {
         this.mindfightService.getMindfight(mindfightId).subscribe((result) => {
             this.mindfight = result;
-            console.log(result);
         });
     }
 

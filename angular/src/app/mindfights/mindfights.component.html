@@ -1,21 +1,22 @@
 <div class="block-header" [@routerTransition]>
-    <h2>Protmūšiai</h2>
-    <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-medium"
-            [routerLink]="['/app/mindfights/create']" title="Sukurti naują protmūšį">
-        <i class="material-icons">add</i>
-    </button>
-    <button type="button" data-toggle="modal"
-            class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right margin-bottom-medium margin-right-small"
-            [routerLink]="['/app/mindfights/administrate']" title="Administruoti protmūšius">
-        <i class="material-icons">settings</i>
-    </button>
-</div>
-<div class="row clearfix">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="main-content">
-            <div class="body">
-                <div class="row">
-                    <app-mindfights-list [type]="'upcoming'"></app-mindfights-list>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Artėjantys protmūšiai</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="main-content">
+                <div class="body">
+                    <div class="row">
+                        <app-mindfights-list [type]="'upcoming'"></app-mindfights-list>
+                    </div>
                 </div>
             </div>
         </div>

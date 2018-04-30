@@ -4,7 +4,6 @@ import { MindfightCreateUpdateDto, MindfightServiceProxy } from 'shared/service-
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { DatepickerOptionsService } from '../../services/datepickerOptions.service';
-import { Location } from '@angular/common';
 import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
@@ -25,7 +24,6 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
         injector: Injector,
         private mindfightService: MindfightServiceProxy,
         private datepickerOptionsService: DatepickerOptionsService,
-        private location: Location,
         private route: ActivatedRoute,
         private router: Router) {
         super(injector);
@@ -40,8 +38,6 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
 
     selectedDateEvent(value: any) {
         this.selectedDate.startDate = value.start;
-        this.selectedDate.endDate = value.end;
-        console.log(this.selectedDate);
     }
 
     createMindfight(): void {
@@ -54,10 +50,5 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
             that.router.navigate(['../' + createdMindfightId + '/edit'], { relativeTo: that.route });
             that.saving = false;
         });
-        console.log(this.mindfight);
-    }
-
-    goBack() {
-        this.location.back();
     }
 }
