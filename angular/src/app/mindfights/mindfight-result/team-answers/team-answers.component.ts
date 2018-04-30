@@ -5,11 +5,13 @@ import {
 } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppComponentBase } from 'shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-team-answers',
     templateUrl: './team-answers.component.html',
-    styleUrls: ['./team-answers.component.css']
+    styleUrls: ['./team-answers.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class TeamAnswersComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

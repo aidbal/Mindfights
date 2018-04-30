@@ -1,11 +1,13 @@
 import { Component, OnInit, Injector, Input } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { MindfightDto, PlayerDto } from 'shared/service-proxies/service-proxies';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-mindfight-card',
     templateUrl: './mindfight-card.component.html',
-    styleUrls: ['./mindfight-card.component.css']
+    styleUrls: ['./mindfight-card.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class MindfightCardComponent extends AppComponentBase implements OnInit {
     @Input() mindfight: MindfightDto;

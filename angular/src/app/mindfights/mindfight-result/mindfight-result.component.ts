@@ -7,11 +7,13 @@ import {
 } from 'shared/service-proxies/service-proxies';
 import { Location } from '@angular/common';
 import { AppComponentBase } from 'shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-mindfight-result',
     templateUrl: './mindfight-result.component.html',
-    styleUrls: ['./mindfight-result.component.css']
+    styleUrls: ['./mindfight-result.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class MindfightResultComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

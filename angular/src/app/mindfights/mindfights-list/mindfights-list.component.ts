@@ -1,11 +1,13 @@
 import { Component, OnInit, Injector, Input } from '@angular/core';
 import { MindfightServiceProxy, PlayerDto, PlayerServiceProxy } from '@shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
-  selector: 'app-mindfights-list',
-  templateUrl: './mindfights-list.component.html',
-  styleUrls: ['./mindfights-list.component.css']
+    selector: 'app-mindfights-list',
+    templateUrl: './mindfights-list.component.html',
+    styleUrls: ['./mindfights-list.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class MindfightsListComponent extends AppComponentBase implements OnInit {
     mindfights: any;
@@ -39,7 +41,7 @@ export class MindfightsListComponent extends AppComponentBase implements OnInit 
             this.mindfights = result;
         });
     }
-    
+
     getMyCreatedMindfights(): void {
         this.mindfightService.getMyCreatedMindfights().subscribe((result) => {
             this.mindfights = result;

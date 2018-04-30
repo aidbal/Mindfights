@@ -2,11 +2,13 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { TeamDto, TeamServiceProxy, TeamPlayerDto } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-edit-team',
     templateUrl: './edit-team.component.html',
-    styleUrls: ['./edit-team.component.css']
+    styleUrls: ['./edit-team.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EditTeamComponent extends AppComponentBase implements OnInit {
     team: TeamDto;

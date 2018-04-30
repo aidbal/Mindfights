@@ -2,11 +2,13 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { TourDto, TourServiceProxy, QuestionDto, QuestionServiceProxy } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
   selector: 'app-tour-details',
   templateUrl: './tour-details.component.html',
-  styleUrls: ['./tour-details.component.css']
+    styleUrls: ['./tour-details.component.css'],
+  animations: [appModuleAnimation()]
 })
 export class TourDetailsComponent extends AppComponentBase implements OnInit {
     mindfightId: number;

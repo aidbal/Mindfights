@@ -1,76 +1,78 @@
-<div class="col-md-12 paddingless">
-    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-            [routerLink]="['/app/mindfights/' + mindfightId + '/edit']" title="Grįžti į protmūšio puslapį">
-        <i class="fa fa-arrow-circle-left fa-xs"></i> Protmūšis
-    </button>
-    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-            [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours']" title="Grįžti į turų sąrašą">
-        <i class="fa fa-arrow-circle-left fa-xs"></i> Turai
-    </button>
-    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-            [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId]" title="Grįžti į turą">
-        <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
-    </button>
-    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-            [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions']" title="Grįžti į klausimų sąrašą">
-        <i class="fa fa-arrow-circle-left fa-xs"></i> Klausimai
-    </button>
-</div>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title">
-                    <span>Klausimas</span>
-                </h4>
+<div [@routerTransition]>
+    <div class="col-md-12 paddingless">
+        <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+                [routerLink]="['/app/mindfights/' + mindfightId + '/edit']" title="Grįžti į protmūšio puslapį">
+            <i class="fa fa-arrow-circle-left fa-xs"></i> Protmūšis
+        </button>
+        <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours']" title="Grįžti į turų sąrašą">
+            <i class="fa fa-arrow-circle-left fa-xs"></i> Turai
+        </button>
+        <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId]" title="Grįžti į turą">
+            <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
+        </button>
+        <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions']" title="Grįžti į klausimų sąrašą">
+            <i class="fa fa-arrow-circle-left fa-xs"></i> Klausimai
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Klausimas</span>
+                    </h4>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content" *ngIf="question">
-            <div class="header display-flex align-center">
-                <div class="col-xs-8 display-flex">
-                    <h2>
-                        {{question.title}}
-                    </h2>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content" *ngIf="question">
+                <div class="header display-flex align-center">
+                    <div class="col-xs-8 display-flex">
+                        <h2>
+                            {{question.title}}
+                        </h2>
+                    </div>
+                    <div class="col-xs-4 display-flex flex-end">
+                        <button [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions/' + question.id + '/edit']"
+                                type="button" class="btn white waves-effect waves-light">
+                            <i class="fa fa-edit"></i>Redaguoti
+                        </button>
+                    </div>
                 </div>
-                <div class="col-xs-4 display-flex flex-end">
-                    <button [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions/' + question.id + '/edit']"
-                            type="button" class="btn white waves-effect waves-light">
-                        <i class="fa fa-edit"></i>Redaguoti
-                    </button>
-                </div>
-            </div>
-            <div class="body table-responsive">
-                <div>
-                    <p class="description">
-                        {{question.description}}
-                    </p>
-                </div>
-                <hr />
-                <div>
-                    <p>
-                        Atsakymas:
-                        <br />
-                        <b>{{question.answer}}</b>
-                    </p>
-                </div>
-                <div>
-                    <p>
-                        Klausimo eilės numeris: <b>{{question.orderNumber}}</b>
-                    </p>
-                </div>
-                <div>
-                    <p>
-                        Taškai, skirti už klausimą: <b>{{question.points}}</b>
-                    </p>
-                </div>
-                <div>
-                    <p>
-                        Laikas, skirtas atsakyti klausimui: <b>{{question.timeToAnswerInSeconds}}</b>
-                    </p>
+                <div class="body table-responsive">
+                    <div>
+                        <p class="description">
+                            {{question.description}}
+                        </p>
+                    </div>
+                    <hr />
+                    <div>
+                        <p>
+                            Atsakymas:
+                            <br />
+                            <b>{{question.answer}}</b>
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            Klausimo eilės numeris: <b>{{question.orderNumber}}</b>
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            Taškai, skirti už klausimą: <b>{{question.points}}</b>
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            Laikas, skirtas atsakyti klausimui: <b>{{question.timeToAnswerInSeconds}}</b>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

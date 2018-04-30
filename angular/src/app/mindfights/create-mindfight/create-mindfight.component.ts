@@ -5,11 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
 import { DatepickerOptionsService } from '../../services/datepickerOptions.service';
 import { Location } from '@angular/common';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
-  selector: 'app-create-mindfight',
-  templateUrl: './create-mindfight.component.html',
-  styleUrls: ['./create-mindfight.component.css']
+    selector: 'app-create-mindfight',
+    templateUrl: './create-mindfight.component.html',
+    styleUrls: ['./create-mindfight.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class CreateMindfightComponent extends AppComponentBase implements OnInit {
     mindfight: MindfightCreateUpdateDto = null;
@@ -31,6 +33,7 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
 
     ngOnInit() {
         this.singleDatepickerOptions = this.datepickerOptionsService.getSingleDatepickerOptions();
+        this.singleDatepickerOptions.startDate = this.datepickerOptionsService.initialDate.startDate;
         this.selectedDate = this.datepickerOptionsService.getInitialDate();
         this.mindfight = new MindfightCreateUpdateDto();
     }

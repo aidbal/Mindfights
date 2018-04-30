@@ -5,11 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import * as moment from 'moment';
 import { DatepickerOptionsService } from '../../services/datepickerOptions.service';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-edit-mindfight',
     templateUrl: './edit-mindfight.component.html',
-    styleUrls: ['./edit-mindfight.component.css']
+    styleUrls: ['./edit-mindfight.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EditMindfightComponent extends AppComponentBase implements OnInit {
     mindfight: MindfightDto = null;

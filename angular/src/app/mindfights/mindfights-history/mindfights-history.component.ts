@@ -2,11 +2,13 @@ import { Component, OnInit, Injector, Input } from '@angular/core';
 import { AppComponentBase } from 'shared/app-component-base';
 import { MindfightResultDto, ResultServiceProxy } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-mindfights-history',
     templateUrl: './mindfights-history.component.html',
-    styleUrls: ['./mindfights-history.component.css']
+    styleUrls: ['./mindfights-history.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class MindfightsHistoryComponent extends AppComponentBase implements OnInit {
     @Input() teamId: number;

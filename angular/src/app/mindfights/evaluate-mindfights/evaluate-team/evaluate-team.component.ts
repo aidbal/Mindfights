@@ -7,11 +7,13 @@ import {
 } from 'shared/service-proxies/service-proxies';
 import { Location } from '@angular/common';
 import { AppComponentBase } from 'shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-evaluate-team',
     templateUrl: './evaluate-team.component.html',
-    styleUrls: ['./evaluate-team.component.css']
+    styleUrls: ['./evaluate-team.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

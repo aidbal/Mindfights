@@ -3,11 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AppComponentBase } from '@shared/app-component-base';
 import { Location } from '@angular/common';
 import { MindfightDto, MindfightServiceProxy, TourDto, TourServiceProxy } from 'shared/service-proxies/service-proxies';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
   selector: 'app-tours',
   templateUrl: './tours.component.html',
-  styleUrls: ['./tours.component.css']
+    styleUrls: ['./tours.component.css'],
+  animations: [appModuleAnimation()]
 })
 export class ToursComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

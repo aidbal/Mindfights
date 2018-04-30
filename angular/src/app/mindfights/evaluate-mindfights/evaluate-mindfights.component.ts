@@ -1,13 +1,15 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { PlayerServiceProxy, MindfightServiceProxy, MindfightDto } from 'shared/service-proxies/service-proxies';
+import { MindfightServiceProxy, MindfightDto } from 'shared/service-proxies/service-proxies';
 import { Location } from '@angular/common';
 import { AppComponentBase } from 'shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-evaluate-mindfights.',
     templateUrl: './evaluate-mindfights.component.html',
-    styleUrls: ['./evaluate-mindfights.component.css']
+    styleUrls: ['./evaluate-mindfights.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EvaluateMindfightsComponent extends AppComponentBase implements OnInit {
     mindfights: MindfightDto[] = [];

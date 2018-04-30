@@ -8,8 +8,8 @@ export class DatepickerOptionsService {
     singleDatepickerOptions = {};
     rangeDatepickerOptions = {};
     initialDate = {
-        startDate: moment().add(1, 'days'),
-        endDate: moment().add(1, 'days').endOf('day')
+        startDate: moment().add(1, 'days').format(this.dateTimeFormat),
+        endDate: moment().add(2, 'days').endOf('day').format(this.dateTimeFormat)
     };
 
     private singleDatePickerOption = {
@@ -54,7 +54,7 @@ export class DatepickerOptionsService {
             "firstDay": 1
         },
         "alwaysShowCalendars": true,
-        "opens": "right",
+        "opens": "right"
     };
 
     constructor() {

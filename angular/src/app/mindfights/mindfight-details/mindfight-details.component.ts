@@ -7,11 +7,13 @@ import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import * as moment from 'moment';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-mindfight-details',
     templateUrl: './mindfight-details.component.html',
-    styleUrls: ['./mindfight-details.component.css']
+    styleUrls: ['./mindfight-details.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class MindfightDetailsComponent extends AppComponentBase implements OnInit {
     mindfight: MindfightDto;

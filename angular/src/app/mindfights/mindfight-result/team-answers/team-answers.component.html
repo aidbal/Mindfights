@@ -1,57 +1,59 @@
-<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        [routerLink]="['/app/mindfights/' + mindfightId + '/results']" title="Protmūšio rezultatai">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Protmūšio rezultatai
-</button>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title">
-                    <span>Komandos atsakymai</span>
-                </h4>
-                <span *ngIf="mindfight">Protmūšis: <b>{{mindfight.title}}</b></span>
-                <br />
-                <span *ngIf="team">Komanda: <b>{{team.name}}</b></span>
+<div [@routerTransition]>
+    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+            [routerLink]="['/app/mindfights/' + mindfightId + '/results']" title="Protmūšio rezultatai">
+        <i class="fa fa-arrow-circle-left fa-xs"></i> Protmūšio rezultatai
+    </button>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Komandos atsakymai</span>
+                    </h4>
+                    <span *ngIf="mindfight">Protmūšis: <b>{{mindfight.title}}</b></span>
+                    <br />
+                    <span *ngIf="team">Komanda: <b>{{team.name}}</b></span>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-md-12">
-    <div class="card" *ngIf="teamAnswers.length <= 0">
-        <div class="header text-center">
-            Komanda neturi jokių įvestų atsakymų!
+    <div class="col-md-12">
+        <div class="card" *ngIf="teamAnswers.length <= 0">
+            <div class="header text-center">
+                Komanda neturi jokių įvestų atsakymų!
+            </div>
         </div>
     </div>
-</div>
-<div class="col-md-12">
-    <div class="card" *ngIf="teamAnswers.length > 0">
-        <div class="header">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Įvertinta</th>
-                        <th>Turas</th>
-                        <th>Klausimas</th>
-                        <th>Vertintojas</th>
-                        <th>Vertintojo komentaras</th>
-                        <th>Paskirti taškai</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let answer of teamAnswers; let i = index">
-                        <td>
-                            <input type="checkbox" id="isAnswerEvaluated{{i}}" disabled
-                                   [ngModel]="answer.isEvaluated">
-                            <label [attr.for]="'isAnswerEvaluated'+i" title="Įvertinimo statusas"></label>
-                        </td>
-                        <td>{{answer.tourOrderNumber}}</td>
-                        <td>{{answer.questionTitle}}</td>
-                        <td>{{answer.evaluator}}</td>
-                        <td>{{answer.evaluatorComment}}</td>
-                        <td>{{answer.earnedPoints}}</td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="col-md-12">
+        <div class="card" *ngIf="teamAnswers.length > 0">
+            <div class="header">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Įvertinta</th>
+                            <th>Turas</th>
+                            <th>Klausimas</th>
+                            <th>Vertintojas</th>
+                            <th>Vertintojo komentaras</th>
+                            <th>Paskirti taškai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let answer of teamAnswers; let i = index">
+                            <td>
+                                <input type="checkbox" id="isAnswerEvaluated{{i}}" disabled
+                                       [ngModel]="answer.isEvaluated">
+                                <label [attr.for]="'isAnswerEvaluated'+i" title="Įvertinimo statusas"></label>
+                            </td>
+                            <td>{{answer.tourOrderNumber}}</td>
+                            <td>{{answer.questionTitle}}</td>
+                            <td>{{answer.evaluator}}</td>
+                            <td>{{answer.evaluatorComment}}</td>
+                            <td>{{answer.earnedPoints}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

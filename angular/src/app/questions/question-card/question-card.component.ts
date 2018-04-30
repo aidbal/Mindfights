@@ -1,11 +1,13 @@
 import { Component, OnInit, Injector, Input, Output, EventEmitter } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { QuestionDto, QuestionServiceProxy } from 'shared/service-proxies/service-proxies';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
-  selector: 'app-question-card',
-  templateUrl: './question-card.component.html',
-  styleUrls: ['./question-card.component.css']
+    selector: 'app-question-card',
+    templateUrl: './question-card.component.html',
+    styleUrls: ['./question-card.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class QuestionCardComponent extends AppComponentBase implements OnInit {
     @Output() notifyOrderChange: EventEmitter<any> = new EventEmitter();

@@ -2,11 +2,13 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-player-details',
     templateUrl: './player-details.component.html',
-    styleUrls: ['./player-details.component.css']
+    styleUrls: ['./player-details.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class PlayerDetailsComponent extends AppComponentBase implements OnInit {
     playerInfo: PlayerDto;

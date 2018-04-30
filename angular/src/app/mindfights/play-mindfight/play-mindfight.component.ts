@@ -11,11 +11,13 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/take';
 import "rxjs/add/observable/of";
 import * as moment from 'moment';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-play-mindfight',
     templateUrl: './play-mindfight.component.html',
-    styleUrls: ['./play-mindfight.component.css']
+    styleUrls: ['./play-mindfight.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

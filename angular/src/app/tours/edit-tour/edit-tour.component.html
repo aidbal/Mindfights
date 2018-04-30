@@ -1,104 +1,106 @@
-<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/']" title="Grįžti į turus">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Turai
-</button>
-<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId]" title="Grįžti į turą">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
-</button>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title">
-                    <span>Redaguoti turą</span>
-                </h4>
+<div [@routerTransition]>
+    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+            [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/']" title="Grįžti į turus">
+        <i class="fa fa-arrow-circle-left fa-xs"></i> Turai
+    </button>
+    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+            [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId]" title="Grįžti į turą">
+        <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
+    </button>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Redaguoti turą</span>
+                    </h4>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <form *ngIf="tour" #editTourForm="ngForm" novalidate (ngSubmit)="updateTour()">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <mat-form-field>
-                                    <input matInput class="form-control" [(ngModel)]="tour.title"
-                                           placeholder="Pavadinimas"
-                                           name="Title"
-                                           type="text"
-                                           maxlength="255" minlength="2"
-                                           required>
-                                </mat-form-field>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <form *ngIf="tour" #editTourForm="ngForm" novalidate (ngSubmit)="updateTour()">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <input matInput class="form-control" [(ngModel)]="tour.title"
+                                               placeholder="Pavadinimas"
+                                               name="Title"
+                                               type="text"
+                                               maxlength="255" minlength="2"
+                                               required>
+                                    </mat-form-field>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <mat-form-field>
-                                    <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="tour.description"
-                                              placeholder="Aprašymas"
-                                              name="Description"
-                                              type="text"
-                                              minRows="5"
-                                              maxlength="2550" minlength="2"
-                                              required>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <textarea matInput matTextareaAutosize class="form-control" [(ngModel)]="tour.description"
+                                                  placeholder="Aprašymas"
+                                                  name="Description"
+                                                  type="text"
+                                                  minRows="5"
+                                                  maxlength="2550" minlength="2"
+                                                  required>
                                     </textarea>
-                                </mat-form-field>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <input matInput class="form-control" [(ngModel)]="tour.timeToEnterAnswersInSeconds"
+                                               placeholder="Laikas, skirti įvesti atsakymams, pasibaigus turui (sekundės)"
+                                               name="TimeToEnterAnswersInSeconds"
+                                               type="number" required>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <mat-form-field>
+                                        <input matInput class="form-control" [(ngModel)]="tour.introTimeInSeconds"
+                                               placeholder="Turo pasiruošimo laikas (sekundės)"
+                                               name="IntroTimeInSeconds"
+                                               type="number" required>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="gray">
+                                    <p>
+                                        Turo eilės numeris: <b>{{tour.orderNumber}}</b>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <mat-form-field>
-                                    <input matInput class="form-control" [(ngModel)]="tour.timeToEnterAnswersInSeconds"
-                                           placeholder="Laikas, skirti įvesti atsakymams, pasibaigus turui (sekundės)"
-                                           name="TimeToEnterAnswersInSeconds"
-                                           type="number" required>
-                                </mat-form-field>
-                            </div>
+                    <div class="modal-footer">
+                        <div class="display-flex col-xs-6">
+                            <button (click)="deleteTour()" class="btn btn-danger left-align" type="button">
+                                Ištrinti <i class="fa fa-times fa-xs"></i>
+                            </button>
+                        </div>
+                        <div class="display-flex flex-end col-xs-6">
+                            <button [disabled]="!editTourForm.form.valid || !editTourForm.form.dirty || saving" type="submit" class="btn btn-primary green">
+                                Atnaujinti <i class="fa fa-check fa-xs"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <mat-form-field>
-                                    <input matInput class="form-control" [(ngModel)]="tour.introTimeInSeconds"
-                                           placeholder="Turo pasiruošimo laikas (sekundės)"
-                                           name="IntroTimeInSeconds"
-                                           type="number" required>
-                                </mat-form-field>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="gray">
-                                <p>
-                                    Turo eilės numeris: <b>{{tour.orderNumber}}</b>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="display-flex col-xs-6">
-                        <button (click)="deleteTour()" class="btn btn-danger left-align" type="button">
-                            Ištrinti <i class="fa fa-times fa-xs"></i>
-                        </button>
-                    </div>
-                    <div class="display-flex flex-end col-xs-6">
-                        <button [disabled]="!editTourForm.form.valid || !editTourForm.form.dirty || saving" type="submit" class="btn btn-primary green">
-                            Atnaujinti <i class="fa fa-check fa-xs"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>

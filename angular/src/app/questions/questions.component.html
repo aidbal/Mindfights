@@ -1,4 +1,4 @@
-<div>
+<div [@routerTransition]>
     <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
             [routerLink]="['/app/mindfights/' + mindfightId]" title="Grįžti į protmūšį">
         <i class="fa fa-arrow-circle-left fa-xs"></i> Protmūšis
@@ -10,46 +10,46 @@
             [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId]" title="Grįžti į turą">
         <i class="fa fa-arrow-circle-left fa-xs"></i> Turas
     </button>
-</div>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title">
-                    <span>Klausimai</span>
-                </h4>
-            </div>
-            <div class="modal-body text-center">
-                <div *ngIf="mindfight">
-                    <span>Protmūšis: <b>{{mindfight.title}}</b></span>
-                    <br />
-                    <span>Pradžios data: <b>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</b></span>
-                    <br />
-                    <span>Turų skaičius: <b>{{mindfight.toursCount}}</b></span>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Klausimai</span>
+                    </h4>
                 </div>
-            </div>
-            <div class="modal-body text-center">
-                <div *ngIf="tour">
-                    <span>Turas: <b>{{tour.title}}</b></span>
-                    <br />
-                    <span>Turo eilės numeris: <b>{{tour.orderNumber}}</b></span>
-                    <br />
-                    <span>Klausimų skaičius: <b>{{tour.questionsCount}}</b></span>
-                    <br />
-                    <span>Viso taškų skaičius: <b>{{tour.totalPoints}}</b></span>
+                <div class="modal-body text-center">
+                    <div *ngIf="mindfight">
+                        <span>Protmūšis: <b>{{mindfight.title}}</b></span>
+                        <br />
+                        <span>Pradžios data: <b>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</b></span>
+                        <br />
+                        <span>Turų skaičius: <b>{{mindfight.toursCount}}</b></span>
+                    </div>
+                </div>
+                <div class="modal-body text-center">
+                    <div *ngIf="tour">
+                        <span>Turas: <b>{{tour.title}}</b></span>
+                        <br />
+                        <span>Turo eilės numeris: <b>{{tour.orderNumber}}</b></span>
+                        <br />
+                        <span>Klausimų skaičius: <b>{{tour.questionsCount}}</b></span>
+                        <br />
+                        <span>Viso taškų skaičius: <b>{{tour.totalPoints}}</b></span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div>
-    <div class="block-header">
-        <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float margin-bottom-medium"
-                [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions/create']" title="Sukurti naują klausimą">
-            <i class="material-icons">add</i>
-        </button>
+    <div>
+        <div class="block-header">
+            <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float margin-bottom-medium"
+                    [routerLink]="['/app/mindfights/' + mindfightId + '/edit/tours/' + tourId + '/questions/create']" title="Sukurti naują klausimą">
+                <i class="material-icons">add</i>
+            </button>
+        </div>
     </div>
-</div>
-<div *ngFor="let question of questions">
-    <app-question-card [question]="question" [mindfightId]="mindfightId" [tourId]="tourId" (notifyOrderChange)="onOrderChange($event)"></app-question-card>
+    <div *ngFor="let question of questions">
+        <app-question-card [question]="question" [mindfightId]="mindfightId" [tourId]="tourId" (notifyOrderChange)="onOrderChange($event)"></app-question-card>
+    </div>
 </div>

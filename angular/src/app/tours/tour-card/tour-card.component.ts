@@ -1,11 +1,13 @@
 import { Component, OnInit, Injector, Input, Output, EventEmitter } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { TourDto, TourServiceProxy } from 'shared/service-proxies/service-proxies';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-tour-card',
     templateUrl: './tour-card.component.html',
-    styleUrls: ['./tour-card.component.css']
+    styleUrls: ['./tour-card.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class TourCardComponent extends AppComponentBase implements OnInit {
     @Output() notifyOrderChange: EventEmitter<any> = new EventEmitter();

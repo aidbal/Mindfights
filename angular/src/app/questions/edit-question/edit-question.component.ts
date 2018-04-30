@@ -2,11 +2,13 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { QuestionDto, QuestionServiceProxy } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
-  selector: 'app-edit-question',
-  templateUrl: './edit-question.component.html',
-  styleUrls: ['./edit-question.component.css']
+    selector: 'app-edit-question',
+    templateUrl: './edit-question.component.html',
+    styleUrls: ['./edit-question.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EditQuestionComponent extends AppComponentBase implements OnInit {
     mindfightId: number;

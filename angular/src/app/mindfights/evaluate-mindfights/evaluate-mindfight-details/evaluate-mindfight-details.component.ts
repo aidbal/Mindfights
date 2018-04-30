@@ -3,11 +3,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PlayerServiceProxy, MindfightServiceProxy, MindfightDto, MindfightResultDto, ResultServiceProxy } from 'shared/service-proxies/service-proxies';
 import { Location } from '@angular/common';
 import { AppComponentBase } from 'shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-evaluate-mindfight-details',
     templateUrl: './evaluate-mindfight-details.component.html',
-    styleUrls: ['./evaluate-mindfight-details.component.css']
+    styleUrls: ['./evaluate-mindfight-details.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EvaluateMindfightDetailsComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

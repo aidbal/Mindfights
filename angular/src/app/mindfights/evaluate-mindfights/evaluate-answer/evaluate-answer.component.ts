@@ -2,11 +2,13 @@ import { Component, OnInit, Injector, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TeamAnswerServiceProxy, TeamAnswerDto, QuestionDto, QuestionServiceProxy } from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from 'shared/app-component-base';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-evaluate-answer',
     templateUrl: './evaluate-answer.component.html',
-    styleUrls: ['./evaluate-answer.component.css']
+    styleUrls: ['./evaluate-answer.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class EvaluateAnswerComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;

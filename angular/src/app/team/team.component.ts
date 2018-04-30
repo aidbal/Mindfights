@@ -2,11 +2,13 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
 import { TeamServiceProxy, TeamDto, PlayerDto, PlayerServiceProxy, TeamPlayerDto } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
+import { appModuleAnimation } from 'shared/animations/routerTransition';
 
 @Component({
     selector: 'app-team',
     templateUrl: './team.component.html',
-    styleUrls: ['./team.component.css']
+    styleUrls: ['./team.component.css'],
+    animations: [appModuleAnimation()]
 })
 export class TeamComponent extends AppComponentBase implements OnInit {
     teamId: number;

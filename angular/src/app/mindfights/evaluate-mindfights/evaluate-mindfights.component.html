@@ -1,31 +1,33 @@
-<div class="col-md-12" *ngFor="let mindfight of mindfights">
-    <div class="card" *ngIf="mindfight">
-        <div class="header">
-            <h2>
-                {{mindfight.title}}
-            </h2>
-            <ul class="header-dropdown m-r-0">
-                <li>
-                    <i class="fa fa-calendar"></i>
-                </li>
-                <li>
-                    <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span>
-                </li>
-            </ul>
-            <hr />
-            <div class="row display-flex align-vertical-center">
-                <div class="col-md-6">
-                    <small *ngIf="mindfightResults">
-                        Įvertinta komandų {{evaluatedCount}} / {{mindfightResults.length}}
-                    </small>
-                </div>
-                <div class="col-md-6">
-                    <div class="text-right">
-                        <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
-                                [routerLink]="['/app/mindfights', mindfight.id]">
-                            <span>Daugiau</span>
-                            <i class="fa fa-arrow-circle-right"></i>
-                        </button>
+<div [@routerTransition]>
+    <div class="col-md-12" *ngFor="let mindfight of mindfights">
+        <div class="card" *ngIf="mindfight">
+            <div class="header">
+                <h2>
+                    {{mindfight.title}}
+                </h2>
+                <ul class="header-dropdown m-r-0">
+                    <li>
+                        <i class="fa fa-calendar"></i>
+                    </li>
+                    <li>
+                        <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span>
+                    </li>
+                </ul>
+                <hr />
+                <div class="row display-flex align-vertical-center">
+                    <div class="col-md-6">
+                        <small *ngIf="mindfightResults">
+                            Įvertinta komandų {{evaluatedCount}} / {{mindfightResults.length}}
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-right">
+                            <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                    [routerLink]="['/app/mindfights', mindfight.id]">
+                                <span>Daugiau</span>
+                                <i class="fa fa-arrow-circle-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

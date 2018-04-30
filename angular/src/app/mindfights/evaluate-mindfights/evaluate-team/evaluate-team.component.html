@@ -1,84 +1,86 @@
-<button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-        [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details']" title="Komandų vertinimas">
-    <i class="fa fa-arrow-circle-left fa-xs"></i> Komandų vertinimas
-</button>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card main-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title">
-                    <span>Įvertinti komandos atsakymus</span>
-                </h4>
-                <span *ngIf="mindfight">Protmūšis: <b>{{mindfight.title}}</b></span>
-                <br />
-                <span *ngIf="team">Komanda: <b>{{team.name}}</b></span>
+<div [@routerTransition]>
+    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+            [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details']" title="Komandų vertinimas">
+        <i class="fa fa-arrow-circle-left fa-xs"></i> Komandų vertinimas
+    </button>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">
+                        <span>Įvertinti komandos atsakymus</span>
+                    </h4>
+                    <span *ngIf="mindfight">Protmūšis: <b>{{mindfight.title}}</b></span>
+                    <br />
+                    <span *ngIf="team">Komanda: <b>{{team.name}}</b></span>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-md-12">
-    <div class="card" *ngIf="teamAnswers.length <= 0">
-        <div class="header text-center">
-            Komanda neturi jokių įvestų atsakymų!
+    <div class="col-md-12">
+        <div class="card" *ngIf="teamAnswers.length <= 0">
+            <div class="header text-center">
+                Komanda neturi jokių įvestų atsakymų!
+            </div>
         </div>
     </div>
-</div>
-<div class="col-md-12">
-    <div class="card" *ngIf="teamAnswers.length > 0 && mindfightResult">
-        <div class="header">
-            <div *ngIf="!mindfightResult.isEvaluated">
-                <div class="display-flex flex-end">
-                    <button type="button" class="btn bg-green waves-effect btn-sm"
-                            [disabled]="teamAnswers.length <= 0 || teamAnswers.length != evaluatedTeamAnswers"
-                            (click)="completeEvaluate()">
+    <div class="col-md-12">
+        <div class="card" *ngIf="teamAnswers.length > 0 && mindfightResult">
+            <div class="header">
+                <div *ngIf="!mindfightResult.isEvaluated">
+                    <div class="display-flex flex-end">
+                        <button type="button" class="btn bg-green waves-effect btn-sm"
+                        [disabled]="teamAnswers.length <= 0 || teamAnswers.length != evaluatedTeamAnswers"
+                        (click)="completeEvaluate()">
                         <span>Baigti komandos vertinimą</span>
                         <i class="fa fa-check"></i>
-                    </button>
+                        </button>
+                    </div>
+                    <div class="display-flex flex-end margin-bottom-medium">
+                        <small *ngIf="teamAnswers.length <= 0 || teamAnswers.length != evaluatedTeamAnswers">
+                            Norint baigti vertinti komandą, reikia įvertinti visus klausimus
+                        </small>
+                    </div>
                 </div>
-                <div class="display-flex flex-end margin-bottom-medium">
-                    <small *ngIf="teamAnswers.length <= 0 || teamAnswers.length != evaluatedTeamAnswers">
-                    Norint baigti vertinti komandą, reikia įvertinti visus klausimus
-                    </small>
-                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Įvertinta</th>
+                            <th>Turas</th>
+                            <th>Klausimas</th>
+                            <th>Vertintojas</th>
+                            <th>Vertintojo komentaras</th>
+                            <th>Paskirti taškai</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let answer of teamAnswers; let i = index">
+                            <td>
+                                <input type="checkbox" id="isAnswerEvaluated{{i}}" disabled
+                                       [ngModel]="answer.isEvaluated">
+                                <label [attr.for]="'isAnswerEvaluated'+i" title="Įvertinimo statusas"></label>
+                            </td>
+                            <td>{{answer.tourOrderNumber}}</td>
+                            <td>{{answer.questionTitle}}</td>
+                            <td>{{answer.evaluator}}</td>
+                            <td>{{answer.evaluatorComment}}</td>
+                            <td>{{answer.earnedPoints}}</td>
+                            <td>
+                                <div class="display-flex flex-end">
+                                    <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
+                                            *ngIf="!mindfightResult.isEvaluated"
+                                            [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/team/' + teamId + '/question/' + answer.questionId]">
+                                        <span *ngIf="!answer.isEvaluated">Įvertinti</span>
+                                        <span *ngIf="answer.isEvaluated">Redaguoti</span>
+                                        <i class="fa fa-arrow-circle-right"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Įvertinta</th>
-                        <th>Turas</th>
-                        <th>Klausimas</th>
-                        <th>Vertintojas</th>
-                        <th>Vertintojo komentaras</th>
-                        <th>Paskirti taškai</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let answer of teamAnswers; let i = index">
-                        <td>
-                            <input type="checkbox" id="isAnswerEvaluated{{i}}" disabled
-                                   [ngModel]="answer.isEvaluated">
-                            <label [attr.for]="'isAnswerEvaluated'+i" title="Įvertinimo statusas"></label>
-                        </td>
-                        <td>{{answer.tourOrderNumber}}</td>
-                        <td>{{answer.questionTitle}}</td>
-                        <td>{{answer.evaluator}}</td>
-                        <td>{{answer.evaluatorComment}}</td>
-                        <td>{{answer.earnedPoints}}</td>
-                        <td>
-                            <div class="display-flex flex-end">
-                                <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
-                                        *ngIf="!mindfightResult.isEvaluated"
-                                        [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/team/' + teamId + '/question/' + answer.questionId]">
-                                    <span *ngIf="!answer.isEvaluated">Įvertinti</span>
-                                    <span *ngIf="answer.isEvaluated">Redaguoti</span>
-                                    <i class="fa fa-arrow-circle-right"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
