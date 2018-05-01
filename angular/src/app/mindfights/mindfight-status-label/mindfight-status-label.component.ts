@@ -24,9 +24,9 @@ export class MindfightStatusLabelComponent extends AppComponentBase implements O
     updateActiveStatus(currentStatus) {
         this.mindfightService.updateActiveStatus(this.mindfight.id, !currentStatus).subscribe(() => {
             if (currentStatus) {
-                this.notify.success("Protmūšis '" + this.mindfight.title + "' sėkmingai aktyvuotas!");
+                this.notify.success("Protmūšis '" + this.mindfight.title + "' sėkmingai deaktyvuotas!");
             } else {
-                this.notify.success("Protmūšis '" + this.mindfight.title + "' sėkmingai deaktyvuotas!")
+                this.notify.success("Protmūšis '" + this.mindfight.title + "' sėkmingai aktyvuotas!")
             }
             this.mindfight.isActive = !currentStatus;
         });

@@ -106,7 +106,7 @@
                                     <label [attr.for]="'isActiveInTeam'+i" title="Keisti aktyvumo statusą"></label>
                                 </td>
                                 <td>{{player.id}}</td>
-                                <td>{{player.userName}}</td>
+                                <td><a [routerLink]="['/app/player/' + player.id]">{{player.userName}}</a></td>
                                 <td>{{player.points}}</td>
                                 <td *ngIf="currentUserId != player.id" class="display-flex center">
                                     <button type="button" class="btn red" (click)="removePlayer(player.id, player.userName)">

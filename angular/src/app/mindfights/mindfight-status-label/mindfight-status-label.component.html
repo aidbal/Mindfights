@@ -4,10 +4,12 @@
             <span>Protmūšis pabaigtas </span><i class="fa fa-check"></i>
         </div>
         <div *ngIf="canEdit && !mindfight.isFinished">
-            <button class="btn status-label inactive-color" type="button" *ngIf="!mindfight.isActive" title="Aktyvuoti">
+            <button class="btn status-label inactive-color" type="button" *ngIf="!mindfight.isActive" title="Aktyvuoti"
+                    (click)="updateActiveStatus(mindfight.isActive)">
                 <span>Protmūšis neaktyvus </span><i class="fa fa-ban"></i>
             </button>
-            <button class="btn status-label active-color" type="button" *ngIf="mindfight.isActive" title="Deaktyvuoti">
+            <button class="btn status-label active-color" type="button" *ngIf="mindfight.isActive" title="Deaktyvuoti"
+                    (click)="updateActiveStatus(mindfight.isActive)">
                 <span>Protmūšis aktyvus </span><i class="fa fa-check"></i>
             </button>
         </div>

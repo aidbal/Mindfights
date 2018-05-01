@@ -134,7 +134,7 @@
                                            (click)="updateConfirmation(registration)">
                                     <label [attr.for]="'isTeamConfirmed'+i" title="Keisti patvirtinimo statusą"></label>
                                 </td>
-                                <td>{{registration.teamName}}</td>
+                                <td><a [routerLink]="['/app/team/' + registration.teamId]">{{registration.teamName}}</a></td>
                                 <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>
                             </tr>
                         </tbody>

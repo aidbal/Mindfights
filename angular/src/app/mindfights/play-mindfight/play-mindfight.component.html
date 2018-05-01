@@ -9,7 +9,9 @@
                             <b *ngIf="secondsLeftToStartMindfight > 0">{{timeLeftToStartMindfight}}</b>
                             <b *ngIf="secondsLeftToStartTour > 0">{{timeLeftToStartTour}}</b>
                             <b *ngIf="secondsLeftToStartQuestion > 0">{{timeLeftToStartQuestion}}</b>
-                            <b *ngIf="secondsLeftToEnterAnswers > 0">{{timeLeftToEnterAnswers}}</b>
+                            <b *ngIf="secondsLeftToStartTour <= 0 && secondsLeftToStartQuestion <= 0 && secondsLeftToEnterAnswers > 0">
+                                {{timeLeftToEnterAnswers}}
+                            </b>
                         </span>
                     </h4>
                 </div>
@@ -32,7 +34,7 @@
             </div>
         </div>
     </div>
-    <div class="row display-flex flex-end" *ngIf="mindfight && currentTour && secondsLeftToStartMindfight <= 0">
+    <div class="row display-flex flex-end" *ngIf="mindfight && currentTour && secondsLeftToStartMindfight <= 0 && !showAnswersLabel">
         <div class="col-xs-3">
             <div class="card margin-bottom-small">
                 <div class="modal-header">

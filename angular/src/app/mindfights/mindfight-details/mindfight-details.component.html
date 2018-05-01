@@ -16,7 +16,9 @@
                             <div>
                                 <button *ngIf="showPlayButton" type="button"
                                         class="btn bg-green waves-effect waves-light"
-                                        [routerLink]="['/app/mindfights/' + mindfightId + '/play']">
+                                        [routerLink]="['/app/mindfights/' + mindfightId + '/play']"
+                                        [disabled]="!isRegistrationActive || !isActiveInTeam" 
+                                        title="{{ isRegistrationActive ? (isActiveInTeam ? 'Žaisto protmūšį' : 'Jūs esate neaktyvus komandoje') : 'Komandos registracija neaktyvi'}}">
                                     Žaisti protmūšį
                                 </button>
                                 <button *ngIf="hasMindfightStarted" type="button"
@@ -24,7 +26,7 @@
                                         [routerLink]="['/app/mindfights/' + mindfightId + '/results']">
                                     Protmūšio rezultatai
                                 </button>
-                                <button *ngIf="canEvaluate" type="button"
+                                <button *ngIf="(canEvaluate || canEdit) && hasMindfightStarted" type="button"
                                         class="btn bg-orange waves-effect waves-light"
                                         [routerLink]="['/app/mindfights/evaluate/' + mindfightId + '/details/']">
                                     Vertinti atsakymus
@@ -80,7 +82,7 @@
                                            (click)="updateConfirmation(registration)">
                                     <label [attr.for]="'isTeamConfirmed'+i" title="Patvirtinimo statusas"></label>
                                 </td>
-                                <td>{{registration.teamName}}</td>
+                                <td><a [routerLink]="['/app/team/' + registration.teamId]">{{registration.teamName}}</a></td>
                                 <td>{{registration.creationTime | date:'yyyy-MM-dd HH:mm'}}</td>
                             </tr>
                         </tbody>

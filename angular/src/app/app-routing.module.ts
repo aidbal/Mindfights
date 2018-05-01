@@ -42,6 +42,7 @@ import { RegisteredMindfightsComponent } from 'app/mindfights/registered-mindfig
                 children: [
                     { path: 'home', component: HomeComponent, canActivate: [AppRouteGuard] },
                     { path: 'player', component: PlayerDetailsComponent, canActivate: [AppRouteGuard] },
+                    { path: 'player/:playerId', component: PlayerDetailsComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/registered', component: RegisteredMindfightsComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/create', component: CreateMindfightComponent, canActivate: [AppRouteGuard] },
                     { path: 'mindfights/administrate', component: AdministrateMindfightsComponent, canActivate: [AppRouteGuard] },
@@ -65,6 +66,7 @@ import { RegisteredMindfightsComponent } from 'app/mindfights/registered-mindfig
                     { path: 'mindfights', component: MindfightsComponent, canActivate: [AppRouteGuard] },
                     { path: 'team', component: TeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'team/create', component: CreateTeamComponent, canActivate: [AppRouteGuard] },
+                    { path: 'team/:teamId', component: TeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'team/:teamId/edit', component: EditTeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },

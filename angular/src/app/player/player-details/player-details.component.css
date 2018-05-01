@@ -17,3 +17,16 @@
 .flex-center {
     align-items: center;
 }
+
+div .card .margin-bottom-none {
+    margin-bottom: 0;
+}
+
+.margin-bottom-medium {
+    margin-bottom: 20px;
+}
+
+.navigate-button {
+    background-color: white;
+    min-width: 150px;
+}

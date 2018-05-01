@@ -16,8 +16,8 @@ export class EvaluateMindfightDetailsComponent extends AppComponentBase implemen
     mindfightId: number;
     mindfight: MindfightDto;
     mindfightResults: MindfightResultDto[] = [];
-    evaluatedCount: number = 0;
-    overallCount: number = 0;
+    evaluatedCount = 0;
+    overallCount = 0;
 
     constructor(
         injector: Injector,
@@ -49,8 +49,8 @@ export class EvaluateMindfightDetailsComponent extends AppComponentBase implemen
     }
 
     getMindfightResults(mindfightId): void {
-        this.mindfightResultService.getMindfightResults(mindfightId).subscribe((result) => {
-            this.mindfightResults = result;
+        this.mindfightResultService.getMindfightResults(mindfightId).subscribe((mindfightResults) => {
+            this.mindfightResults = mindfightResults;
             this.mindfightResults.forEach((result) => {
                 if (result.isEvaluated) {
                     this.evaluatedCount += 1;

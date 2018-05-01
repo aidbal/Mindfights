@@ -20,7 +20,7 @@ import { RegisterComponent } from './register/register.component';
 import { AccountLanguagesComponent } from './layout/account-languages.component';
 
 import { LoginService } from './login/login.service';
-import { MatInputModule, MatDatepickerModule, MAT_DATE_LOCALE } from '@angular/material';
+import { MatInputModule, MatDatepickerModule, MAT_DATE_LOCALE, MatSelectModule } from '@angular/material';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
@@ -36,7 +36,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
         ModalModule.forRoot(),
         MatInputModule,
         MatDatepickerModule,
-        MatMomentDateModule
+        MatMomentDateModule,
+        MatSelectModule,
     ],
     declarations: [
         AccountComponent,

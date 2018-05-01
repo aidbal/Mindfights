@@ -114,6 +114,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     getNextQuestion(mindfightId, teamId): void {
         this.questionService.getNextQuestion(mindfightId, teamId).subscribe(
             (result) => {
+                console.log(result);
                 this.currentQuestion = result;
                 this.showTourLabel = false;
                 this.showQuestionLabel = true;
@@ -126,9 +127,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
 
                 this.secondsLeftToStartQuestion = result.timeToAnswerInSeconds;
                 this.startQuestionCountdownTimer();
-                if (result.isLastQuestion) {
-                    this.currentQuestionIsLast = true;
-                }
+                this.currentQuestionIsLast = result.isLastQuestion;
             },
             () => {
                 this.notify.error("Gaunant sekantį klausimą!", "Klaida");
@@ -245,6 +244,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
 
     startAnswersCountdownTimer(): void {
         let that = this;
+        this.showQuestionLabel = false;
         let answersCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToEnterAnswers)
             .map(() => --this.secondsLeftToEnterAnswers);

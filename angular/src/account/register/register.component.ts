@@ -1,3 +1,4 @@
+import { City } from './../../shared/service-proxies/service-proxies';
 import { Component, Injector, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountServiceProxy, RegisterInput, RegisterOutput } from '@shared/service-proxies/service-proxies'
@@ -12,7 +13,6 @@ import * as moment from 'moment';
     animations: [accountModuleAnimation()]
 })
 export class RegisterComponent extends AppComponentBase implements AfterViewInit {
-
     @ViewChild('cardBody') cardBody: ElementRef;
 
     model: RegisterInput = new RegisterInput();
@@ -20,6 +20,7 @@ export class RegisterComponent extends AppComponentBase implements AfterViewInit
     startDate = moment("1990 01 01", "YYYY MM DD");
     minDate = moment("1900 01 01", "YYYY MM DD");
     maxDate = moment();
+    registrationCities: City[] = [];
 
     saving: boolean = false;
 
@@ -32,8 +33,18 @@ export class RegisterComponent extends AppComponentBase implements AfterViewInit
         super(injector);
     }
 
+    ngOnInit() {
+        this.getRegistrationCities();
+    }
+
     ngAfterViewInit(): void {
         $(this.cardBody.nativeElement).find('input:first').focus();
+    }
+
+    getRegistrationCities() {
+        this._accountService.getRegistrationCities().subscribe((cities) => {
+            this.registrationCities = cities;
+        });
     }
 
     back(): void {

@@ -1,4 +1,8 @@
 <div [@routerTransition]>
+        <button type="button" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button" (click)="goBack()"
+            title="Grįžti į ankstesnį puslapį">
+            <i class="fa fa-arrow-circle-left fa-xs"></i> Grįžti
+        </button>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card main-content">
@@ -21,41 +25,83 @@
                     </div>
                 </div>
                 <div class="body table-responsive">
-                    <br />
-                    <div>
-                        <p>
-                            El. pašto adresas: <b>{{playerInfo.emailAddress}}</b>
-                        </p>
-                    </div>
-                    <br />
-                    <div>
-                        <p>
-                            Taškai: <b>{{playerInfo.points}}</b>
-                        </p>
-                    </div>
-                    <br />
-                    <div *ngIf="playerInfo.teamName" class="display-flex">
-                        <div class="col-xs-6 paddingless">
-                            <p>
-                                Komanda: <b>{{playerInfo.teamName}}</b>
-                            </p>
-                            <br />
-                            <p>
-                                Komandos kapitonas: <b>{{playerInfo.isTeamLeader ? 'Taip' : 'Ne'}}</b>
-                            </p>
+                    <div class="col-xs-12 margin-bottom-none">
+                        <div class="col-xs-4">
+                            Vardas:
                         </div>
-                        <div class="col-xs-6 paddingless display-flex flex-end flex-center">
-                            <button type="button" class="btn white waves-effect btn-sm"
-                                    [routerLink]="['/app/team/']">
-                                <span>Komandos puslapis</span>
-                                <i class="fa fa-arrow-circle-right"></i>
-                            </button>
+                        <div class="col-xs-8">
+                            <b>{{playerInfo.name}}</b>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-none">
+                        <div class="col-xs-4">
+                            Pavardė:
+                        </div>
+                        <div class="col-xs-8">
+                            <b>{{playerInfo.surname}}</b>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-none">
+                        <div class="col-xs-4">
+                            El. pašto adresas:
+                        </div>
+                        <div class="col-xs-8">
+                            <b>{{playerInfo.emailAddress}}</b>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-none">
+                        <div class="col-xs-4">
+                            Miestas:
+                        </div>
+                        <div class="col-xs-8">
+                            <b>{{playerInfo.city ? playerInfo.city : '-'}}</b>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-none">
+                        <div class="col-xs-4">
+                            Gimimo data:
+                        </div>
+                        <div class="col-xs-8">
+                            <b>{{playerInfo.birthdate ? (playerInfo.birthdate  | date:'yyyy-MM-dd') : '-'}}</b>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-bottom-none">
+                        <div class="col-xs-4">
+                            Taškai:
+                        </div>
+                        <div class="col-xs-8">
+                            <b>{{playerInfo.points}}</b>
+                        </div>
+                    </div>
+                    <div *ngIf="playerInfo.teamName">
+                        <div class="col-xs-12 margin-bottom-none">
+                            <div class="col-xs-4">
+                                Komanda:
+                            </div>
+                            <div class="col-xs-8">
+                                <b>
+                                    <a [routerLink]="['/app/team/' + playerInfo.teamId]">{{playerInfo.teamName}}</a>
+                                </b>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 margin-bottom-none">
+                            <div class="col-xs-4">
+                                Komandos kapitonas:
+                            </div>
+                            <div class="col-xs-8">
+                                <b>{{playerInfo.isTeamLeader ? 'Taip' : 'Ne'}}</b>
+                            </div>
                         </div>
                     </div>
                     <div *ngIf="!playerInfo.teamName">
-                        <p>
-                            Komanda: <b>-</b>
-                        </p>
+                        <div class="col-xs-12 margin-bottom-none">
+                            <div class="col-xs-4">
+                                Komanda:
+                            </div>
+                            <div class="col-xs-8">
+                                <b>-</b>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,7 +112,7 @@
             <div class="card main-content">
                 <div class="modal-header text-center">
                     <h4 class="modal-title">
-                        <span>Mano protmūšių istorija</span>
+                        <span>Protmūšių istorija</span>
                     </h4>
                 </div>
             </div>

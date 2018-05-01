@@ -141,12 +141,4 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
     selectedDateEvent(value: any) {
         this.selectedDate.startDate = value.start;
     }
-
-    goToTours() {
-        this.location.back();
-    }
-
-    goBack() {
-        this.location.back();
-    }
 }

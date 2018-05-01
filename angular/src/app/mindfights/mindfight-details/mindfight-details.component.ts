@@ -25,6 +25,8 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     canEdit = false;
     hasMindfightStarted = false;
     showPlayButton = false;
+    isActiveInTeam = false;
+    isRegistrationActive = false;
 
     constructor(
         injector: Injector,
@@ -51,20 +53,20 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     }
 
     checkShowPlayButton(): void {
-        var that = this;
+        // let mindfightStartTime = moment(moment.utc(this.mindfight.startTime).format('YYYY-MM-DDTHH:mm:ss'));
+        let mindfightStartTime = moment(this.mindfight.startTime.format('YYYY-MM-DDTHH:mm:ss'));
+        let isMindfightPrestartTime = mindfightStartTime.diff(moment()) > 0
+            && mindfightStartTime.diff(moment(), 'minutes') < 10;
+        let isMindfightPrepareTime = mindfightStartTime.add(this.mindfight.prepareTime, 'minutes').diff(moment(), 'minutes')
+                                        < this.mindfight.prepareTime &&
+                                    mindfightStartTime.add(this.mindfight.prepareTime, 'minutes').diff(moment()) > 0;
         this.showPlayButton = false;
         if (
             !this.mindfight.isFinished
-            && moment(this.mindfight.startTime).diff(moment().add(10, 'minutes')) <= 0
-            && moment(this.mindfight.startTime).add(this.mindfight.prepareTime, 'minutes').diff(moment()) >= 0
-            ) {
-            const currentRegistrationIndex =
-                this.registrations.findIndex(registration => registration.teamId === that.playerInfo.teamId);
-            if (currentRegistrationIndex >= 0) {
-                if (this.registrations[currentRegistrationIndex].isConfirmed && this.playerInfo.isActiveInTeam) {
-                    this.showPlayButton = true;
-                }
-            }
+            && (isMindfightPrestartTime
+                || isMindfightPrepareTime)
+        ) {
+            this.showPlayButton = true;
         }
     }
 
@@ -104,9 +106,17 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     }
 
     getRegistrations(mindfightId): void {
+        let that = this;
         this.registrationService.getMindfightRegistrations(mindfightId).subscribe((result) => {
             this.registrations = result;
             this.checkShowPlayButton();
+            const currentRegistrationIndex =
+                this.registrations.findIndex(registration => registration.teamId === that.playerInfo.teamId);
+            if (currentRegistrationIndex >= 0) {
+                if (this.registrations[currentRegistrationIndex].isConfirmed) {
+                    this.isRegistrationActive = true;
+                }
+            }
         });
     }
 
@@ -117,6 +127,7 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     getPlayerInfo(): void {
         this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
             this.playerInfo = result;
+            this.isActiveInTeam = this.playerInfo.isActiveInTeam;
         });
     };
 

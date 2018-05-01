@@ -1,10 +1,15 @@
 <div [@routerTransition]>
+    <button type="button" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button" (click)="goBack()"
+        title="Grįžti į ankstesnį puslapį">
+        <i class="fa fa-arrow-circle-left fa-xs"></i> Grįžti
+    </button>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card main-content">
                 <div class="modal-header text-center">
                     <h4 class="modal-title">
-                        <span>Mano komanda</span>
+                        <span *ngIf="isMyTeam">Mano komanda</span>
+                        <span *ngIf="!isMyTeam">Komanda</span>
                     </h4>
                 </div>
             </div>
@@ -18,7 +23,7 @@
         </div>
         <div class="display-flex flex-end">
             <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float margin-bottom-medium"
-                    [routerLink]="['/app/team/create']" title="Sukurti naują komandą">
+                [routerLink]="['/app/team/create']" title="Sukurti naują komandą">
                 <i class="material-icons">add</i>
             </button>
         </div>
@@ -33,38 +38,38 @@
                                 {{team.name}}
                             </h2>
                         </div>
-                        <div class="col-xs-4 display-flex flex-end">
+                        <div class="col-xs-4 display-flex flex-end" *ngIf="isMyTeam">
                             <div *ngIf="isTeamLeader">
-                                <button [routerLink]="['/app/team/' + team.id + '/edit']"
-                                        type="button" class="btn white-bg waves-effect waves-light">
+                                <button [routerLink]="['/app/team/' + team.id + '/edit']" type="button" class="btn white-bg waves-effect waves-light">
                                     Redaguoti
                                 </button>
                             </div>
                             <div *ngIf="!isTeamLeader">
-                                <button (click)="leaveCurrentTeam()" title="Palikti dabartinę komandą"
-                                        type="button" class="btn leave-button waves-effect waves-light">
+                                <button (click)="leaveCurrentTeam()" title="Palikti dabartinę komandą" type="button" class="btn leave-button waves-effect waves-light">
                                     Išeiti iš komandos
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="body table-responsive">
-                        <br />
+                        <br/>
                         <div>
                             <p class="description">
                                 {{team.description}}
                             </p>
                         </div>
-                        <br />
-                        <br />
+                        <br/>
+                        <br/>
                         <div>
                             <p>
-                                Bendri komandos taškai: <b>{{team.gamePoints}}</b>
+                                Bendri komandos taškai:
+                                <b>{{team.gamePoints}}</b>
                             </p>
                         </div>
                         <div>
                             <p>
-                                Komandos narių kiekis: <b>{{team.playersCount}}</b>
+                                Komandos narių kiekis:
+                                <b>{{team.playersCount}}</b>
                             </p>
                         </div>
                         <table *ngIf="activeTeamPlayers" class="table table-hover">
@@ -79,7 +84,9 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td colspan="5"><b>Komandos kapitonas</b></td>
+                                    <td colspan="5">
+                                        <b>Komandos kapitonas</b>
+                                    </td>
                                 </tr>
                                 <tr *ngIf="teamLeader">
                                     <td></td>
@@ -91,28 +98,28 @@
                                         {{teamLeader.id}}
                                     </td>
                                     <td>
-                                        {{teamLeader.userName}}
+                                        <a [routerLink]="['/app/player/' + teamLeader.id]">{{teamLeader.userName}}</a>
                                     </td>
                                     <td>
                                         {{teamLeader.points}}
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td colspan="5"><b>Aktyvi komandos ekipa</b></td>
+                                    <td colspan="5">
+                                        <b>Aktyvi komandos ekipa</b>
+                                    </td>
                                 </tr>
                                 <tr *ngFor="let teamPlayer of activeTeamPlayers; let i = index">
                                     <td></td>
                                     <td>
-                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled
-                                               [ngModel]="teamPlayer.isActiveInTeam"
-                                               (click)="updateConfirmation(registration)">
+                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled [ngModel]="teamPlayer.isActiveInTeam" (click)="updateConfirmation(registration)">
                                         <label [attr.for]="'isActiveInTeam'+i" title="Aktyvus komandoje"></label>
                                     </td>
                                     <td>
                                         {{teamPlayer.id}}
                                     </td>
                                     <td>
-                                        {{teamPlayer.userName}}
+                                        <a [routerLink]="['/app/player/' + teamPlayer.id]">{{teamPlayer.userName}}</a>
                                     </td>
                                     <td>
                                         {{teamPlayer.points}}
@@ -122,21 +129,21 @@
                                     <td colspan="5"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="5"><b>Pasyvi komandos ekipa</b></td>
+                                    <td colspan="5">
+                                        <b>Pasyvi komandos ekipa</b>
+                                    </td>
                                 </tr>
                                 <tr *ngFor="let teamPlayer of passiveTeamPlayers; let i = index">
                                     <td></td>
                                     <td>
-                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled
-                                               [ngModel]="teamPlayer.isActiveInTeam"
-                                               (click)="updateConfirmation(registration)">
+                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled [ngModel]="teamPlayer.isActiveInTeam" (click)="updateConfirmation(registration)">
                                         <label [attr.for]="'isActiveInTeam'+i" title="Aktyvus komandoje"></label>
                                     </td>
                                     <td>
                                         {{teamPlayer.id}}
                                     </td>
                                     <td>
-                                        {{teamPlayer.userName}}
+                                        <a [routerLink]="['/app/player/' + teamPlayer.id]">{{teamPlayer.userName}}</a>
                                     </td>
                                     <td>
                                         {{teamPlayer.points}}

@@ -3,6 +3,7 @@ import { AppComponentBase } from '@shared/app-component-base';
 import { TeamServiceProxy, TeamDto, PlayerDto, PlayerServiceProxy, TeamPlayerDto } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appModuleAnimation } from 'shared/animations/routerTransition';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-team',
@@ -11,6 +12,7 @@ import { appModuleAnimation } from 'shared/animations/routerTransition';
     animations: [appModuleAnimation()]
 })
 export class TeamComponent extends AppComponentBase implements OnInit {
+    private routeSubscriber: any;
     teamId: number;
     team: TeamDto;
     teamPlayers: TeamPlayerDto[] = [];
@@ -19,11 +21,13 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     passiveTeamPlayers: TeamPlayerDto[] = [];
     playerInfo: PlayerDto;
     isTeamLeader = false;
+    isMyTeam = false;
 
     constructor(
         injector: Injector,
         private teamService: TeamServiceProxy,
         private playerService: PlayerServiceProxy,
+        private location: Location,
         private route: ActivatedRoute,
         private router: Router
     ) {
@@ -31,7 +35,20 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     }
 
     ngOnInit() {
-        this.getPlayerInfo();
+        this.routeSubscriber = this.route.params.subscribe(params => {
+            this.teamId = +params['teamId'];
+
+            if (isNaN(this.teamId)) {
+                this.getPlayerInfo(abp.session.userId);
+                this.isMyTeam = true;
+            } else {
+                this.getPlayerTeam(this.teamId);
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.routeSubscriber.unsubscribe();
     }
 
     leaveCurrentTeam() {
@@ -54,15 +71,20 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         );
     }
 
-    getPlayerInfo(): void {
-        this.playerService.getPlayerInfo(abp.session.userId).subscribe((result) => {
+    getPlayerInfo(playerId): void {
+        this.playerService.getPlayerInfo(playerId).subscribe((result) => {
             this.playerInfo = result;
-            if (this.playerInfo.teamId != null) {
+            if (this.playerInfo.teamId !== null && this.isMyTeam) {
                 this.teamId = this.playerInfo.teamId;
                 this.getPlayerTeam(this.playerInfo.teamId);
             }
             if (result.isTeamLeader) {
                 this.isTeamLeader = true;
+            }
+            if (!this.isMyTeam) {
+                if (this.teamId === this.playerInfo.teamId) {
+                    this.isMyTeam = true;
+                }
             }
         });
     };
@@ -71,7 +93,10 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.teamService.getTeam(teamId).subscribe(
             (result) => {
                 this.team = result;
-                this.getAllTeamPlayers(this.playerInfo.teamId);
+                this.getAllTeamPlayers(this.teamId);
+                if (!this.isMyTeam) {
+                    this.getPlayerInfo(abp.session.userId);
+                }
             }
         );
     }
@@ -86,15 +111,20 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     }
 
     getActivePassiveTeamPlayers(teamPlayers): void {
-        var that = this;
-        teamPlayers.forEach(function (player) {
-            if (player.id === that.team.leaderId) {
-                that.teamLeader = player;
+        teamPlayers.forEach(player => {
+            if (player.id === this.team.leaderId) {
+                if (this.teamLeader == null) {
+                    this.teamLeader = player;
+                }
             } else if (player.isActiveInTeam) {
-                that.activeTeamPlayers.push(player);
+                this.activeTeamPlayers.push(player);
             } else {
-                that.passiveTeamPlayers.push(player);
+                this.passiveTeamPlayers.push(player);
             }
         });
+    }
+
+    goBack() {
+        this.location.back();
     }
 }

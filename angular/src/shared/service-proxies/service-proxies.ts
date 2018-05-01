@@ -133,6 +133,56 @@ export class AccountServiceProxy {
         }
         return Observable.of<RegisterOutput>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    getRegistrationCities(): Observable<City[]> {
+        let url_ = this.baseUrl + "/api/services/app/Account/GetRegistrationCities";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetRegistrationCities(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetRegistrationCities(<any>response_);
+                } catch (e) {
+                    return <Observable<City[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<City[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetRegistrationCities(response: Response): Observable<City[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(City.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<City[]>(<any>null);
+    }
 }
 
 @Injectable()
@@ -806,60 +856,6 @@ export class PlayerServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Observable.of<PlayerDto>(<any>null);
-    }
-
-    /**
-     * @return Success
-     */
-    getMindfightEvaluators(mindfightId: number): Observable<PlayerDto[]> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Player/GetMindfightEvaluators?";
-        if (mindfightId === undefined || mindfightId === null)
-            throw new Error("The parameter 'mindfightId' must be defined and cannot be null.");
-        else
-            url_ += "mindfightId=" + encodeURIComponent("" + mindfightId) + "&"; 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            method: "get",
-            headers: new Headers({
-                "Content-Type": "application/json", 
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request(url_, options_).flatMap((response_ : any) => {
-            return this.processGetMindfightEvaluators(response_);
-        }).catch((response_: any) => {
-            if (response_ instanceof Response) {
-                try {
-                    return this.processGetMindfightEvaluators(<any>response_);
-                } catch (e) {
-                    return <Observable<PlayerDto[]>><any>Observable.throw(e);
-                }
-            } else
-                return <Observable<PlayerDto[]>><any>Observable.throw(response_);
-        });
-    }
-
-    protected processGetMindfightEvaluators(response: Response): Observable<PlayerDto[]> {
-        const status = response.status;
-
-        let _headers: any = response.headers ? response.headers.toJSON() : {};
-        if (status === 200) {
-            const _responseText = response.text();
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200 && resultData200.constructor === Array) {
-                result200 = [];
-                for (let item of resultData200)
-                    result200.push(PlayerDto.fromJS(item));
-            }
-            return Observable.of(result200);
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.text();
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Observable.of<PlayerDto[]>(<any>null);
     }
 }
 
@@ -4457,7 +4453,8 @@ export class RegisterInput implements IRegisterInput {
     userName: string;
     emailAddress: string;
     password: string;
-    birthday: moment.Moment;
+    birthdate: moment.Moment;
+    cityId: number;
     captchaResponse: string;
 
     constructor(data?: IRegisterInput) {
@@ -4476,7 +4473,8 @@ export class RegisterInput implements IRegisterInput {
             this.userName = data["userName"];
             this.emailAddress = data["emailAddress"];
             this.password = data["password"];
-            this.birthday = data["birthday"] ? moment(data["birthday"].toString()) : <any>undefined;
+            this.birthdate = data["birthdate"] ? moment(data["birthdate"].toString()) : <any>undefined;
+            this.cityId = data["cityId"];
             this.captchaResponse = data["captchaResponse"];
         }
     }
@@ -4495,7 +4493,8 @@ export class RegisterInput implements IRegisterInput {
         data["userName"] = this.userName;
         data["emailAddress"] = this.emailAddress;
         data["password"] = this.password;
-        data["birthday"] = this.birthday ? this.birthday.toISOString() : <any>undefined;
+        data["birthdate"] = this.birthdate ? this.birthdate.toISOString() : <any>undefined;
+        data["cityId"] = this.cityId;
         data["captchaResponse"] = this.captchaResponse;
         return data; 
     }
@@ -4514,7 +4513,8 @@ export interface IRegisterInput {
     userName: string;
     emailAddress: string;
     password: string;
-    birthday: moment.Moment;
+    birthdate: moment.Moment;
+    cityId: number;
     captchaResponse: string;
 }
 
@@ -4559,6 +4559,53 @@ export class RegisterOutput implements IRegisterOutput {
 
 export interface IRegisterOutput {
     canLogin: boolean;
+}
+
+export class City implements ICity {
+    name: string;
+    id: number;
+
+    constructor(data?: ICity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.name = data["name"];
+            this.id = data["id"];
+        }
+    }
+
+    static fromJS(data: any): City {
+        data = typeof data === 'object' ? data : {};
+        let result = new City();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        data["id"] = this.id;
+        return data; 
+    }
+
+    clone() {
+        const json = this.toJSON();
+        let result = new City();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ICity {
+    name: string;
+    id: number;
 }
 
 export class ChangeUiThemeInput implements IChangeUiThemeInput {
@@ -4886,6 +4933,9 @@ export class PlayerDto implements IPlayerDto {
     emailAddress: string;
     userName: string;
     name: string;
+    surname: string;
+    city: string;
+    birthdate: moment.Moment;
     points: number;
     teamId: number;
     teamName: string;
@@ -4907,6 +4957,9 @@ export class PlayerDto implements IPlayerDto {
             this.emailAddress = data["emailAddress"];
             this.userName = data["userName"];
             this.name = data["name"];
+            this.surname = data["surname"];
+            this.city = data["city"];
+            this.birthdate = data["birthdate"] ? moment(data["birthdate"].toString()) : <any>undefined;
             this.points = data["points"];
             this.teamId = data["teamId"];
             this.teamName = data["teamName"];
@@ -4928,6 +4981,9 @@ export class PlayerDto implements IPlayerDto {
         data["emailAddress"] = this.emailAddress;
         data["userName"] = this.userName;
         data["name"] = this.name;
+        data["surname"] = this.surname;
+        data["city"] = this.city;
+        data["birthdate"] = this.birthdate ? this.birthdate.toISOString() : <any>undefined;
         data["points"] = this.points;
         data["teamId"] = this.teamId;
         data["teamName"] = this.teamName;
@@ -4949,6 +5005,9 @@ export interface IPlayerDto {
     emailAddress: string;
     userName: string;
     name: string;
+    surname: string;
+    city: string;
+    birthdate: moment.Moment;
     points: number;
     teamId: number;
     teamName: string;
