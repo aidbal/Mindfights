@@ -18,7 +18,7 @@
                                         class="btn bg-green waves-effect waves-light"
                                         [routerLink]="['/app/mindfights/' + mindfightId + '/play']"
                                         [disabled]="!isRegistrationActive || !isActiveInTeam" 
-                                        title="{{ isRegistrationActive ? (isActiveInTeam ? 'Žaisto protmūšį' : 'Jūs esate neaktyvus komandoje') : 'Komandos registracija neaktyvi'}}">
+                                        title="{{ isRegistrationActive ? (isActiveInTeam ? 'Žaisti protmūšį' : 'Jūs esate neaktyvus komandoje') : 'Komandos registracija neaktyvi'}}">
                                     Žaisti protmūšį
                                 </button>
                                 <button *ngIf="hasMindfightStarted" type="button"

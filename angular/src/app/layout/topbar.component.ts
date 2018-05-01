@@ -1,5 +1,6 @@
-﻿import { Component, Injector, ViewEncapsulation } from '@angular/core';
+import { Component, Injector, ViewEncapsulation } from '@angular/core';
 import { AppComponentBase } from '@shared/app-component-base';
+import { MindfightStateService } from 'app/services/mindfight-state.service';
 
 @Component({
     templateUrl: './topbar.component.html',
@@ -9,8 +10,13 @@ import { AppComponentBase } from '@shared/app-component-base';
 export class TopBarComponent extends AppComponentBase {
 
     constructor(
-        injector: Injector
+        injector: Injector,
+        private mindfightStateService: MindfightStateService
     ) {
         super(injector);
+    }
+
+    hasMindfightStarted() {
+        return this.mindfightStateService.mindfightStartedState;
     }
 }

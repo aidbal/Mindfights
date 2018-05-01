@@ -96,7 +96,7 @@ namespace Mindfights.Services.TeamAnswerService
 
                 var teamAnswer = await _teamAnswerRepository
                     .GetAll()
-                    .Where(x => answer.QuestionId == x.QuestionId)
+                    .Where(x => answer.QuestionId == x.QuestionId && answer.TeamId == user.TeamId)
                     .FirstOrDefaultAsync();
                 if (teamAnswer != null) continue;
 

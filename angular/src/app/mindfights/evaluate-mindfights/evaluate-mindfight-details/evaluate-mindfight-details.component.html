@@ -80,7 +80,7 @@
                                 <label [attr.for]="'isTeamEvaluated'+i" title="Įvertinimo statusas"></label>
                             </td>
                             <td><a [routerLink]="['/app/team/' + result.teamId]">{{result.teamName}}</a></td>
-                            <td>{{result.place}}</td>
+                            <td>{{result.place ? 0 : '-'}}</td>
                             <td>{{result.earnedPoints}}</td>
                             <td>
                                 <div class="display-flex flex-end">

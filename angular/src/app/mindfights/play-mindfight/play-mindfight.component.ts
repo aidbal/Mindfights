@@ -12,6 +12,7 @@ import 'rxjs/add/operator/take';
 import "rxjs/add/observable/of";
 import * as moment from 'moment';
 import { appModuleAnimation } from 'shared/animations/routerTransition';
+import { MindfightStateService } from 'app/services/mindfight-state.service';
 
 @Component({
     selector: 'app-play-mindfight',
@@ -58,6 +59,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         private registrationService: RegistrationServiceProxy,
         private questionService: QuestionServiceProxy,
         private teamAnswerService: TeamAnswerServiceProxy,
+        private mindfightStateService: MindfightStateService,
         private activatedRoute: ActivatedRoute,
         private location: Location,
         private router: Router
@@ -106,6 +108,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
             },
             () => {
                 this.notify.error("Gaunant sekantį turą!", "Klaida");
+                this.setMindfightState(false);
                 this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
         );
@@ -131,6 +134,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
             },
             () => {
                 this.notify.error("Gaunant sekantį klausimą!", "Klaida");
+                this.setMindfightState(false);
                 this.router.navigate(['../'], { relativeTo: this.activatedRoute });
             }
         );
@@ -188,6 +192,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     }
 
     startMindfightCountdownTimer(): void {
+        let mindfightStateSet = false;
         let mindfightCountDown = Observable.timer(0, 1000)
             .take(this.secondsLeftToStartMindfight)
             .map(() => --this.secondsLeftToStartMindfight);
@@ -195,6 +200,10 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.mindfightCountDownSubscriber = mindfightCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartMindfight = this.getMinutesAndSecondsString(seconds);
+                if (seconds <= 10 && !mindfightStateSet) {
+                    this.setMindfightState(true);
+                    mindfightStateSet = true;
+                }
             },
             () => { },
             () => {
@@ -262,12 +271,14 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                         },
                         () => {
                             that.notify.error("Klaida išsaugojant atsakymus!", "Klaida");
+                            this.setMindfightState(false);
                             that.router.navigate(['../'], { relativeTo: that.activatedRoute });
                         }
                     );
                 }
                 if (that.currentQuestionIsLast && that.currentTourIsLast) {
                     that.notify.success("Protmūšis sėkmingai pabaigtas!", "Sveikiname");
+                    this.setMindfightState(false);
                     that.router.navigate(['../results'], { relativeTo: that.activatedRoute });
                 } else {
                     that.getNextTour(that.mindfightId, that.playerInfo.teamId);
@@ -292,5 +303,9 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
 
     goBack() {
         this.location.back();
+    }
+
+    setMindfightState(started: boolean) {
+        this.mindfightStateService.mindfightStartedState = started;
     }
 }

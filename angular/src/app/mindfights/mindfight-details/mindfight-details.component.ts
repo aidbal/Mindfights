@@ -53,13 +53,13 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     }
 
     checkShowPlayButton(): void {
-        // let mindfightStartTime = moment(moment.utc(this.mindfight.startTime).format('YYYY-MM-DDTHH:mm:ss'));
         let mindfightStartTime = moment(this.mindfight.startTime.format('YYYY-MM-DDTHH:mm:ss'));
         let isMindfightPrestartTime = mindfightStartTime.diff(moment()) > 0
             && mindfightStartTime.diff(moment(), 'minutes') < 10;
-        let isMindfightPrepareTime = mindfightStartTime.add(this.mindfight.prepareTime, 'minutes').diff(moment(), 'minutes')
-                                        < this.mindfight.prepareTime &&
-                                    mindfightStartTime.add(this.mindfight.prepareTime, 'minutes').diff(moment()) > 0;
+
+        let mindfightPrepareTimeLeft = moment(this.mindfight.startTime).diff(moment(), 'minutes');
+        let isMindfightPrepareTime = mindfightPrepareTimeLeft < this.mindfight.prepareTime
+                                    && mindfightPrepareTimeLeft > 0;
         this.showPlayButton = false;
         if (
             !this.mindfight.isFinished

@@ -3,7 +3,7 @@
 <top-bar></top-bar>
 
 <section>
-    <aside id="leftsidebar" class="sidebar">
+    <aside id="leftsidebar" class="sidebar" [ngClass]="{'mindfight-active': hasMindfightStarted()}">
         <sidebar-user-area></sidebar-user-area>
         <sidebar-nav></sidebar-nav>
         <sidebar-footer></sidebar-footer>
@@ -12,7 +12,7 @@
     <right-sidebar></right-sidebar>
 </section>
 
-<section class="content">
+<section class="content" [ngClass]="{'mindfight-active': hasMindfightStarted()}">
     <div class="container-fluid">
         <router-outlet></router-outlet>
     </div>

@@ -7,3 +7,19 @@
 .card {
     border-radius: 5px;
 }
+
+section.content.mindfight-active {
+    margin-right: 315px;
+}
+
+.sidebar#leftsidebar.mindfight-active {
+    display: none;
+}
+
+#top-navbar.mindfight-active {
+    pointer-events: none;
+}
+
+.ls-closed section.content.mindfight-active {
+    margin-right: 0;
+}

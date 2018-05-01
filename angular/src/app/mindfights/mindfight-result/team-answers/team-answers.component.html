@@ -33,6 +33,7 @@
                             <th>Įvertinta</th>
                             <th>Turas</th>
                             <th>Klausimas</th>
+                            <th>Įvestas atsakymas</th>
                             <th>Vertintojas</th>
                             <th>Vertintojo komentaras</th>
                             <th>Paskirti taškai</th>
@@ -47,6 +48,7 @@
                             </td>
                             <td>{{answer.tourOrderNumber}}</td>
                             <td>{{answer.questionTitle}}</td>
+                            <td>{{answer.enteredAnswer ? answer.enteredAnswer : '-'}}</td>
                             <td>{{answer.evaluator}}</td>
                             <td>{{answer.evaluatorComment}}</td>
                             <td>{{answer.earnedPoints}}</td>
