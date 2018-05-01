@@ -44,8 +44,8 @@ namespace Mindfights.Models
             Registrations = new List<Registration>();
             MindfightStates = new List<MindfightState>();
             CreationTime = Clock.Now;
-            IsActive = true;
-            IsConfirmed = false;
+            IsActive = false;
+            IsConfirmed = true;
             IsFinished = false;
         }
     }

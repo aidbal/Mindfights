@@ -13,7 +13,6 @@ using Mindfights.Authentication.JwtBearer;
 using Mindfights.Configuration;
 using Mindfights.DTOs;
 using Mindfights.EntityFrameworkCore;
-using Mindfights.Models;
 using Mindfights.Services.MindfightService;
 using Mindfights.Services.PlayerService;
 using Mindfights.Services.QuestionService;

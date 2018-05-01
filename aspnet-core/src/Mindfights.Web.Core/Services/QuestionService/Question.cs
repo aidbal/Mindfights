@@ -1,5 +1,4 @@
-﻿using System;
-using Abp.AspNetCore.Mvc.Authorization;
+﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
@@ -56,14 +55,14 @@ namespace Mindfights.Services.QuestionService
 
             if (currentTour == null)
             {
-                throw new UserFriendlyException("Tour with specified id does not exist!");
+                throw new UserFriendlyException("Turas su nurodytu id neegzistuoja!");
             }
 
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")
                   || currentTour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
             {
-                throw new AbpAuthorizationException("Insufficient permissions to get this question!");
+                throw new AbpAuthorizationException("Jūs neturite teisės peržiūrėti šio klausimo!");
             }
 
             var questionsDto = new List<QuestionDto>();
@@ -96,14 +95,14 @@ namespace Mindfights.Services.QuestionService
 
             if (currentQuestion == null)
             {
-                throw new UserFriendlyException("Question with specified id does not exist!");
+                throw new UserFriendlyException("Klausimas su nurodytu id neegzistuoja!");
             }
 
             if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")
                   || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
             {
-                throw new AbpAuthorizationException("Insufficient permissions to get this question!");
+                throw new AbpAuthorizationException("Jūs neturite teisės peržiūrėti šio klausimo!");
             }
 
             var question = new QuestionDto();
@@ -119,7 +118,7 @@ namespace Mindfights.Services.QuestionService
 
             if (currentMindfight == null)
             {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
             }
 
             var currentTeam = await _teamRepository
@@ -127,7 +126,7 @@ namespace Mindfights.Services.QuestionService
 
             if (currentTeam == null)
             {
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
             }
 
             var teamMindfightState = currentMindfight.MindfightStates
@@ -135,21 +134,22 @@ namespace Mindfights.Services.QuestionService
 
             if (teamMindfightState == null)
             {
-                throw new UserFriendlyException("Team must first start tour!");
+                throw new UserFriendlyException("Komanda pirmiausia turi pradėti turą!");
             }
 
             var currentTour = await _tourRepository
                 .FirstOrDefaultAsync(tour => tour.Id == teamMindfightState.CurrentTourId);
             if (currentTour == null)
             {
-                throw new UserFriendlyException("There was a problem getting tour from state");
+                throw new UserFriendlyException("Problema gaunant turą iš protmūšio statuso");
             }
 
             Models.Question currentQuestion;
-
+            var isFirstTourQuestion = false;
             if (teamMindfightState.CurrentQuestionId == null)
             {
                 currentQuestion = await GetFirstTourQuestion(teamMindfightState.CurrentTourId);
+                isFirstTourQuestion = true;
             }
             else
             {
@@ -159,13 +159,14 @@ namespace Mindfights.Services.QuestionService
 
             if (currentQuestion == null)
             {
-                throw new UserFriendlyException("There was a problem getting question from state");
+                throw new UserFriendlyException("Problema gaunant klausimą iš protmūšio statuso");
             }
 
             var nextQuestionOrderNumber = currentQuestion.OrderNumber;
+            var tourIntroTime = isFirstTourQuestion ? currentTour.IntroTimeInSeconds : 0;
 
             if ((Clock.Now - teamMindfightState.ChangeTime).TotalSeconds >
-                currentQuestion.TimeToAnswerInSeconds - BufferSeconds + currentTour.IntroTimeInSeconds)
+                currentQuestion.TimeToAnswerInSeconds - BufferSeconds + tourIntroTime)
             {
                 nextQuestionOrderNumber += 1;
             }
@@ -178,7 +179,7 @@ namespace Mindfights.Services.QuestionService
 
             if (mindfightQuestions.Count == 0)
             {
-                throw new UserFriendlyException("There are no more questions left to answer!");
+                throw new UserFriendlyException("Daugiau nėra jokių klausimų!");
             }
 
             var questionToReturn = mindfightQuestions.First();
@@ -209,13 +210,13 @@ namespace Mindfights.Services.QuestionService
                 .FirstOrDefaultAsync(x => x.Id == tourId);
             if (currentTour == null)
             {
-                throw new UserFriendlyException("Tour with specified id does not exist!");
+                throw new UserFriendlyException("Turas su nurodytu id neegzistuoja!");
             }
 
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")))
             {
-                throw new AbpAuthorizationException("Insufficient permissions to create question!");
+                throw new AbpAuthorizationException("Jūs neturite teisės kurti klausimus!");
             }
 
             question.OrderNumber = await GetLastOrderNumber(tourId);
@@ -240,7 +241,7 @@ namespace Mindfights.Services.QuestionService
                 .FirstOrDefaultAsync(x => x.Id == questionId);
             if (questionToUpdate == null)
             {
-                throw new UserFriendlyException("Question with specified id does not exist!");
+                throw new UserFriendlyException("Klausimas su nurodytu id neegzistuoja!");
             }
 
             var currentTour = await _tourRepository
@@ -249,13 +250,13 @@ namespace Mindfights.Services.QuestionService
                 .FirstOrDefaultAsync(x => x.Id == questionToUpdate.Tour.Id);
             if (currentTour == null)
             {
-                throw new UserFriendlyException("Tour with specified id does not exist!");
+                throw new UserFriendlyException("Turas su nurodytu id neegzistuoja!");
             }
 
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")))
             {
-                throw new AbpAuthorizationException("Insufficient permissions to update question!");
+                throw new AbpAuthorizationException("Jūs neturite teisės atnaujinti klausimus!");
             }
             question.OrderNumber = questionToUpdate.OrderNumber;
             question.MapTo(questionToUpdate);
@@ -267,7 +268,7 @@ namespace Mindfights.Services.QuestionService
         {
             var questionToDelete = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
             if (questionToDelete == null)
-                throw new UserFriendlyException("Question with specified id does not exist!");
+                throw new UserFriendlyException("Klausimas su nurodytu id neegzistuoja!");
 
             var currentTour = await _tourRepository
                 .GetAll()
@@ -275,11 +276,11 @@ namespace Mindfights.Services.QuestionService
                 .FirstOrDefaultAsync(x => x.Id == questionToDelete.TourId);
 
             if (currentTour == null)
-                throw new UserFriendlyException("Error getting question's tour!");
+                throw new UserFriendlyException("Klaida gaunant klausimo turą!");
             
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                 || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new AbpAuthorizationException("Insufficient permissions to delete question!");
+                throw new AbpAuthorizationException("Jūs neturite teisės trinti klausimus!");
             
             var orderNumber = questionToDelete.OrderNumber;
             await UpdateOrderNumbers(orderNumber, questionToDelete.Id, currentTour.Id);
@@ -290,17 +291,17 @@ namespace Mindfights.Services.QuestionService
         {
             var currentQuestion = await _questionRepository.FirstOrDefaultAsync(x => x.Id == questionId);
             if (currentQuestion == null)
-                throw new UserFriendlyException("Question with specified id does not exist!");
+                throw new UserFriendlyException("Klausimas su nurodytu id neegzistuoja!");
 
             var currentTour = await _tourRepository
                 .GetAllIncluding(x => x.Mindfight)
                 .FirstOrDefaultAsync(x => x.Questions.Any(y => y.Id == questionId));
             if (currentTour == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             if (!(currentTour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                 || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new AbpAuthorizationException("Insufficient permissions to update order number!");
+                throw new AbpAuthorizationException("Jūs neturite teisės keisti eilės numerius!");
 
             var questionWithNewOrderNumber = await _questionRepository
                 .GetAll()
@@ -335,7 +336,7 @@ namespace Mindfights.Services.QuestionService
                 .ToListAsync();
             if (questionTours.Count < 1)
             {
-                throw new UserFriendlyException("Tour has no questions!");
+                throw new UserFriendlyException("Turas neturi jokių klausimų!");
             }
             return questionTours.First();
         }

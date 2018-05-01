@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Abp.AutoMapper;
-using AutoMapper;
 using Mindfights.Models;
 
 namespace Mindfights.DTOs

@@ -43,17 +43,17 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodyti id neegzistuoja!");
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
 
             if(_userManager.AbpSession.UserId != currentTeam.LeaderId)
-                throw new UserFriendlyException("You are not team leader!");
+                throw new UserFriendlyException("Jūs nesate komandos kapitonas!");
 
             var currentRegistration = await _registrationRepository
                                           .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId) ??
@@ -69,23 +69,23 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
 
             if (_userManager.AbpSession.UserId != currentTeam.LeaderId)
-                throw new UserFriendlyException("You are not team leader!");
+                throw new UserFriendlyException("Jūs nesate komandos kapitonas!");
 
             var currentRegistration = await _registrationRepository
                 .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
 
             if (currentRegistration == null)
-                throw new UserFriendlyException("Team is not registered to this mindfight!");
+                throw new UserFriendlyException("Komanda nėra užsiregistravusi į protmūšį!");
 
             //if (currentMindfight.StartTime.AddDays(-1) < Clock.Now)
                 await _registrationRepository.DeleteAsync(currentRegistration);
@@ -98,7 +98,7 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
 
             var currentMindfights = await _mindfightRepository
                 .GetAllIncluding(x => x.Registrations)
@@ -131,7 +131,7 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == registrationId);
 
             if (currentRegistration == null) {
-                throw new UserFriendlyException("Registration with specified id does not exist!");
+                throw new UserFriendlyException("Registracija su nurodytu id neegzistuoja!");
             }
 
             var registrationDto = new RegistrationDto();
@@ -148,14 +148,14 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
 
             var currentRegistration = await _registrationRepository
                 .GetAllIncluding(x => x.Mindfight, x => x.Team)
@@ -178,7 +178,7 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var currentRegistrations = await _registrationRepository
                 .GetAllIncluding(x => x.Mindfight, x => x.Team)
@@ -205,24 +205,24 @@ namespace Mindfights.Services.RegistrationService
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId 
                 || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisių patvirtinti komandas!");
 
             var currentTeam = await _teamRepository
                 .GetAll()
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (currentTeam == null)
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
 
             var currentRegistration = await _registrationRepository
                 .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
 
             if (currentRegistration == null)
-                throw new UserFriendlyException("Team is not registered to this mindfight!");
+                throw new UserFriendlyException("Komanda nėra užsiregistravusi į protmūšį!");
 
             currentRegistration.IsConfirmed = isConfirmed;
             await _registrationRepository.UpdateAsync(currentRegistration);

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Abp.Runtime.Session;
-using Abp.UI;
+﻿using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
 using System.Threading.Tasks;
@@ -36,14 +33,15 @@ namespace Mindfights.Services.PlayerService
             var player = await _userManager.Users
                 .IgnoreQueryFilters()
                 .Include(x => x.Team)
+                .Include(x => x.City)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (player == null)
             {
-                throw new UserFriendlyException("Player with specified id does not exist!");
+                throw new UserFriendlyException("Vartotojas su nurodytu id neegzistuoja!");
             }
             player.MapTo(playerDto);
-
+            playerDto.City = player.City == null ? string.Empty : player.City.Name;
             if (player.Team != null)
             {
                 playerDto.TeamId = player.Team.Id;
@@ -51,33 +49,6 @@ namespace Mindfights.Services.PlayerService
                 playerDto.IsActiveInTeam = player.IsActiveInTeam;
             }
             return playerDto;
-        }
-
-        public async Task<List<PlayerDto>> GetMindfightEvaluators(long mindfightId)
-        {
-            var currentMindfight = await _mindfightRepository
-                .GetAllIncluding(x => x.Evaluators)
-                .Where(x => x.Id == mindfightId).FirstOrDefaultAsync();
-
-            if (currentMindfight == null)
-            {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
-            }
-
-            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId ||
-                  _permissionChecker.IsGranted("ManageMindfights")))
-            {
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
-            }
-
-            var evaluators = await _userManager.Users
-                .IgnoreQueryFilters()
-                .Where(x => currentMindfight.Evaluators.Any(y => x.Id == y.UserId))
-                .ToListAsync();
-
-            var evaluatorsDto = new List<PlayerDto>();
-            evaluators.MapTo(evaluatorsDto);
-            return evaluatorsDto;
         }
     }
 }

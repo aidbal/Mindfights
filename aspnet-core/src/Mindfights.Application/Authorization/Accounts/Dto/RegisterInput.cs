@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.Extensions;
+using Mindfights.Models;
 using Mindfights.Validation;
 
 namespace Mindfights.Authorization.Accounts.Dto
@@ -33,7 +34,10 @@ namespace Mindfights.Authorization.Accounts.Dto
         public string Password { get; set; }
 
         [Required]
-        public DateTime Birthday { get; set; }
+        public DateTime Birthdate { get; set; }
+
+        [Required]
+        public long CityId { get; set; }
 
         [DisableAuditing]
         public string CaptchaResponse { get; set; }

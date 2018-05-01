@@ -10,6 +10,7 @@ using Abp.IdentityFramework;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Mindfights.Authorization.Roles;
+using Mindfights.Models;
 using Mindfights.MultiTenancy;
 
 namespace Mindfights.Authorization.Users
@@ -37,7 +38,7 @@ namespace Mindfights.Authorization.Users
             AbpSession = NullAbpSession.Instance;
         }
 
-        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, DateTime birthdate, string userName, string plainPassword, bool isEmailConfirmed)
+        public async Task<User> RegisterAsync(string name, string surname, string emailAddress, DateTime birthdate, City city, string userName, string plainPassword, bool isEmailConfirmed)
         {
             CheckForTenant();
 
@@ -49,6 +50,7 @@ namespace Mindfights.Authorization.Users
                 Name = name,
                 Surname = surname,
                 Birthdate = birthdate,
+                City = city,
                 EmailAddress = emailAddress,
                 IsActive = true,
                 UserName = userName,

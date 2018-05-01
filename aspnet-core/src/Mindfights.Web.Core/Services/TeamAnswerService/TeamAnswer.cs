@@ -54,10 +54,9 @@ namespace Mindfights.Services.TeamAnswerService
                 .ThenInclude(x => x.Team)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
-
             if (currentMindfight == null)
             {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
             }
 
             var user = await _userManager.Users
@@ -67,12 +66,12 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             if (user.Team == null)
             {
-                throw new UserFriendlyException("User does not have a team!");
+                throw new UserFriendlyException("Vartotojas neturi komandos!");
             }
 
             var currentTeam = await _teamRepository
@@ -81,12 +80,12 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentTeam.LeaderId != _userManager.AbpSession.UserId)
             {
-                throw new UserFriendlyException("User is not leader of the team!");
+                throw new UserFriendlyException("Vartotojas nėra komadnos kapitonas!");
             }
 
             if (!currentMindfight.Registrations.Any(x => x.TeamId == user.Team.Id && x.IsConfirmed))
             {
-                throw new UserFriendlyException("User's team is not confirmed to play this mindfight!");
+                throw new UserFriendlyException("Komandos registracija nėra patvirtinta");
             }
 
             foreach (var answer in teamAnswers)
@@ -111,8 +110,25 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentMindfightResult == null)
             {
-                var mindfightResult = new MindfightResult(0, false, currentTeam, currentMindfight);
-                await _resultRepository.InsertOrUpdateAsync(mindfightResult);
+                currentMindfightResult = new MindfightResult(0, false, currentTeam, currentMindfight);
+                await _resultRepository.InsertOrUpdateAsync(currentMindfightResult);
+            }
+
+            var teamPlayers = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Include(x => x.Team)
+                .Include(u => u.MindfightResults)
+                .Where(u => u.TeamId == user.Team.Id && u.IsActiveInTeam)
+                .ToListAsync();
+
+            foreach (var player in teamPlayers)
+            {
+                var currentUserMindfightResult = player.MindfightResults.FirstOrDefault(result => result.MindfightResultId == currentMindfightResult.Id);
+                var userMindfightResult = new UserMindfightResult(player, currentMindfightResult);
+                if (currentUserMindfightResult == null)
+                {
+                    player.MindfightResults.Add(userMindfightResult);
+                }
             }
 
             return insertedTeamAnswerIds;
@@ -127,7 +143,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var currentQuestion = await _questionRepository
@@ -139,7 +155,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentQuestion == null)
             {
-                throw new UserFriendlyException("Question with specified id does not exist!");
+                throw new UserFriendlyException("Klausimas su nurodytu id neegzistuoja!");
             }
 
             var currentTeam = await _teamRepository
@@ -148,7 +164,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentTeam == null)
             {
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
             }
 
             if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
@@ -156,7 +172,7 @@ namespace Mindfights.Services.TeamAnswerService
                   || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)
                   || user.TeamId == teamId))
             {
-                throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
+                throw new AbpAuthorizationException("Jūs neturite teisių gauti šiuos atsakymus!");
             }
 
             var teamAnswer = await _teamAnswerRepository
@@ -168,7 +184,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (teamAnswer == null)
             {
-                throw new UserFriendlyException("Team answer does not exist!");
+                throw new UserFriendlyException("Komandos atsakymas neegizstuoja!");
             }
 
             var teamAnswerDto = new TeamAnswerDto();
@@ -187,7 +203,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var currentTeam = await _teamRepository
@@ -196,7 +212,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentTeam == null)
             {
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
             }
 
             var currentMindfight = await _mindfightRepository
@@ -204,7 +220,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentMindfight == null)
             {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
             }
 
             var currentTours = await _tourRepository
@@ -226,7 +242,7 @@ namespace Mindfights.Services.TeamAnswerService
                   || user.TeamId == teamId
                   ))
             {
-                throw new AbpAuthorizationException("Insufficient permissions to get this team answer!");
+                throw new AbpAuthorizationException("Jūs neturite teisių gauti šiam atsakymui");
             }
 
             var teamAnswers = await _teamAnswerRepository
@@ -262,7 +278,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentQuestion == null)
             {
-                throw new UserFriendlyException("Question with specified id does not exist!");
+                throw new UserFriendlyException("Klausimas su nurodytu id neegzistuoja!");
             }
 
             var evaluator = await _userManager.Users
@@ -272,14 +288,14 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (evaluator == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             if (!(currentQuestion.Tour.Mindfight.CreatorId == _userManager.AbpSession.UserId
                   || _permissionChecker.IsGranted("ManageMindfights")
                   || currentQuestion.Tour.Mindfight.Evaluators.Any(x => x.UserId == _userManager.AbpSession.UserId)))
             {
-                throw new AbpAuthorizationException("Insufficient permissions!");
+                throw new AbpAuthorizationException("Jūs neturite teisių redaguoti atsakymus!");
             }
 
             var currentTeam = await _teamRepository
@@ -288,7 +304,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (currentTeam == null)
             {
-                throw new UserFriendlyException("Team with specified id does not exist!");
+                throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
             }
 
             var teamAnswer = await _teamAnswerRepository.GetAll()
@@ -296,7 +312,7 @@ namespace Mindfights.Services.TeamAnswerService
 
             if (teamAnswer == null)
             {
-                throw new UserFriendlyException("Team answer does not exist!");
+                throw new UserFriendlyException("Komandos atsakymas neegzistuoja!");
             }
 
             teamAnswer.IsEvaluated = isEvaluated;

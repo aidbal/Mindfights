@@ -139,7 +139,8 @@ namespace Mindfights.Controllers
                 externalUser.Name,
                 externalUser.Surname,
                 externalUser.EmailAddress,
-                externalUser.Birthday,
+                externalUser.Birthdate,
+                null,
                 externalUser.EmailAddress,
                 Authorization.Users.User.CreateRandomPassword(),
                 true

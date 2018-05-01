@@ -18,12 +18,22 @@ namespace Mindfights.Services.MindfightService
     public class Mindfight : IMindfightService
     {
         private readonly IRepository<Models.Mindfight, long> _mindfightRepository;
+        private readonly IRepository<MindfightResult, long> _resultRepository;
+        private readonly IRepository<Team, long> _teamRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
 
-        public Mindfight(IRepository<Models.Mindfight, long> mindfightRepository, IPermissionChecker permissionChecker, UserManager userManager)
+        public Mindfight(
+            IRepository<Models.Mindfight, long> mindfightRepository,
+            IRepository<MindfightResult, long> resultRepository,
+            IRepository<Team, long> teamRepository,
+            IPermissionChecker permissionChecker,
+            UserManager userManager
+            )
         {
             _mindfightRepository = mindfightRepository;
+            _resultRepository = resultRepository;
+            _teamRepository = teamRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
@@ -35,23 +45,23 @@ namespace Mindfights.Services.MindfightService
                 .Include(x => x.Tours)
                 .Include(x => x.Registrations).ThenInclude(x => x.Team)
                 .Include(x => x.Evaluators).ThenInclude(x => x.User)
-                .FirstOrDefaultAsync(x => x.Id == mindfightId && x.IsActive);
+                .FirstOrDefaultAsync(x => x.Id == mindfightId);
 
             if (currentMindfight == null)
             {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su tokiu id neegzistuoja!");
             }
 
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var creator = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == currentMindfight.CreatorId);
             if (creator == null)
             {
-                throw new UserFriendlyException("Creator does not exist!");
+                throw new UserFriendlyException("Protmūšio kūrėjas neegzistoja!");
             }
 
             var mindfight = new MindfightDto
@@ -87,13 +97,13 @@ namespace Mindfights.Services.MindfightService
             if (!(_permissionChecker.IsGranted("CreateMindfights") ||
                   !_permissionChecker.IsGranted("ManageMindfights")))
             {
-                throw new AbpAuthorizationException("You are not authorized to create a mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisės sukurti naują protmūšį!");
             }
 
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var newMindfight = new Models.Mindfight(user, mindfight.Title, mindfight.Description, mindfight.TeamsLimit,
@@ -106,19 +116,19 @@ namespace Mindfights.Services.MindfightService
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfight.Id);
             if (currentMindfight == null)
             {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
             }
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzsituoja!");
             }
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId ||
                   _permissionChecker.IsGranted("ManageMindfights")))
             {
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisės redaguoti šį protmūšį!");
             }
 
             currentMindfight.Title = mindfight.Title;
@@ -135,19 +145,19 @@ namespace Mindfights.Services.MindfightService
             var currentMindfight = await _mindfightRepository.FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
             {
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
             }
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId ||
                   _permissionChecker.IsGranted("ManageMindfights")))
             {
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisės ištrinti šio protmūšio!");
             }
 
             await _mindfightRepository.DeleteAsync(currentMindfight);
@@ -158,14 +168,14 @@ namespace Mindfights.Services.MindfightService
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("There was a problem getting current user!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var isMindfightsManager = _permissionChecker.IsGranted("ManageMindfights");
 
             var mindfights = await _mindfightRepository
                 .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Creator)
-                .OrderBy(mindfight => !mindfight.IsFinished)
+                .OrderBy(mindfight => mindfight.IsFinished)
                 .ThenBy(mindfight => mindfight.StartTime)
                 .Where(x => isMindfightsManager || x.CreatorId == user.Id).ToListAsync();
 
@@ -185,7 +195,7 @@ namespace Mindfights.Services.MindfightService
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("There was a problem getting current user!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var mindfights = await _mindfightRepository
@@ -208,15 +218,15 @@ namespace Mindfights.Services.MindfightService
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
             {
-                throw new UserFriendlyException("Problema gaunant vartotoją!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
             }
 
             var mindfights = await _mindfightRepository
                 .GetAllIncluding(mindfight => mindfight.Registrations, mindfight => mindfight.Creator)
                 .OrderBy(mindfight => mindfight.StartTime)
                 .Where(mindfight =>
-                    mindfight.Registrations.Any(registration => registration.TeamId == user.TeamId) 
-                    && mindfight.IsConfirmed 
+                    mindfight.Registrations.Any(registration => registration.TeamId == user.TeamId)
+                    && mindfight.IsConfirmed
                     && !mindfight.IsFinished
                     && mindfight.StartTime > Clock.Now.AddHours(-1)
                 ).ToListAsync();
@@ -260,14 +270,14 @@ namespace Mindfights.Services.MindfightService
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisės redaguoti šio protmūšio!");
 
             currentMindfight.IsActive = isActive;
             await _mindfightRepository.UpdateAsync(currentMindfight);
@@ -278,14 +288,14 @@ namespace Mindfights.Services.MindfightService
             var currentMindfight = await _mindfightRepository
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisės redaguoti šio protmūšio!");
 
             currentMindfight.IsConfirmed = isConfirmed;
             await _mindfightRepository.UpdateAsync(currentMindfight);
@@ -297,18 +307,37 @@ namespace Mindfights.Services.MindfightService
                 .GetAllIncluding(mindfight => mindfight.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegzistuoja!");
 
-            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId 
+            if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId
                 || _permissionChecker.IsGranted("ManageMindfights")
                 || currentMindfight.Evaluators.Any(y => y.UserId == user.Id)))
-                throw new UserFriendlyException("You are not allowed to finish this mindfight!");
+                throw new UserFriendlyException("Jūs neturite teisės redaguoti šio protmūšio!");
 
             currentMindfight.IsFinished = isFinished;
+
+            var mindfightResults = await _resultRepository
+                .GetAll()
+                .Where(result => result.MindfightId == currentMindfight.Id && result.IsEvaluated)
+                .ToListAsync();
+
+            foreach (var mindfightResult in mindfightResults)
+            {
+                var resultPlayers = await _userManager.Users
+                    .Where(x => x.MindfightResults.Any(
+                        result => result.MindfightResultId == mindfightResult.Id && result.MindfightResult.IsEvaluated))
+                    .ToListAsync();
+
+                foreach (var player in resultPlayers)
+                {
+                    player.Points += mindfightResult.EarnedPoints;
+                }
+            }
+
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
@@ -317,14 +346,14 @@ namespace Mindfights.Services.MindfightService
             var currentMindfight = await _mindfightRepository.GetAllIncluding(x => x.Evaluators)
                 .FirstOrDefaultAsync(x => x.Id == mindfightId);
             if (currentMindfight == null)
-                throw new UserFriendlyException("Mindfight with specified id does not exist!");
+                throw new UserFriendlyException("Protmūšis su nurodytu id neegzistuoja!");
 
             var user = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
-                throw new UserFriendlyException("User does not exist!");
+                throw new UserFriendlyException("Vartotojas neegizstuoja!");
 
             if (!(currentMindfight.CreatorId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("ManageMindfights")))
-                throw new AbpAuthorizationException("You are not creator of this mindfight!");
+                throw new AbpAuthorizationException("Jūs neturite teisės redaguoti šio protmūšio!");
 
             var evaluators = await _userManager.Users.IgnoreQueryFilters()
                 .Where(p => evaluatorEmails.Any(p2 => p2.ToUpper() == p.NormalizedEmailAddress))
