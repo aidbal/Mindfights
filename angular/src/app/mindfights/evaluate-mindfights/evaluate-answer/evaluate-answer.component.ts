@@ -38,19 +38,22 @@ export class EvaluateAnswerComponent extends AppComponentBase implements OnInit 
         });
     }
 
-    getQuestion = function (questionId) {
+    getQuestion (questionId) {
         this.questionService.getQuestion(questionId).subscribe((result) => {
-            this.question = result
+            this.question = result;
         });
     }
 
-    getTeamAnswer = function (questionId, teamId) {
+    getTeamAnswer (questionId, teamId) {
         this.teamAnswerService.getTeamAnswer(questionId, teamId).subscribe((result) => {
-            this.teamAnswer = result
+            this.teamAnswer = result;
         });
     }
-
-    evaluateAnswer = function () {
+    
+    evaluateAnswer() {
+        this.teamAnswer.evaluatorComment = (this.teamAnswer.evaluatorComment && this.teamAnswer.evaluatorComment.length > 0)
+            ? this.teamAnswer.evaluatorComment
+            : '';
         this.teamAnswerService.updateIsEvaluated(
             this.questionId,
             this.teamId,

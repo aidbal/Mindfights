@@ -3,6 +3,7 @@ import { AppComponentBase } from '@shared/app-component-base';
 import { TeamDto, TeamServiceProxy, TeamPlayerDto } from 'shared/service-proxies/service-proxies';
 import { ActivatedRoute, Router } from '@angular/router';
 import { appModuleAnimation } from 'shared/animations/routerTransition';
+import { TeamStateService } from 'app/services/team-state.service';
 
 @Component({
     selector: 'app-edit-team',
@@ -21,6 +22,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
     constructor(
         injector: Injector,
         private teamService: TeamServiceProxy,
+        private teamStateService: TeamStateService,
         private route: ActivatedRoute,
         private router: Router
     ) {
@@ -43,6 +45,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
     updateTeam(): void {
         this.saving = true;
         this.teamService.updateTeam(this.team, this.teamId).subscribe(() => {
+            this.teamStateService.changeTeamName(this.team.name);
             this.notify.success("Komanda sėkmingai atnaujinta!", "Atlikta");
             this.router.navigate(['../../'], { relativeTo: this.route });
             this.saving = false;
@@ -84,6 +87,7 @@ export class EditTeamComponent extends AppComponentBase implements OnInit {
                     this.teamService.deleteTeam(this.teamId).subscribe(
                         () => {
                             this.notify.success('Komanda sėkmingai ištrintas!', 'Atlikta');
+                            this.teamStateService.changeTeamName(null);
                         },
                         () => {
                             this.notify.error('Komandos nepavyko ištrinti!', 'Klaida');

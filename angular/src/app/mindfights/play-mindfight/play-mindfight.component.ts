@@ -21,6 +21,7 @@ import { MindfightStateService } from 'app/services/mindfight-state.service';
     animations: [appModuleAnimation()]
 })
 export class PlayMindfightComponent extends AppComponentBase implements OnInit {
+    secondsToMindfightMode = 30;
     private routeSubscriber: any;
     mindfight: MindfightDto;
     mindfightId: number;
@@ -200,7 +201,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
         this.mindfightCountDownSubscriber = mindfightCountDown.subscribe(
             (seconds) => {
                 this.timeLeftToStartMindfight = this.getMinutesAndSecondsString(seconds);
-                if (seconds <= 10 && !mindfightStateSet) {
+                if (seconds <= this.secondsToMindfightMode && !mindfightStateSet) {
                     this.setMindfightState(true);
                     mindfightStateSet = true;
                 }

@@ -191,6 +191,7 @@ namespace Mindfights.Services.TeamAnswerService
             teamAnswer.MapTo(teamAnswerDto);
             teamAnswerDto.Evaluator = teamAnswer.Evaluator?.EmailAddress.ToLower();
             teamAnswerDto.TourOrderNumber = teamAnswer.Question.Tour.OrderNumber;
+            teamAnswerDto.Answer = currentQuestion.Answer;
             return teamAnswerDto;
         }
 
@@ -261,6 +262,7 @@ namespace Mindfights.Services.TeamAnswerService
                 teamAnswer.MapTo(teamAnswerDto);
                 teamAnswerDto.Evaluator = teamAnswer.Evaluator?.EmailAddress.ToLower();
                 teamAnswerDto.TourOrderNumber = teamAnswer.Question.Tour.OrderNumber;
+                teamAnswerDto.Answer = teamAnswer.Question.Answer;
                 teamAnswersDto.Add(teamAnswerDto);
             }
             return teamAnswersDto;

@@ -8,6 +8,7 @@ namespace Mindfights.DTOs
     public class TeamAnswerDto
     {
         public string EnteredAnswer { get; set; }
+        public string Answer { get; set; }
         public int EarnedPoints { get; set; }
         public bool IsEvaluated { get; set; }
         public DateTime CreationTime { get; set; }

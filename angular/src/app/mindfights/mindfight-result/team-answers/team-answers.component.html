@@ -34,6 +34,7 @@
                             <th>Turas</th>
                             <th>Klausimas</th>
                             <th>Įvestas atsakymas</th>
+                            <th>Tikras atsakymas</th>
                             <th>Vertintojas</th>
                             <th>Vertintojo komentaras</th>
                             <th>Paskirti taškai</th>
@@ -49,8 +50,9 @@
                             <td>{{answer.tourOrderNumber}}</td>
                             <td>{{answer.questionTitle}}</td>
                             <td>{{answer.enteredAnswer ? answer.enteredAnswer : '-'}}</td>
+                            <td>{{answer.answer ? answer.answer : '-'}}</td>
                             <td>{{answer.evaluator}}</td>
-                            <td>{{answer.evaluatorComment}}</td>
+                            <td>{{answer.evaluatorComment ? answer.evaluatorComment : '-'}}</td>
                             <td>{{answer.earnedPoints}}</td>
                         </tr>
                     </tbody>

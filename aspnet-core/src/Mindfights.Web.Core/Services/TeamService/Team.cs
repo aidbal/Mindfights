@@ -156,6 +156,7 @@ namespace Mindfights.Services.TeamService
             }
             
             var currentUser = await _userManager.Users.IgnoreQueryFilters()
+                .Include(user => user.Team)
                 .FirstOrDefaultAsync(x => string.CompareOrdinal(x.UserName.ToUpper(), username.ToUpper()) == 0);
             if (currentUser == null)
             {
@@ -191,7 +192,9 @@ namespace Mindfights.Services.TeamService
             if (currentLeaderTeam != null)
                 throw new UserFriendlyException("Vartotojas yra komandos kapitonas!");
 
-            var currentUser = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == userId);
+            var currentUser = await _userManager.Users.IgnoreQueryFilters()
+                .Include(user => user.Team)
+                .FirstOrDefaultAsync(x => x.Id == userId);
             if (currentUser == null)
                 throw new UserFriendlyException("Vartotojas neegzistuoja!");
 
@@ -232,7 +235,9 @@ namespace Mindfights.Services.TeamService
             if (currentLeader == null)
                 throw new UserFriendlyException("Klaida gaunant komandos kapitoną!");
 
-            var newLeader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == newLeaderId);
+            var newLeader = await _userManager.Users.IgnoreQueryFilters()
+                .Include(user => user.Team)
+                .FirstOrDefaultAsync(x => x.Id == newLeaderId);
             if (newLeader == null)
                 throw new UserFriendlyException("Vartotojas neegzistuoja");
 

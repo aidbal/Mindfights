@@ -1887,56 +1887,6 @@ export class ResultServiceProxy {
         }
         return Observable.of<MindfightResultDto[]>(<any>null);
     }
-
-    /**
-     * @return Success
-     */
-    getMonthlyLeaderBoard(): Observable<LeaderBoardDto[]> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Result/GetMonthlyLeaderBoard";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            method: "get",
-            headers: new Headers({
-                "Content-Type": "application/json", 
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request(url_, options_).flatMap((response_ : any) => {
-            return this.processGetMonthlyLeaderBoard(response_);
-        }).catch((response_: any) => {
-            if (response_ instanceof Response) {
-                try {
-                    return this.processGetMonthlyLeaderBoard(<any>response_);
-                } catch (e) {
-                    return <Observable<LeaderBoardDto[]>><any>Observable.throw(e);
-                }
-            } else
-                return <Observable<LeaderBoardDto[]>><any>Observable.throw(response_);
-        });
-    }
-
-    protected processGetMonthlyLeaderBoard(response: Response): Observable<LeaderBoardDto[]> {
-        const status = response.status;
-
-        let _headers: any = response.headers ? response.headers.toJSON() : {};
-        if (status === 200) {
-            const _responseText = response.text();
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200 && resultData200.constructor === Array) {
-                result200 = [];
-                for (let item of resultData200)
-                    result200.push(LeaderBoardDto.fromJS(item));
-            }
-            return Observable.of(result200);
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.text();
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Observable.of<LeaderBoardDto[]>(<any>null);
-    }
 }
 
 @Injectable()
@@ -5248,65 +5198,6 @@ export interface IMindfightResultDto {
     isMindfightFinished: boolean;
 }
 
-export class LeaderBoardDto implements ILeaderBoardDto {
-    teamId: number;
-    teamName: string;
-    playedMindfightsCount: number;
-    wonMindfightsCount: number;
-    earnedPoints: number;
-
-    constructor(data?: ILeaderBoardDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(data?: any) {
-        if (data) {
-            this.teamId = data["teamId"];
-            this.teamName = data["teamName"];
-            this.playedMindfightsCount = data["playedMindfightsCount"];
-            this.wonMindfightsCount = data["wonMindfightsCount"];
-            this.earnedPoints = data["earnedPoints"];
-        }
-    }
-
-    static fromJS(data: any): LeaderBoardDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new LeaderBoardDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["teamId"] = this.teamId;
-        data["teamName"] = this.teamName;
-        data["playedMindfightsCount"] = this.playedMindfightsCount;
-        data["wonMindfightsCount"] = this.wonMindfightsCount;
-        data["earnedPoints"] = this.earnedPoints;
-        return data; 
-    }
-
-    clone() {
-        const json = this.toJSON();
-        let result = new LeaderBoardDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ILeaderBoardDto {
-    teamId: number;
-    teamName: string;
-    playedMindfightsCount: number;
-    wonMindfightsCount: number;
-    earnedPoints: number;
-}
-
 export class CreateRoleDto implements ICreateRoleDto {
     name: string;
     displayName: string;
@@ -5966,6 +5857,7 @@ export interface ITeamPlayerDto {
 
 export class TeamAnswerDto implements ITeamAnswerDto {
     enteredAnswer: string;
+    answer: string;
     earnedPoints: number;
     isEvaluated: boolean;
     creationTime: moment.Moment;
@@ -5989,6 +5881,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
     init(data?: any) {
         if (data) {
             this.enteredAnswer = data["enteredAnswer"];
+            this.answer = data["answer"];
             this.earnedPoints = data["earnedPoints"];
             this.isEvaluated = data["isEvaluated"];
             this.creationTime = data["creationTime"] ? moment(data["creationTime"].toString()) : <any>undefined;
@@ -6012,6 +5905,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["enteredAnswer"] = this.enteredAnswer;
+        data["answer"] = this.answer;
         data["earnedPoints"] = this.earnedPoints;
         data["isEvaluated"] = this.isEvaluated;
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
@@ -6035,6 +5929,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
 
 export interface ITeamAnswerDto {
     enteredAnswer: string;
+    answer: string;
     earnedPoints: number;
     isEvaluated: boolean;
     creationTime: moment.Moment;

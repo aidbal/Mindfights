@@ -16,6 +16,8 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
         registrationId: null,
         createEvent: false
     };
+    saving = false;
+    registrationFull = false;
 
     constructor(
         injector: Injector,
@@ -27,6 +29,13 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
 
     ngOnInit() {
         this.getPlayerInfo(abp.session.userId);
+        this.checkRegistrationLimits();
+    }
+
+    checkRegistrationLimits() {
+        if (this.mindfight.teamsLimit > 0 && this.mindfight.registeredTeamsCount >= this.mindfight.teamsLimit) {
+            this.registrationFull = true;
+        }
     }
 
     getRegistration(mindfightId, teamId): void {
@@ -47,22 +56,26 @@ export class RegisterComponent extends AppComponentBase implements OnInit {
     };
 
     deleteRegistration(): void {
+        this.saving = true;
         this.registrationService.deleteRegistration(this.mindfight.id, this.playerInfo.teamId).subscribe((result) => {
             this.notify.success("Registracija sėkmingai atšaukta!", "Atlikta");
             this.registrationChangeObject.registrationId = this.registration.id;
             this.registrationChangeObject.createEvent = false;
             this.notifyRegisterChange.emit(this.registrationChangeObject);
             this.registration = null;
+            this.saving = false;
         });
     }
 
     createRegistration(): void {
+        this.saving = true;
         this.registrationService.createRegistration(this.mindfight.id, this.playerInfo.teamId).subscribe((result) => {
             this.getRegistration(this.mindfight.id, this.playerInfo.teamId);
             this.notify.success("Registracija sėkmingai sukurta!", "Atlikta");
             this.registrationChangeObject.registrationId = result;
             this.registrationChangeObject.createEvent = true;
             this.notifyRegisterChange.emit(this.registrationChangeObject);
+            this.saving = false;
         });
     }
 }

@@ -4,6 +4,7 @@ import { TeamServiceProxy, TeamDto, PlayerDto, PlayerServiceProxy, TeamPlayerDto
 import { ActivatedRoute, Router } from '@angular/router';
 import { appModuleAnimation } from 'shared/animations/routerTransition';
 import { Location } from '@angular/common';
+import { TeamStateService } from 'app/services/team-state.service';
 
 @Component({
     selector: 'app-team',
@@ -27,6 +28,7 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         injector: Injector,
         private teamService: TeamServiceProxy,
         private playerService: PlayerServiceProxy,
+        private teamStateService: TeamStateService,
         private location: Location,
         private route: ActivatedRoute,
         private router: Router
@@ -61,6 +63,7 @@ export class TeamComponent extends AppComponentBase implements OnInit {
                         () => {
                             this.notify.success('Sėkmingai palikote komandą!', 'Atlikta');
                             this.team = null;
+                            this.teamStateService.changeTeamName(null);
                         },
                         () => {
                             this.notify.error('Komandos palikti nepavyko!', 'Klaida');

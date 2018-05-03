@@ -24,6 +24,7 @@ export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
     evaluatedTeamAnswers: number = 0;
     teamAnswers: TeamAnswerDto[] = [];
     mindfightResult: MindfightResultDto;
+    saving = false;
 
     constructor(
         injector: Injector,
@@ -83,8 +84,11 @@ export class EvaluateTeamComponent extends AppComponentBase implements OnInit {
     }
 
     completeEvaluate() {
+        this.saving = true;
         this.resultService.updateResult(this.mindfightId, this.teamId).subscribe(() => {
             this.notify.success("Sėkmingai baigta vertinti komandą.", "Atlikta!");
+            this.router.navigate(['../../details'], { relativeTo: this.activatedRoute });
+            this.saving = false;
         });
     }
 }

@@ -7599,7 +7599,7 @@ fieldset[disabled] .form-control {
       cursor: default;
       display: block;
       position: relative;
-      top: 25px; }
+      top: 20px; }
       .sidebar .user-info .info-container .name {
         white-space: nowrap;
         -ms-text-overflow: ellipsis;
@@ -7621,7 +7621,7 @@ fieldset[disabled] .form-control {
       .sidebar .user-info .info-container .user-helper-dropdown {
         position: absolute;
         right: -3px;
-        bottom: -12px;
+        bottom: 0;
         -webkit-box-shadow: none;
         -moz-box-shadow: none;
         -ms-box-shadow: none;

@@ -56,10 +56,17 @@ namespace Mindfights.Services.RegistrationService
                 throw new UserFriendlyException("Jūs nesate komandos kapitonas!");
 
             var currentRegistration = await _registrationRepository
-                                          .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId) ??
-                                      new Models.Registration(currentMindfight, currentTeam);
+                .FirstOrDefaultAsync(x => x.MindfightId == mindfightId && x.TeamId == teamId);
 
-            currentRegistration.CreationTime = Clock.Now;
+            if (currentRegistration != null)
+            {
+                throw new UserFriendlyException("Registracija jau egzistuoja!");
+            }
+
+            currentRegistration = new Models.Registration(currentMindfight, currentTeam)
+            {
+                CreationTime = Clock.Now
+            };
             return await _registrationRepository.InsertOrUpdateAndGetIdAsync(currentRegistration);
         }
 

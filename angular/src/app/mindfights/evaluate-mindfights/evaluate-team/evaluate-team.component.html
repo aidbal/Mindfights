@@ -30,7 +30,7 @@
                 <div *ngIf="!mindfightResult.isEvaluated">
                     <div class="display-flex flex-end">
                         <button type="button" class="btn bg-green waves-effect btn-sm"
-                        [disabled]="teamAnswers.length <= 0 || teamAnswers.length != evaluatedTeamAnswers"
+                        [disabled]="teamAnswers.length <= 0 || teamAnswers.length != evaluatedTeamAnswers || saving"
                         (click)="completeEvaluate()">
                         <span>Baigti komandos vertinimą</span>
                         <i class="fa fa-check"></i>
@@ -64,7 +64,7 @@
                             <td>{{answer.tourOrderNumber}}</td>
                             <td>{{answer.questionTitle}}</td>
                             <td>{{answer.evaluator}}</td>
-                            <td>{{answer.evaluatorComment}}</td>
+                            <td>{{answer.evaluatorComment ? answer.evaluatorComment : '-'}}</td>
                             <td>{{answer.earnedPoints}}</td>
                             <td>
                                 <div class="display-flex flex-end">

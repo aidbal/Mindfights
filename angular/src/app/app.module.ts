@@ -69,6 +69,7 @@ import { PlayerDetailsComponent } from './player/player-details/player-details.c
 import { RegisteredMindfightsComponent } from './mindfights/registered-mindfights/registered-mindfights.component';
 import { MindfightStatusLabelComponent } from './mindfights/mindfight-status-label/mindfight-status-label.component';
 import { MindfightStateService } from 'app/services/mindfight-state.service';
+import { TeamStateService } from 'app/services/team-state.service';
 
 @NgModule({
     declarations: [
@@ -142,7 +143,8 @@ import { MindfightStateService } from 'app/services/mindfight-state.service';
     ],
     providers: [
         DatepickerOptionsService,
-        MindfightStateService
+        MindfightStateService,
+        TeamStateService
     ]
 })
 export class AppModule { }

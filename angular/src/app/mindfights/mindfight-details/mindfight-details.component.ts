@@ -57,7 +57,7 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         let isMindfightPrestartTime = mindfightStartTime.diff(moment()) > 0
             && mindfightStartTime.diff(moment(), 'minutes') < 10;
 
-        let mindfightPrepareTimeLeft = moment(this.mindfight.startTime).diff(moment(), 'minutes');
+        let mindfightPrepareTimeLeft = moment().diff(moment(this.mindfight.startTime), 'minutes');
         let isMindfightPrepareTime = mindfightPrepareTimeLeft < this.mindfight.prepareTime
                                     && mindfightPrepareTimeLeft > 0;
         this.showPlayButton = false;

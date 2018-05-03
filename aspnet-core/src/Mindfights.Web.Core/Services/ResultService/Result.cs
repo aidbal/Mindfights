@@ -123,7 +123,7 @@ namespace Mindfights.Services.ResultService
 
             var teamAnswers = await _teamAnswerRepository
                 .GetAll()
-                .Where(x => questions.Any(y => y.Id == x.QuestionId))
+                .Where(teamAnswer => questions.Any(y => y.Id == teamAnswer.QuestionId) && teamAnswer.TeamId == teamId)
                 .ToListAsync();
             
             if (questions.Count != teamAnswers.Count)
@@ -169,10 +169,8 @@ namespace Mindfights.Services.ResultService
                 var userMindfightResult = new UserMindfightResult(player, currentResult);
                 if (currentUserMindfightResult != null)
                 {
-                    if (player.MindfightResults.Remove(currentUserMindfightResult))
-                    {
-                        player.MindfightResults.Add(userMindfightResult);
-                    }
+                    currentUserMindfightResult.MindfightResult = currentResult;
+                    currentUserMindfightResult.MindfightResultId = currentResult.Id;
                 }
                 else
                 {
@@ -368,40 +366,6 @@ namespace Mindfights.Services.ResultService
                 resultsDto.Add(resultDto);
             }
             return resultsDto;
-        }
-
-        public async Task<List<LeaderBoardDto>> GetMonthlyLeaderBoard()
-        {
-            var leaderBoardDtos = new List<LeaderBoardDto>();
-            var mindfightResults = await _resultRepository
-                .GetAllIncluding(x => x.Team)
-                .OrderByDescending(x => x.EarnedPoints)
-                .Where(x => x.Mindfight.StartTime > Clock.Now.AddMonths(-1) && x.Mindfight.StartTime < Clock.Now)
-                .ToListAsync();
-
-            foreach (var teamResult in mindfightResults)
-            {
-                var leaderBoardDto = leaderBoardDtos.FirstOrDefault(x => x.TeamId == teamResult.TeamId);
-                if (leaderBoardDto == null)
-                {
-                    leaderBoardDto = new LeaderBoardDto
-                    {
-                        TeamId = teamResult.TeamId,
-                        TeamName = teamResult.Team.Name,
-                        EarnedPoints = teamResult.EarnedPoints,
-                        PlayedMindfightsCount = 1,
-                        WonMindfightsCount = mindfightResults.Where(x => x.TeamId == teamResult.TeamId)
-                            .Count(x => x.Place == 1)
-                    };
-                    leaderBoardDtos.Add(leaderBoardDto);
-                }
-                else
-                {
-                    leaderBoardDto.EarnedPoints += teamResult.EarnedPoints;
-                    leaderBoardDto.PlayedMindfightsCount += 1;
-                }
-            }
-            return leaderBoardDtos.OrderByDescending(x => x.EarnedPoints).Take(10).ToList();
         }
 
         private async Task UpdateMindfightPlaces(long mindfightId)
