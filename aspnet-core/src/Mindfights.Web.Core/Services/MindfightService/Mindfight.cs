@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
+using Abp.Timing;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
@@ -10,7 +11,6 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Timing;
 
 namespace Mindfights.Services.MindfightService
 {

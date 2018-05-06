@@ -1,30 +1,19 @@
-﻿using Abp.UI;
+﻿using Abp.AutoMapper;
+using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
-using System.Threading.Tasks;
-using Abp.Authorization;
-using Abp.AutoMapper;
-using Abp.Domain.Repositories;
-using Mindfights.Models;
 using Mindfights.DTOs;
+using System.Threading.Tasks;
 
 namespace Mindfights.Services.PlayerService
 {
     public class Player : IPlayerService
     {
         private readonly UserManager _userManager;
-        private readonly IRepository<Mindfight, long> _mindfightRepository;
-        private readonly IPermissionChecker _permissionChecker;
 
-        public Player(
-            UserManager userManager,
-            IRepository<Mindfight, long> mindfightRepository,
-            IPermissionChecker permissionChecker
-            )
+        public Player(UserManager userManager)
         {
             _userManager = userManager;
-            _mindfightRepository = mindfightRepository;
-            _permissionChecker = permissionChecker;
         }
 
         public async Task<PlayerDto> GetPlayerInfo(long userId)

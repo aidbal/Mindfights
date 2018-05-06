@@ -1,4 +1,6 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
+using Abp.Authorization;
+using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using Abp.Timing;
 using Abp.UI;
@@ -9,8 +11,6 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Authorization;
-using Abp.AutoMapper;
 
 namespace Mindfights.Services.RegistrationService
 {

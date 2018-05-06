@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
+using Abp.Timing;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
@@ -10,7 +11,6 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Abp.Timing;
 
 namespace Mindfights.Services.QuestionService
 {
@@ -19,7 +19,6 @@ namespace Mindfights.Services.QuestionService
     {
         private readonly IRepository<Models.Question, long> _questionRepository;
         private readonly IRepository<Team, long> _teamRepository;
-        private readonly IRepository<TeamAnswer, long> _teamAnswerRepository;
         private readonly IRepository<Tour, long> _tourRepository;
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IPermissionChecker _permissionChecker;
@@ -28,8 +27,7 @@ namespace Mindfights.Services.QuestionService
 
         public Question(
             IRepository<Models.Question, long> questionRepository, 
-            IRepository<Team, long> teamRepository, 
-            IRepository<TeamAnswer, long> teamAnswerRepository, 
+            IRepository<Team, long> teamRepository,
             IRepository<Tour, long> tourRepository,
             IRepository<Mindfight, long> mindfightRepository,
             IPermissionChecker permissionChecker,
@@ -38,7 +36,6 @@ namespace Mindfights.Services.QuestionService
         {
             _questionRepository = questionRepository;
             _teamRepository = teamRepository;
-            _teamAnswerRepository = teamAnswerRepository;
             _tourRepository = tourRepository;
             _mindfightRepository = mindfightRepository;
             _permissionChecker = permissionChecker;
