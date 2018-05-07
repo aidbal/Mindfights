@@ -25,7 +25,7 @@
                             </td>
                             <td>{{result.mindfightStartTime | date:'yyyy-MM-dd HH:mm'}}</td>
                             <td>{{result.mindfightName}}</td>
-                            <td>{{result.place ? 0 : '-'}}</td>
+                            <td>{{result.place ? (result.place === 0 ? '-' : result.place) : '-'}}</td>
                             <td>{{result.isMindfightFinished ? result.earnedPoints : '-'}}</td>
                             <td>
                                 <div class="display-flex flex-end">

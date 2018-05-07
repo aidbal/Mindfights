@@ -1,4 +1,5 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "~datatables.net-bs4/css/dataTables.bootstrap4.css";
 
 .mat-form-field, .mat-form-field-infix {
     width: 100%;
@@ -22,4 +23,12 @@ section.content.mindfight-active {
 
 .ls-closed section.content.mindfight-active {
     margin-right: 0;
+}
+
+.header-highlight {
+    background-color: darkcyan;
+}
+
+.header-highlight-text {
+    color: white !important;
 }

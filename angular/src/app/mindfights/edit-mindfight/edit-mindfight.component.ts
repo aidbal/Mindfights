@@ -1,5 +1,5 @@
 import { Component, OnInit, Injector } from '@angular/core';
-import { MindfightDto, RegistrationDto, MindfightServiceProxy, RegistrationServiceProxy, PlayerServiceProxy, PlayerDto } from 'shared/service-proxies/service-proxies';
+import { MindfightDto, MindfightServiceProxy, PlayerServiceProxy } from 'shared/service-proxies/service-proxies';
 import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -18,7 +18,6 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
     usersAllowedToEvaluate: string = null;
     selectedDate: any = {};
     singleDatepickerOptions: any;
-    registrations: RegistrationDto[] = [];
     mindfightId: number;
     saving: boolean = false;
     private routeSubscriber: any;
@@ -27,7 +26,6 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
     constructor(
         injector: Injector,
         private mindfightService: MindfightServiceProxy,
-        private registrationService: RegistrationServiceProxy,
         private playerService: PlayerServiceProxy,
         private datepickerOptionsService: DatepickerOptionsService,
         private route: ActivatedRoute,
@@ -44,7 +42,6 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
             this.mindfightId = +params['mindfightId'];
         });
         this.getMindfight(this.mindfightId);
-        this.getRegistrations(this.mindfightId);
     }
 
     ngOnDestroy() {
@@ -111,31 +108,6 @@ export class EditMindfightComponent extends AppComponentBase implements OnInit {
             this.singleDatepickerOptions.startDate = this.datepickerOptionsService.getDatetimeStringFromMoment(result.startTime);
             this.loaded = true;
         });
-    }
-
-    getRegistrations(mindfightId): void {
-        this.registrationService.getMindfightRegistrations(mindfightId).subscribe((result) => {
-            this.registrations = result;
-        });
-    }
-
-    updateConfirmation(registration): void {
-        this.registrationService.updateConfirmation(registration.mindfightId,
-            registration.teamId,
-            !registration.isConfirmed).subscribe(() => {
-                if (registration.isConfirmed) {
-                    this.notify.success("Komanda '" + registration.teamName + "' sėkmingai atšaukta!");
-                } else {
-                    this.notify.success("Komanda '" + registration.teamName + "' sėkmingai patvirtinta!")
-                }
-                let registrationIndex = this.registrations.findIndex(i => i.mindfightId === registration.mindfightId &&
-                    i.teamId === registration.teamId);
-                if (registrationIndex >= 0) {
-                    this.registrations[registrationIndex].isConfirmed = !registration.isConfirmed;
-                }
-            },
-            () => this.notify.error("Klaida keičiant komandos patvirtinimo statusą")
-            );
     }
 
     selectedDateEvent(value: any) {

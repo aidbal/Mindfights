@@ -78,6 +78,7 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.playerService.getPlayerInfo(playerId).subscribe((result) => {
             this.playerInfo = result;
             if (this.playerInfo.teamId !== null && this.isMyTeam) {
+                this.teamStateService.changeTeamName(this.playerInfo.teamName);
                 this.teamId = this.playerInfo.teamId;
                 this.getPlayerTeam(this.playerInfo.teamId);
             }

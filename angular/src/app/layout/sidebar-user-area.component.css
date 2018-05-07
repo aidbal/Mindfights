@@ -19,3 +19,17 @@
 .clickable {
     cursor: pointer;
 }
+
+.margin-top-large {
+    margin-top: 50px;
+}
+
+.username {
+    white-space: nowrap;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 12px;
+    max-width: 200px;
+    color: #fff;
+}

@@ -1,15 +1,12 @@
 <div class="user-info">
-    <div class="image">
-        <img src="/assets/images/user.png" width="48" height="48" alt="User" />
-    </div>
-    <div class="info-container">
-        <div [routerLink]="['/app/player']" title="Žaidėjo informacija" class="name clickable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{shownLoginName}}</div>
-        <div [routerLink]="['/app/player']" title="Žaidėjo informacija" class="email clickable">{{appSession.user.emailAddress}}</div>
-        <div [routerLink]="['/app/team']" title="Komandos informacija" class="team clickable">Komanda: {{playerInfo ? (playerInfo.teamName ? playerInfo.teamName : '-') : '-'}}</div>
+    <div class="info-container margin-top-large">
+        <div [routerLink]="['/app/player']" title="Žaidėjo informacija" class="username clickable" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Vartotojas: <b>{{shownLoginName}}</b></div>
+        <div [routerLink]="['/app/team']" title="Komandos informacija" class="team clickable">Komanda: <b>{{playerInfo ? (playerInfo.teamName ? playerInfo.teamName : '-') : '-'}}</b></div>
         <div class="btn-group user-helper-dropdown">
             <div class="pull-right">
                 <a (click)="logout()" title="Atsijungti"><i class="material-icons logout-button">input</i></a>
             </div>
+            <div class="clearfix"></div>
         </div>
     </div>
 </div>
