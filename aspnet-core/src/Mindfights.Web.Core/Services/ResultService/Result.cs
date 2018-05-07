@@ -372,15 +372,27 @@ namespace Mindfights.Services.ResultService
             var results = await _resultRepository
                 .GetAll()
                 .Where(x => x.MindfightId == mindfightId)
-                .OrderBy(x => x.EarnedPoints)
+                .OrderByDescending(x => x.EarnedPoints)
                 .ToListAsync();
-            
-            const int currentPlacePoints = -1;
 
-            for (var i = 0; i < results.Count; i++)
+            if (results.Count > 0)
             {
-                if (results[i].EarnedPoints >= currentPlacePoints)
-                    results[i].Place = i + 1;
+                var currentPlacePoints = results[0].EarnedPoints;
+                var currentPlace = 1;
+
+                foreach (var result in results)
+                {
+                    if (result.EarnedPoints == currentPlacePoints)
+                    {
+                        result.Place = currentPlace;
+                    }
+                    else
+                    {
+                        currentPlace++;
+                        result.Place = currentPlace;
+                        currentPlacePoints = result.EarnedPoints;
+                    }
+                }
             }
         }
     }

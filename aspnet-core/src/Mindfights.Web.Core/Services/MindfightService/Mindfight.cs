@@ -338,6 +338,8 @@ namespace Mindfights.Services.MindfightService
                 }
             }
 
+            await UpdateMindfightPlaces(mindfightId);
+
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
 
@@ -378,6 +380,35 @@ namespace Mindfights.Services.MindfightService
                 currentMindfight.Evaluators.Add(mindfightEvaluators);
             }
             await _mindfightRepository.UpdateAsync(currentMindfight);
+        }
+
+        private async Task UpdateMindfightPlaces(long mindfightId)
+        {
+            var results = await _resultRepository
+                .GetAll()
+                .Where(x => x.MindfightId == mindfightId)
+                .OrderByDescending(x => x.EarnedPoints)
+                .ToListAsync();
+
+            if (results.Count > 0)
+            {
+                var currentPlacePoints = results[0].EarnedPoints;
+                var currentPlace = 1;
+
+                foreach (var result in results)
+                {
+                    if (result.EarnedPoints == currentPlacePoints)
+                    {
+                        result.Place = currentPlace;
+                    }
+                    else
+                    {
+                        currentPlace++;
+                        result.Place = currentPlace;
+                        currentPlacePoints = result.EarnedPoints;
+                    }
+                }
+            }
         }
     }
 }
