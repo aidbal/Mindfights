@@ -7,5 +7,6 @@ namespace Mindfights.Services.PlayerService
     public interface IPlayerService : IApplicationService
     {
         Task<PlayerDto> GetPlayerInfo(long userId);
+        Task UpdatePlayerInfo(PlayerDto playerInfo, long userId);
     }
 }

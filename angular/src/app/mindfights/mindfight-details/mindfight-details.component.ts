@@ -1,4 +1,4 @@
-import { Component, OnInit, Injector } from '@angular/core';
+import { Component, OnInit, Injector, ChangeDetectorRef } from '@angular/core';
 import {
     MindfightDto, RegistrationDto, MindfightServiceProxy,
     RegistrationServiceProxy, PlayerServiceProxy, PlayerDto
@@ -6,8 +6,11 @@ import {
 import { AppComponentBase } from '@shared/app-component-base';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import * as moment from 'moment';
 import { appModuleAnimation } from 'shared/animations/routerTransition';
+import * as moment from 'moment';
+import * as $ from 'jquery';
+import 'datatables.net';
+import 'datatables.net-bs4';
 
 @Component({
     selector: 'app-mindfight-details',
@@ -16,6 +19,7 @@ import { appModuleAnimation } from 'shared/animations/routerTransition';
     animations: [appModuleAnimation()]
 })
 export class MindfightDetailsComponent extends AppComponentBase implements OnInit {
+    dataTable: any;
     mindfight: MindfightDto;
     registrations: RegistrationDto[] = [];
     mindfightId: number;
@@ -35,7 +39,8 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         private playerService: PlayerServiceProxy,
         private activatedRoute: ActivatedRoute,
         private location: Location,
-        private router: Router
+        private router: Router,
+        private chRef: ChangeDetectorRef
     ) {
         super(injector);
     }
@@ -117,6 +122,13 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
                     this.isRegistrationActive = true;
                 }
             }
+            this.chRef.detectChanges();
+            const table: any = $('#mindfightRegistrationsTable');
+            this.dataTable = table.DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Lithuanian.json"
+                }
+            });
         });
     }
 
@@ -155,6 +167,25 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
                 });
             }
         }
+    }
+
+    updateConfirmation(registration): void {
+        this.registrationService.updateConfirmation(registration.mindfightId,
+            registration.teamId,
+            !registration.isConfirmed).subscribe(() => {
+                if (registration.isConfirmed) {
+                    this.notify.success("Komanda '" + registration.teamName + "' sėkmingai atšaukta!");
+                } else {
+                    this.notify.success("Komanda '" + registration.teamName + "' sėkmingai patvirtinta!")
+                }
+                let registrationIndex = this.registrations.findIndex(i => i.mindfightId === registration.mindfightId &&
+                    i.teamId === registration.teamId);
+                if (registrationIndex >= 0) {
+                    this.registrations[registrationIndex].isConfirmed = !registration.isConfirmed;
+                }
+            },
+            () => this.notify.error("Klaida keičiant komandos patvirtinimo statusą")
+        );
     }
 
     goBack() {

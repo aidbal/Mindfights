@@ -70,6 +70,8 @@ import { RegisteredMindfightsComponent } from './mindfights/registered-mindfight
 import { MindfightStatusLabelComponent } from './mindfights/mindfight-status-label/mindfight-status-label.component';
 import { MindfightStateService } from 'app/services/mindfight-state.service';
 import { TeamStateService } from 'app/services/team-state.service';
+import { EditPlayerComponent } from './player/edit-player/edit-player.component';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
     declarations: [
@@ -122,7 +124,8 @@ import { TeamStateService } from 'app/services/team-state.service';
         MindfightsHistoryComponent,
         PlayerDetailsComponent,
         RegisteredMindfightsComponent,
-        MindfightStatusLabelComponent
+        MindfightStatusLabelComponent,
+        EditPlayerComponent
     
     ],
     imports: [
@@ -139,7 +142,8 @@ import { TeamStateService } from 'app/services/team-state.service';
         SharedModule,
         NgxPaginationModule,
         MatDatepickerModule,
-        Daterangepicker 
+        Daterangepicker,
+        MatMomentDateModule
     ],
     providers: [
         DatepickerOptionsService,

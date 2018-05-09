@@ -3,7 +3,7 @@
 }
 
 .description {
-    white-space: pre-wrap;
+    white-space: pre-line;
 }
 
 .margin-bottom-medium {
@@ -32,4 +32,29 @@
 
 .completed-color {
     background-color: #4CAF50;
+}
+
+.display-flex {
+    display: flex;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.paddingless {
+    padding: 0;
+}
+
+.hover-zoom-effect .icon i {
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+.hover-zoom-effect:hover .icon i {
+    opacity: 0.4;
+    -webkit-transform: rotate(-32deg) scale(1.4);
+    transform: rotate(-32deg) scale(1.4);
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
 }

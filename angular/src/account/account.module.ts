@@ -37,7 +37,7 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
         MatInputModule,
         MatDatepickerModule,
         MatMomentDateModule,
-        MatSelectModule,
+        MatSelectModule
     ],
     declarations: [
         AccountComponent,

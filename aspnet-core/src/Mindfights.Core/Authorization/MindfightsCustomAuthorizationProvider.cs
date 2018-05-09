@@ -7,8 +7,8 @@ namespace Mindfights.Authorization
     {
         public override void SetPermissions(IPermissionDefinitionContext context)
         {
-            context.CreatePermission("CreateMindfights", L("Create mindfights"));
-            context.CreatePermission("ManageMindfights", L("Manage mindfights"));
+            context.CreatePermission("CreateMindfights", L("Kurti protmūšius"));
+            context.CreatePermission("ManageMindfights", L("valdyti protmūšius"));
         }
 
         private static ILocalizableString L(string name)

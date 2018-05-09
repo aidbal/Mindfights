@@ -31,9 +31,9 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card main-content" *ngIf="question">
-                <div class="header display-flex align-center">
+                <div class="header display-flex align-center header-highlight">
                     <div class="col-xs-8 display-flex">
-                        <h2>
+                        <h2 class="header-highlight-text">
                             {{question.title}}
                         </h2>
                     </div>
@@ -51,9 +51,7 @@
                     <hr />
                     <div>
                         <p>
-                            Atsakymas:
-                            <br />
-                            <b>{{question.answer}}</b>
+                            Atsakymas: <b>{{question.answer}}</b>
                         </p>
                     </div>
                     <div>

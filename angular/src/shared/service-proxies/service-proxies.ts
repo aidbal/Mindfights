@@ -857,6 +857,56 @@ export class PlayerServiceProxy {
         }
         return Observable.of<PlayerDto>(<any>null);
     }
+
+    /**
+     * @playerInfo (optional) 
+     * @return Success
+     */
+    updatePlayerInfo(playerInfo: PlayerDto, userId: number): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Player/UpdatePlayerInfo?";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined and cannot be null.");
+        else
+            url_ += "userId=" + encodeURIComponent("" + userId) + "&"; 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(playerInfo);
+
+        let options_ : any = {
+            body: content_,
+            method: "put",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processUpdatePlayerInfo(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processUpdatePlayerInfo(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<void>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processUpdatePlayerInfo(response: Response): Observable<void> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            return Observable.of<void>(<any>null);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<void>(<any>null);
+    }
 }
 
 @Injectable()
@@ -4884,6 +4934,7 @@ export class PlayerDto implements IPlayerDto {
     userName: string;
     name: string;
     surname: string;
+    cityId: number;
     city: string;
     birthdate: moment.Moment;
     points: number;
@@ -4908,6 +4959,7 @@ export class PlayerDto implements IPlayerDto {
             this.userName = data["userName"];
             this.name = data["name"];
             this.surname = data["surname"];
+            this.cityId = data["cityId"];
             this.city = data["city"];
             this.birthdate = data["birthdate"] ? moment(data["birthdate"].toString()) : <any>undefined;
             this.points = data["points"];
@@ -4932,6 +4984,7 @@ export class PlayerDto implements IPlayerDto {
         data["userName"] = this.userName;
         data["name"] = this.name;
         data["surname"] = this.surname;
+        data["cityId"] = this.cityId;
         data["city"] = this.city;
         data["birthdate"] = this.birthdate ? this.birthdate.toISOString() : <any>undefined;
         data["points"] = this.points;
@@ -4956,6 +5009,7 @@ export interface IPlayerDto {
     userName: string;
     name: string;
     surname: string;
+    cityId: number;
     city: string;
     birthdate: moment.Moment;
     points: number;

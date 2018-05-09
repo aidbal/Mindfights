@@ -15,6 +15,7 @@ export class PlayerDetailsComponent extends AppComponentBase implements OnInit {
     private routeSubscriber: any;
     playerInfo: PlayerDto;
     playerId: number;
+    canEditInfo = false;
 
     constructor(
         injector: Injector,
@@ -30,10 +31,12 @@ export class PlayerDetailsComponent extends AppComponentBase implements OnInit {
         this.routeSubscriber = this.route.params.subscribe(params => {
             this.playerId = +params['playerId'];
             if (isNaN(this.playerId)) {
-                this.getPlayerInfo(abp.session.userId);
-            } else {
-                this.getPlayerInfo(this.playerId);
+                this.playerId = abp.session.userId;
             }
+            if (abp.auth.isGranted("Pages.Users") || this.playerId === abp.session.userId) {
+                this.canEditInfo = true;
+            }
+            this.getPlayerInfo(this.playerId);
         });
     }
 

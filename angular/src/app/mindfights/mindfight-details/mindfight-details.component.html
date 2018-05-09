@@ -1,26 +1,27 @@
 <div [@routerTransition]>
-    <button type="button" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
-            (click)="goBack()" title="Grįžti į ankstesnį puslapį">
-        <i class="fa fa-arrow-circle-left fa-xs"></i> Grįžti
-    </button>
+    <div class="col-md-6 paddingless">
+        <button type="button" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+                (click)="goBack()" title="Grįžti į ankstesnį puslapį">
+            <i class="fa fa-arrow-circle-left fa-xs"></i> Grįžti
+        </button>
+    </div>
+    <div class="col-md-6 paddingless display-flex flex-end" *ngIf="canEdit">
+        <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+                [routerLink]="['/app/mindfights/' + mindfight.id + '/edit/tours']" title="Administruoti protmūšio turus">
+            Turai <i class="fa fa-arrow-circle-right fa-xs"></i>
+        </button>
+    </div>
     <div class="row clearfix">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card main-content" *ngIf="mindfight">
                 <app-mindfight-status-label [canEdit]="canEdit" [mindfight]="mindfight"></app-mindfight-status-label>
-                <div class="header">
-                    <h2>
+                <div class="header header-highlight">
+                    <h2 class="header-highlight-text">
                         {{mindfight.title}} <span class="event-detail-header"><i class="fa fa-calendar"></i> <span>{{mindfight.startTime | date:'yyyy-MM-dd HH:mm'}}</span></span>
                     </h2>
                     <ul class="header-dropdown m-r--5">
                         <li>
                             <div>
-                                <button *ngIf="showPlayButton" type="button"
-                                        class="btn bg-green waves-effect waves-light"
-                                        [routerLink]="['/app/mindfights/' + mindfightId + '/play']"
-                                        [disabled]="!isRegistrationActive || !isActiveInTeam" 
-                                        title="{{ isRegistrationActive ? (isActiveInTeam ? 'Žaisti protmūšį' : 'Jūs esate neaktyvus komandoje') : 'Komandos registracija neaktyvi'}}">
-                                    Žaisti protmūšį
-                                </button>
                                 <button *ngIf="hasMindfightStarted" type="button"
                                         class="btn bg-green waves-effect waves-light"
                                         [routerLink]="['/app/mindfights/' + mindfightId + '/results']">
@@ -42,10 +43,22 @@
                 </div>
                 <div class="body table-responsive">
                     <br />
-                    <div>
-                        <p class="description">
-                            {{mindfight.description}}
-                        </p>
+                    <div class="col-xs-12 paddingless">
+                        <div class="col-xs-2">
+                            <button *ngIf="showPlayButton" type="button"
+                                    class="btn bg-green waves-effect waves-light hover-zoom-effect"
+                                    [routerLink]="['/app/mindfights/' + mindfightId + '/play']"
+                                    [disabled]="!isRegistrationActive || !isActiveInTeam"
+                                    title="{{ isRegistrationActive ? (isActiveInTeam ? 'Žaisti protmūšį' : 'Jūs esate neaktyvus komandoje') : 'Komandos registracija neaktyvi'}}">
+                                Žaisti protmūšį
+                                <div class="icon bg-green">
+                                    <i class="material-icons">play_arrow</i>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="content col-xs-10">
+                            <p class="description">{{mindfight.description}}</p>
+                        </div>
                     </div>
                     <br />
                     <br />
@@ -66,7 +79,7 @@
                         <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                     </div>
                     <hr />
-                    <table class="table table-hover" *ngIf="registrations.length > 0">
+                    <table id="mindfightRegistrationsTable" class="table table-hover" *ngIf="registrations.length > 0">
                         <thead>
                             <tr>
                                 <th>Patvirtinta</th>
@@ -77,7 +90,7 @@
                         <tbody>
                             <tr *ngFor="let registration of registrations; let i = index">
                                 <td>
-                                    <input type="checkbox" id="isTeamConfirmed{{i}}" disabled
+                                    <input type="checkbox" id="isTeamConfirmed{{i}}" [disabled]="!canEdit"
                                            [ngModel]="registration.isConfirmed"
                                            (click)="updateConfirmation(registration)">
                                     <label [attr.for]="'isTeamConfirmed'+i" title="Patvirtinimo statusas"></label>
