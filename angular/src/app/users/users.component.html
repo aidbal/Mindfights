@@ -1,4 +1,4 @@
-﻿<div class="row clearfix" [@routerTransition]>
+<div class="row clearfix" [@routerTransition]>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card main-content">
             <div class="header">
@@ -14,7 +14,7 @@
                         <ul class="dropdown-menu pull-right">
                             <li>
                                 <a href="javascript:void(0);" class=" waves-effect waves-block()" (click)="refresh();">
-                                    <i class="material-icons">refresh</i> {{l('Refresh')}}</a>
+                                    <i class="material-icons">Atnaujinti</i> {{l('Refresh')}}</a>
                             </li>
                         </ul>
                     </li>
@@ -53,11 +53,18 @@
                                 <ul class="dropdown-menu pull-right">
                                     <li>
                                         <a href="javascript:void(0);" class="waves-effect waves-block" (click)="editUser(user)">
-                                            <i class="material-icons">create</i>{{l('Edit')}}</a>
+                                            <i class="material-icons">create</i>{{l('Edit')}}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="waves-effect waves-block" (click)="changePassword(user)">
+                                            <i class="material-icons">create</i>Keisti slaptažodį
+                                        </a>
                                     </li>
                                     <li>
                                         <a href="javascript:void(0);" class="waves-effect waves-block" (click)="delete(user)">
-                                            <i class="material-icons">delete_sweep</i>{{l('Delete')}}</a>
+                                            <i class="material-icons">delete_sweep</i>{{l('Delete')}}
+                                        </a>
                                     </li>
                                 </ul>
                             </td>
@@ -80,3 +87,4 @@
 
 <create-user-modal #createUserModal (modalSave)="refresh()"></create-user-modal>
 <edit-user-modal #editUserModal (modalSave)="refresh()"></edit-user-modal>
+<change-password-modal #changePasswordModal (modalSave)="refresh()"></change-password-modal>

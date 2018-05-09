@@ -1,9 +1,10 @@
-﻿import { Component, Injector, ViewChild } from '@angular/core';
+import { Component, Injector, ViewChild } from '@angular/core';
 import { appModuleAnimation } from '@shared/animations/routerTransition';
 import { UserServiceProxy, UserDto, PagedResultDtoOfUserDto } from '@shared/service-proxies/service-proxies';
 import { PagedListingComponentBase, PagedRequestDto } from "shared/paged-listing-component-base";
 import { CreateUserComponent } from "app/users/create-user/create-user.component";
 import { EditUserComponent } from "app/users/edit-user/edit-user.component";
+import { ChangePasswordComponent } from 'app/users/change-password/change-password.component';
 
 @Component({
     templateUrl: './users.component.html',
@@ -13,6 +14,7 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
 
     @ViewChild('createUserModal') createUserModal: CreateUserComponent;
     @ViewChild('editUserModal') editUserModal: EditUserComponent;
+    @ViewChild('changePasswordModal') changePasswordModal: ChangePasswordComponent;
 
     active: boolean = false;
     users: UserDto[] = [];
@@ -57,5 +59,9 @@ export class UsersComponent extends PagedListingComponentBase<UserDto> {
 
     editUser(user: UserDto): void {
         this.editUserModal.show(user.id);
+    }
+
+    changePassword(user: UserDto) {
+        this.changePasswordModal.show(user.id);
     }
 }

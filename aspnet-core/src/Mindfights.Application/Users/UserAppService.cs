@@ -1,20 +1,22 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.IdentityFramework;
 using Abp.Localization;
 using Abp.Runtime.Session;
+using Abp.UI;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization;
 using Mindfights.Authorization.Roles;
 using Mindfights.Authorization.Users;
 using Mindfights.Roles.Dto;
 using Mindfights.Users.Dto;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Extensions;
 
 namespace Mindfights.Users
 {
@@ -25,19 +27,22 @@ namespace Mindfights.Users
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IPermissionChecker _permissionChecker;
 
         public UserAppService(
             IRepository<User, long> repository,
             UserManager userManager,
             RoleManager roleManager,
             IRepository<Role> roleRepository,
-            IPasswordHasher<User> passwordHasher)
+            IPasswordHasher<User> passwordHasher,
+            IPermissionChecker permissionChecker)
             : base(repository)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _roleRepository = roleRepository;
             _passwordHasher = passwordHasher;
+            _permissionChecker = permissionChecker;
         }
 
         public override async Task<UserDto> Create(CreateUserDto input)
@@ -78,6 +83,36 @@ namespace Mindfights.Users
             }
 
             return await Get(input);
+        }
+
+        public async Task ChangePassword(long userId, string plainPassword)
+        {
+            if (!_permissionChecker.IsGranted("Pages.Users"))
+            {
+                throw new UserFriendlyException("Neturite teisių redaguoti vartotojo duomenų!");
+            }
+
+            if (plainPassword.IsNullOrEmpty())
+            {
+                throw new UserFriendlyException("Nurodytas slaptažodis tuščias!");
+            }
+
+            if (plainPassword.Length < 4)
+            {
+                throw new UserFriendlyException("Nurodytas slaptažodis turi būti sudarytas iš daugiau nei 3 simbolių!");
+            }
+
+            var user = await _userManager.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                throw new UserFriendlyException("Vartotojas su tokiu id nerastas!");
+            }
+            
+            user.Password = _passwordHasher.HashPassword(user, plainPassword);
+            user.LockoutEndDateUtc = null;
+
+            CurrentUnitOfWork.SaveChanges();
+            await _userManager.UpdateAsync(user);
         }
 
         public override async Task Delete(EntityDto<long> input)

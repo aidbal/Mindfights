@@ -72,6 +72,7 @@ import { MindfightStateService } from 'app/services/mindfight-state.service';
 import { TeamStateService } from 'app/services/team-state.service';
 import { EditPlayerComponent } from './player/edit-player/edit-player.component';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { ChangePasswordComponent } from './users/change-password/change-password.component';
 
 @NgModule({
     declarations: [
@@ -125,7 +126,8 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
         PlayerDetailsComponent,
         RegisteredMindfightsComponent,
         MindfightStatusLabelComponent,
-        EditPlayerComponent
+        EditPlayerComponent,
+        ChangePasswordComponent
     
     ],
     imports: [
