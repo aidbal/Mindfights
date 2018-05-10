@@ -37,15 +37,21 @@ namespace Mindfights.Services.TeamService
         {
             var user = _userManager.Users.IgnoreQueryFilters().FirstOrDefault(u => u.Id == _userManager.AbpSession.UserId);
             if (user == null)
+            {
                 throw new UserFriendlyException("Vartotojas neegzistuoja!");
+            }
 
             var currentUserTeam = await _teamRepository.FirstOrDefaultAsync(x => x.LeaderId == user.Id);
             if (currentUserTeam != null)
+            {
                 throw new UserFriendlyException("Vartotojas jau turi komandą!");
+            }
             
             var teamWithSameName = await _teamRepository.FirstOrDefaultAsync(x => string.CompareOrdinal(x.Name.ToUpper(), team.Name.ToUpper()) == 0);
             if (teamWithSameName != null)
+            {
                 throw new UserFriendlyException("Komanda su tokiu pačiu pavadinimu jau egzistuoja!");
+            }
             
             var teamToInsert = new Models.Team(user, team.Name, team.Description);
             user.IsActiveInTeam = true;
@@ -58,7 +64,9 @@ namespace Mindfights.Services.TeamService
                 .GetAllIncluding(team => team.Players)
                 .FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Komanda su tokiu id neegizstuoja1");
+            }
 
             var teamDto = new TeamDto();
             currentTeam.MapTo(teamDto);
@@ -84,11 +92,16 @@ namespace Mindfights.Services.TeamService
         {
             var currentTeam = await _teamRepository.FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Komanda su tokiu id neegzistuoja!");
+            }
 
-            var teamWithSameName = await _teamRepository.FirstOrDefaultAsync(x => string.CompareOrdinal(x.Name.ToUpper(), team.Name.ToUpper()) == 0 && x.Id != teamId);
+            var teamWithSameName = await _teamRepository
+                .FirstOrDefaultAsync(x => string.CompareOrdinal(x.Name.ToUpper(), team.Name.ToUpper()) == 0 && x.Id != teamId);
             if (teamWithSameName != null)
+            {
                 throw new UserFriendlyException("Komanda su tokiu pačiu pavadinimu jau egzistuoja!");
+            }
             
             currentTeam.Description = team.Description;
             currentTeam.Name = team.Name;
@@ -99,10 +112,15 @@ namespace Mindfights.Services.TeamService
         {
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Komanda su tokiu id neegzistuoja!");
+            }
 
-            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
+            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId ||
+                  _permissionChecker.IsGranted("Pages.Users")))
+            {
                 throw new AbpAuthorizationException("Jūs neturite teisių trinti šios komandos!");
+            }
 
             var teamPlayers = await _userManager.Users
                 .IgnoreQueryFilters()
@@ -127,18 +145,19 @@ namespace Mindfights.Services.TeamService
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (currentUser == null)
+            {
                 throw new UserFriendlyException("Vartotojas neegzistuoja!");
+            }
 
             if (currentUser.Team == null)
+            {
                 throw new UserFriendlyException("Vartotojas neturi komandos!");
+            }
 
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == currentUser.Team.Id);
             if (currentTeam == null)
-                throw new UserFriendlyException("Vartotojas yra kitoje komandoje!");
-
-            if (currentUser.Id == currentTeam.LeaderId)
             {
-                throw new UserFriendlyException("Negalima keisti kapitono statuso!");
+                throw new UserFriendlyException("Vartotojas yra kitoje komandoje!");
             }
 
             if (!(_permissionChecker.IsGranted("Pages.Users") || currentTeam.LeaderId == _userManager.AbpSession.UserId))
@@ -171,7 +190,7 @@ namespace Mindfights.Services.TeamService
 
             if (currentUser.Team != null)
             {
-                throw new UserFriendlyException("Vartotojas yra kitoje komandoje!");
+                throw new UserFriendlyException("Vartotojas jau komandoje!");
             }
 
             currentTeam.Players.Add(currentUser);
@@ -183,23 +202,34 @@ namespace Mindfights.Services.TeamService
         {
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Nurodyta komanda neegzistuoja!");
+            }
 
-            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId || _permissionChecker.IsGranted("Pages.Users")))
+            if (!(currentTeam.LeaderId == _userManager.AbpSession.UserId ||
+                  _permissionChecker.IsGranted("Pages.Users")))
+            {
                 throw new AbpAuthorizationException("Jūs neturite komandos redagavimo teisių!");
+            }
 
             var currentLeaderTeam = await _teamRepository.FirstOrDefaultAsync(x => x.LeaderId == userId);
             if (currentLeaderTeam != null)
+            {
                 throw new UserFriendlyException("Vartotojas yra komandos kapitonas!");
+            }
 
             var currentUser = await _userManager.Users.IgnoreQueryFilters()
                 .Include(user => user.Team)
                 .FirstOrDefaultAsync(x => x.Id == userId);
             if (currentUser == null)
+            {
                 throw new UserFriendlyException("Vartotojas neegzistuoja!");
+            }
 
             if (currentUser.Team == null)
+            {
                 throw new UserFriendlyException("Vartotojas neturi komandos!");
+            }
 
             if (currentTeam.Players.Remove(currentUser))
             {
@@ -212,7 +242,9 @@ namespace Mindfights.Services.TeamService
         {
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
+            }
 
             var usersInTeam = await _userManager.Users.IgnoreQueryFilters().Where(x => x.TeamId == teamId).ToListAsync();
             return usersInTeam.Select(user => new TeamPlayerDto
@@ -220,34 +252,47 @@ namespace Mindfights.Services.TeamService
                     Id = user.Id,
                     UserName = user.UserName,
                     Points = user.Points,
-                    IsActiveInTeam = user.IsActiveInTeam
-                })
-                .ToList();
+                    IsActiveInTeam = user.IsActiveInTeam,
+                    IsTeamLeader = currentTeam.LeaderId == user.Id
+                }
+            ).ToList();
         }
 
         public async Task ChangeTeamLeader(long teamId, long newLeaderId)
         {
             var currentTeam = await _teamRepository.GetAllIncluding(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
             if (currentTeam == null)
+            {
                 throw new UserFriendlyException("Komanda su nurodytu id neegzistuoja!");
+            }
 
             var currentLeader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentTeam.LeaderId);
             if (currentLeader == null)
+            {
                 throw new UserFriendlyException("Klaida gaunant komandos kapitoną!");
+            }
 
             var newLeader = await _userManager.Users.IgnoreQueryFilters()
                 .Include(user => user.Team)
                 .FirstOrDefaultAsync(x => x.Id == newLeaderId);
             if (newLeader == null)
+            {
                 throw new UserFriendlyException("Vartotojas neegzistuoja");
+            }
+
+            if (currentLeader == newLeader)
+            {
+                throw new UserFriendlyException("Nurodytas vartotojas jau yra kapitonas!");
+            }
 
             if (newLeader.Team != null && newLeader.Team != currentTeam)
+            {
                 throw new UserFriendlyException("Vartotojas yra kitoje komandoje!");
+            }
 
             
             currentTeam.LeaderId = newLeaderId;
             newLeader.IsActiveInTeam = true;
-            currentLeader.IsActiveInTeam = false;
             await _teamRepository.UpdateAsync(currentTeam);
         }
 

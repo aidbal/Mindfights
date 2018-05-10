@@ -1,0 +1,102 @@
+<div [@routerTransition]>
+    <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float margin-bottom-medium navigate-button"
+            [routerLink]="['/app/team']" title="Grįžti į komandos puslapį">
+        <i class="fa fa-arrow-circle-left fa-xs"></i> Komanda
+    </button>
+    <div class="row" *ngIf="teamPlayers.length > 0">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span>Pridėti naują žaidėją</span>
+                    </h4>
+                </div>
+                <div class="modal-body text-center display-flex center">
+                    <div class="small-padding-sides">
+                        <mat-form-field>
+                            <input matInput [(ngModel)]="newPlayerUsername"
+                                   placeholder="Vartotojo slapyvardis"
+                                   name="Title"
+                                   type="text"
+                                   maxlength="255" minlength="1" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="small-padding-sides">
+                        <button type="button" class="btn btn-link waves-effect waves-float navigate-button"
+                                [disabled]="!newPlayerUsername || saving"
+                                title="Pridėti vartotoją į komandą" (click)="addNewPlayer()">
+                            Pridėti
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card main-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span>Perleisti kapitono teises</span>
+                    </h4>
+                </div>
+                <div class="modal-body text-center display-flex center">
+                    <div class="small-padding-sides">
+                        <div class="form-group form-float">
+                            <mat-form-field>
+                                <mat-select class="form-control" [(ngModel)]="leader" name="leader" required>
+                                    <mat-option *ngFor="let player of teamPlayersForNewLeader" [value]="player">
+                                        {{ player.userName }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="small-padding-sides">
+                        <button type="button" class="btn btn-link waves-effect waves-float navigate-button" [disabled]="!leader"
+                                title="Perleisti kapitono teises kitam vartotojui" (click)="changeTeamLeader(leader)">
+                            Perleisti
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card main-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        <span>Komandos nariai</span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Aktyvus</th>
+                                <th>Id</th>
+                                <th>Slapyvardis</th>
+                                <th>Taškai</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of teamPlayers; let i = index">
+                                <td>
+                                    <input type="checkbox" id="isActiveInTeam{{i}}"
+                                           [ngModel]="player.isActiveInTeam"
+                                           (click)="updateActiveStatus(player)">
+                                    <label [attr.for]="'isActiveInTeam'+i" title="Keisti aktyvumo statusą"></label>
+                                </td>
+                                <td>{{player.id}}</td>
+                                <td><a [routerLink]="['/app/player/' + player.id]">{{player.userName}}</a></td>
+                                <td>{{player.points}}</td>
+                                <td *ngIf="!player.isTeamLeader" class="display-flex center">
+                                    <button type="button" class="btn red"
+                                            [disabled]="saving"
+                                            (click)="removePlayer(player.id, player.userName)">
+                                        <i class="fa fa-times fa-xs"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

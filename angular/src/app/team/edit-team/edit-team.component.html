@@ -56,68 +56,6 @@
                     </div>
                 </form>
             </div>
-            <div class="card main-content" *ngIf="team">
-                <div class="modal-header">
-                    <h4 class="modal-title">
-                        <span>Pridėti naują žaidėją</span>
-                    </h4>
-                </div>
-                <div class="modal-body text-center display-flex center">
-                    <div class="small-padding-sides">
-                        <mat-form-field>
-                            <input matInput [(ngModel)]="invitationUsername"
-                                   placeholder="Vartotojo slapyvardis"
-                                   name="Title"
-                                   type="text"
-                                   maxlength="255" minlength="1" required>
-                        </mat-form-field>
-                    </div>
-                    <div class="small-padding-sides">
-                        <button type="button" class="btn btn-link waves-effect waves-float navigate-button"
-                                title="Pridėti vartotoją į komandą" (click)="addNewPlayer(invitationUsername)">
-                            Pridėti
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="card main-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">
-                        <span>Komandos nariai</span>
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-hover" *ngIf="teamPlayers.length > 0">
-                        <thead>
-                            <tr>
-                                <th>Aktyvus</th>
-                                <th>Id</th>
-                                <th>Slapyvardis</th>
-                                <th>Taškai</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let player of teamPlayers; let i = index">
-                                <td>
-                                    <input type="checkbox" id="isActiveInTeam{{i}}"
-                                           [ngModel]="player.isActiveInTeam"
-                                           (click)="updateActiveStatus(player)" [disabled]="currentUserId == player.id">
-                                    <label [attr.for]="'isActiveInTeam'+i" title="Keisti aktyvumo statusą"></label>
-                                </td>
-                                <td>{{player.id}}</td>
-                                <td><a [routerLink]="['/app/player/' + player.id]">{{player.userName}}</a></td>
-                                <td>{{player.points}}</td>
-                                <td *ngIf="currentUserId != player.id" class="display-flex center">
-                                    <button type="button" class="btn red" (click)="removePlayer(player.id, player.userName)">
-                                        <i class="fa fa-times fa-xs"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </div>
 </div>

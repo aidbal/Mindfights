@@ -1,10 +1,5 @@
-.margin-bottom-medium {
-    margin-bottom: 20px;
-}
-
-.navigate-button {
-    background-color: white;
-    min-width: 150px;
+.red {
+    background-color: #ffb2b2;
 }
 
 .display-flex {
@@ -18,4 +13,9 @@
 .center {
     align-items: center;
     justify-content: center;
+}
+
+.small-padding-sides {
+    padding-left: 15px;
+    padding-right: 15px;
 }

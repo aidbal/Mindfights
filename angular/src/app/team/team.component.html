@@ -8,8 +8,8 @@
             <div class="card main-content">
                 <div class="modal-header text-center">
                     <h4 class="modal-title">
-                        <span *ngIf="isMyTeam">Mano komanda</span>
-                        <span *ngIf="!isMyTeam">Komanda</span>
+                        <span *ngIf="isMyTeam">Mano komandos informacija</span>
+                        <span *ngIf="!isMyTeam">Komandos informacija</span>
                     </h4>
                 </div>
             </div>
@@ -40,6 +40,11 @@
                         </div>
                         <div class="col-xs-4 display-flex flex-end" *ngIf="isMyTeam">
                             <div *ngIf="isTeamLeader">
+                                <button [routerLink]="['/app/team/' + team.id + '/managePlayers']" type="button" class="btn white-bg waves-effect waves-light">
+                                    Valdyti žaidėjus
+                                </button>
+                            </div>
+                            <div *ngIf="isTeamLeader">
                                 <button [routerLink]="['/app/team/' + team.id + '/edit']" type="button" class="btn white-bg waves-effect waves-light">
                                     Redaguoti
                                 </button>
@@ -54,6 +59,8 @@
                     <div class="body table-responsive">
                         <br/>
                         <div>
+                            <small><b>Komandos aprašymas:</b></small>
+                            <br/>
                             <p class="description">{{team.description}}</p>
                         </div>
                         <br/>

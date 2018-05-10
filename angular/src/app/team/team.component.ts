@@ -39,7 +39,6 @@ export class TeamComponent extends AppComponentBase implements OnInit {
     ngOnInit() {
         this.routeSubscriber = this.route.params.subscribe(params => {
             this.teamId = +params['teamId'];
-
             if (isNaN(this.teamId)) {
                 this.getPlayerInfo(abp.session.userId);
                 this.isMyTeam = true;
