@@ -33,6 +33,7 @@ import { TeamAnswersComponent } from 'app/mindfights/mindfight-result/team-answe
 import { PlayerDetailsComponent } from 'app/player/player-details/player-details.component';
 import { RegisteredMindfightsComponent } from 'app/mindfights/registered-mindfights/registered-mindfights.component';
 import { EditPlayerComponent } from 'app/player/edit-player/edit-player.component';
+import { ManagePlayersComponent } from 'app/team/manage-players/manage-players.component';
 
 @NgModule({
     imports: [
@@ -70,6 +71,7 @@ import { EditPlayerComponent } from 'app/player/edit-player/edit-player.componen
                     { path: 'team/create', component: CreateTeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'team/:teamId', component: TeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'team/:teamId/edit', component: EditTeamComponent, canActivate: [AppRouteGuard] },
+                    { path: 'team/:teamId/managePlayers', component: ManagePlayersComponent, canActivate: [AppRouteGuard] },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },
                     { path: 'tenants', component: TenantsComponent, data: { permission: 'Pages.Tenants' }, canActivate: [AppRouteGuard] },

@@ -5972,6 +5972,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
     creationTime: moment.Moment;
     evaluatorComment: string;
     questionTitle: string;
+    questionDescription: string;
     evaluator: string;
     teamId: number;
     questionId: number;
@@ -5996,6 +5997,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
             this.creationTime = data["creationTime"] ? moment(data["creationTime"].toString()) : <any>undefined;
             this.evaluatorComment = data["evaluatorComment"];
             this.questionTitle = data["questionTitle"];
+            this.questionDescription = data["questionDescription"];
             this.evaluator = data["evaluator"];
             this.teamId = data["teamId"];
             this.questionId = data["questionId"];
@@ -6020,6 +6022,7 @@ export class TeamAnswerDto implements ITeamAnswerDto {
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         data["evaluatorComment"] = this.evaluatorComment;
         data["questionTitle"] = this.questionTitle;
+        data["questionDescription"] = this.questionDescription;
         data["evaluator"] = this.evaluator;
         data["teamId"] = this.teamId;
         data["questionId"] = this.questionId;
@@ -6044,6 +6047,7 @@ export interface ITeamAnswerDto {
     creationTime: moment.Moment;
     evaluatorComment: string;
     questionTitle: string;
+    questionDescription: string;
     evaluator: string;
     teamId: number;
     questionId: number;

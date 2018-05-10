@@ -90,10 +90,10 @@
                         <div>
                             <p class="description">{{mindfight.description}}</p>
                         </div>
-                        <br/>
+                        <br />
                         <div>
                             <span>Iki protmūšio pradžios liko: <b>{{ timeLeftToStartMindfight }}</b></span>
-                            <br/>
+                            <br />
                             <span><small>Protmūšis prasidės automatiškai</small></span>
                         </div>
                     </div>
@@ -147,15 +147,43 @@
             </div>
         </div>
     </div>
+    <div class="row clearfix" *ngIf="currentQuestion && showQuestionLabel && !showAnswersLabel">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="modal-body" *ngIf="isTeamLeader">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <mat-form-field>
+                                    <input matInput class="form-control" [(ngModel)]="teamAnswers[currentQuestionTeamAnswerIndex].enteredAnswer"
+                                           placeholder="Atsakymas"
+                                           name="Answer"
+                                           type="text"
+                                           maxlength="1024" minlength="2">
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row display-flex flex-center"><small>Atsakymai bus išsaugoti automatiškai</small></div>
+                    <div class="row display-flex flex-center"><small>Turo gale turėsite laiko visus atsakymus koreguoti</small></div>
+                </div>
+                <div class="modal-body row" *ngIf="!isTeamLeader">
+                    <div class="display-flex flex-center"><small>Komandos kapitonas gali įvesti atsakymus!</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row clearfix" *ngIf="showAnswersLabel">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="card">
                 <div class="modal-body" *ngIf="isTeamLeader">
                     <div class="row" *ngFor="let teamAnswer of teamAnswers; let i = index">
                         <div class="col-sm-12">
-                            Klausimas
+                            <b>{{i+1}}</b> Klausimas
                             <br />
-                            <b>{{i+1}}</b>. {{teamAnswer.questionTitle}}
+                            {{teamAnswer.questionTitle}}
+                            <br />
+                            {{teamAnswer.questionDescription}}
                             <div class="form-group">
                                 <mat-form-field>
                                     <input matInput class="form-control" [(ngModel)]="teamAnswer.enteredAnswer"
@@ -170,7 +198,7 @@
                     <div class="row display-flex flex-center"><small>Atsakymai bus išsaugoti automatiškai</small></div>
                 </div>
                 <div class="modal-body" *ngIf="!isTeamLeader">
-                    <div class="row display-flex flex-center"><small>Tik komandos kapitonas gali įvesti atsakymus!</small></div>
+                    <div class="row display-flex flex-center"><small>Komandos kapitonas gali įvesti atsakymus!</small></div>
                 </div>
             </div>
         </div>

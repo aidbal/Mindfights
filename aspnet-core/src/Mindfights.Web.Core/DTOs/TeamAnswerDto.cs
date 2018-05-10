@@ -14,6 +14,7 @@ namespace Mindfights.DTOs
         public DateTime CreationTime { get; set; }
         public string EvaluatorComment { get; set; }
         public string QuestionTitle { get; set; }
+        public string QuestionDescription { get; set; }
         public string Evaluator { get; set; }
         public long TeamId { get; set; }
         public long QuestionId { get; set; }

@@ -31,6 +31,7 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     isTeamLeader = false;
     registration: RegistrationDto;
     teamAnswers: TeamAnswerDto[] = [];
+    currentQuestionTeamAnswerIndex: number;
 
     secondsLeftToStartMindfight: number;
     timeLeftToStartMindfight: any;
@@ -127,7 +128,9 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
                 let teamAnswer = new TeamAnswerDto();
                 teamAnswer.questionId = result.id;
                 teamAnswer.questionTitle = result.title;
+                teamAnswer.questionDescription = result.description;
                 this.teamAnswers.push(teamAnswer);
+                this.currentQuestionTeamAnswerIndex = this.teamAnswers.findIndex(i => i.questionId === result.id);
 
                 this.secondsLeftToStartQuestion = result.timeToAnswerInSeconds;
                 this.startQuestionCountdownTimer();
