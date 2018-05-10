@@ -74,6 +74,8 @@ import { EditPlayerComponent } from './player/edit-player/edit-player.component'
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { ChangePasswordComponent } from './users/change-password/change-password.component';
 import { ManagePlayersComponent } from './team/manage-players/manage-players.component';
+import { PlayersLeaderboardComponent } from './leaderboards/players-leaderboard/players-leaderboard.component';
+import { TeamsLeaderboardComponent } from './leaderboards/teams-leaderboard/teams-leaderboard.component';
 
 @NgModule({
     declarations: [
@@ -129,7 +131,9 @@ import { ManagePlayersComponent } from './team/manage-players/manage-players.com
         MindfightStatusLabelComponent,
         EditPlayerComponent,
         ChangePasswordComponent,
-        ManagePlayersComponent
+        ManagePlayersComponent,
+        PlayersLeaderboardComponent,
+        TeamsLeaderboardComponent
     
     ],
     imports: [

@@ -1,4 +1,6 @@
-﻿using Abp.AutoMapper;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Abp.AutoMapper;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
@@ -111,6 +113,27 @@ namespace Mindfights.Services.PlayerService
             player.Birthdate = playerInfo.Birthdate;
 
             await _userManager.UpdateAsync(player);
+        }
+
+        public async Task<List<PlayerDto>> GetAllPlayers()
+        {
+            var players = await _userManager.Users
+                .IgnoreQueryFilters()
+                .Include(player => player.Team)
+                .ToListAsync();
+
+            var playersDto = new List<PlayerDto>();
+
+            foreach (var player in players)
+            {
+                var playerDto = new PlayerDto();
+                player.MapTo(playerDto);
+                playerDto.TeamName = player.Team?.Name;
+                playersDto.Add(playerDto);
+            }
+            var sortedPlayers = playersDto.OrderByDescending(player => player.Points).ToList();
+
+            return sortedPlayers;
         }
     }
 }

@@ -34,6 +34,8 @@ import { PlayerDetailsComponent } from 'app/player/player-details/player-details
 import { RegisteredMindfightsComponent } from 'app/mindfights/registered-mindfights/registered-mindfights.component';
 import { EditPlayerComponent } from 'app/player/edit-player/edit-player.component';
 import { ManagePlayersComponent } from 'app/team/manage-players/manage-players.component';
+import { TeamsLeaderboardComponent } from 'app/leaderboards/teams-leaderboard/teams-leaderboard.component';
+import { PlayersLeaderboardComponent } from 'app/leaderboards/players-leaderboard/players-leaderboard.component';
 
 @NgModule({
     imports: [
@@ -72,6 +74,8 @@ import { ManagePlayersComponent } from 'app/team/manage-players/manage-players.c
                     { path: 'team/:teamId', component: TeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'team/:teamId/edit', component: EditTeamComponent, canActivate: [AppRouteGuard] },
                     { path: 'team/:teamId/managePlayers', component: ManagePlayersComponent, canActivate: [AppRouteGuard] },
+                    { path: 'leaderboard/teams', component: TeamsLeaderboardComponent, canActivate: [AppRouteGuard] },
+                    { path: 'leaderboard/players', component: PlayersLeaderboardComponent, canActivate: [AppRouteGuard] },
                     { path: 'users', component: UsersComponent, data: { permission: 'Pages.Users' }, canActivate: [AppRouteGuard] },
                     { path: 'roles', component: RolesComponent, data: { permission: 'Pages.Roles' }, canActivate: [AppRouteGuard] },
                     { path: 'tenants', component: TenantsComponent, data: { permission: 'Pages.Tenants' }, canActivate: [AppRouteGuard] },

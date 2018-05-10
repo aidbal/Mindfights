@@ -907,6 +907,56 @@ export class PlayerServiceProxy {
         }
         return Observable.of<void>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    getAllPlayers(): Observable<PlayerDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Player/GetAllPlayers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetAllPlayers(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetAllPlayers(<any>response_);
+                } catch (e) {
+                    return <Observable<PlayerDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<PlayerDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetAllPlayers(response: Response): Observable<PlayerDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(PlayerDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<PlayerDto[]>(<any>null);
+    }
 }
 
 @Injectable()
@@ -2453,56 +2503,6 @@ export class TeamServiceProxy {
     }
 
     /**
-     * @return Success
-     */
-    getAllTeams(): Observable<TeamDto[]> {
-        let url_ = this.baseUrl + "/api/services/mindfights/Team/GetAllTeams";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            method: "get",
-            headers: new Headers({
-                "Content-Type": "application/json", 
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request(url_, options_).flatMap((response_ : any) => {
-            return this.processGetAllTeams(response_);
-        }).catch((response_: any) => {
-            if (response_ instanceof Response) {
-                try {
-                    return this.processGetAllTeams(<any>response_);
-                } catch (e) {
-                    return <Observable<TeamDto[]>><any>Observable.throw(e);
-                }
-            } else
-                return <Observable<TeamDto[]>><any>Observable.throw(response_);
-        });
-    }
-
-    protected processGetAllTeams(response: Response): Observable<TeamDto[]> {
-        const status = response.status;
-
-        let _headers: any = response.headers ? response.headers.toJSON() : {};
-        if (status === 200) {
-            const _responseText = response.text();
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (resultData200 && resultData200.constructor === Array) {
-                result200 = [];
-                for (let item of resultData200)
-                    result200.push(TeamDto.fromJS(item));
-            }
-            return Observable.of(result200);
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.text();
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Observable.of<TeamDto[]>(<any>null);
-    }
-
-    /**
      * @team (optional) 
      * @return Success
      */
@@ -2891,6 +2891,56 @@ export class TeamServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
         return Observable.of<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getAllTeams(): Observable<TeamDto[]> {
+        let url_ = this.baseUrl + "/api/services/mindfights/Team/GetAllTeams";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            method: "get",
+            headers: new Headers({
+                "Content-Type": "application/json", 
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request(url_, options_).flatMap((response_ : any) => {
+            return this.processGetAllTeams(response_);
+        }).catch((response_: any) => {
+            if (response_ instanceof Response) {
+                try {
+                    return this.processGetAllTeams(<any>response_);
+                } catch (e) {
+                    return <Observable<TeamDto[]>><any>Observable.throw(e);
+                }
+            } else
+                return <Observable<TeamDto[]>><any>Observable.throw(response_);
+        });
+    }
+
+    protected processGetAllTeams(response: Response): Observable<TeamDto[]> {
+        const status = response.status;
+
+        let _headers: any = response.headers ? response.headers.toJSON() : {};
+        if (status === 200) {
+            const _responseText = response.text();
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(TeamDto.fromJS(item));
+            }
+            return Observable.of(result200);
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.text();
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Observable.of<TeamDto[]>(<any>null);
     }
 }
 

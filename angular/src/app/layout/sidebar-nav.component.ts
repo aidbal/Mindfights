@@ -16,6 +16,8 @@ export class SideBarNavComponent extends AppComponentBase {
         new MenuItem(this.l("Protmūšiai (valdymas)"), "CreateMindfights", "edit", "/app/mindfights/administrate"),
         new MenuItem(this.l("Komanda"), "", "group", "/app/team"),
         new MenuItem(this.l("Žaidėjas"), "", "face", "/app/player"),
+        new MenuItem(this.l("Žaidėjų TOP"), "", "trending_up", "/app/leaderboard/players"),
+        new MenuItem(this.l("Komandų TOP"), "", "trending_up", "/app/leaderboard/teams"),
         new MenuItem(this.l("Vartotojai"), "Pages.Users", "people", "/app/users"),
         new MenuItem(this.l("Rolės"), "Pages.Roles", "local_offer", "/app/roles")
     ];

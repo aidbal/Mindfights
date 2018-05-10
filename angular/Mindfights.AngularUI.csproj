@@ -21,4 +21,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\app\leaderboards\" />
+  </ItemGroup>
 </Project>

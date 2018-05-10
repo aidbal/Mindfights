@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services;
+﻿using System.Collections.Generic;
+using Abp.Application.Services;
 using Mindfights.DTOs;
 using System.Threading.Tasks;
 
@@ -8,5 +9,6 @@ namespace Mindfights.Services.PlayerService
     {
         Task<PlayerDto> GetPlayerInfo(long userId);
         Task UpdatePlayerInfo(PlayerDto playerInfo, long userId);
+        Task<List<PlayerDto>> GetAllPlayers();
     }
 }

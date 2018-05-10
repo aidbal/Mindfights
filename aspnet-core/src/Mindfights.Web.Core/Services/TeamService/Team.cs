@@ -9,6 +9,7 @@ using Mindfights.DTOs;
 using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Mindfights.Services.TeamService
@@ -18,17 +19,20 @@ namespace Mindfights.Services.TeamService
     {
         private readonly IRepository<Models.Team, long> _teamRepository;
         private readonly IRepository<Registration, long> _registrationRepository;
+        private readonly IRepository<MindfightResult, long> _resultRepository;
         private readonly UserManager _userManager;
         private readonly IPermissionChecker _permissionChecker;
 
         public Team(
             IRepository<Models.Team, long> teamRepository, 
-            IRepository<Registration, long> registrationRepository, 
-            UserManager userManager, 
+            IRepository<Registration, long> registrationRepository,
+            IRepository<MindfightResult, long> resultRepository,
+        UserManager userManager, 
             IPermissionChecker permissionChecker)
         {
             _teamRepository = teamRepository;
             _registrationRepository = registrationRepository;
+            _resultRepository = resultRepository;
             _userManager = userManager;
             _permissionChecker = permissionChecker;
         }
@@ -75,17 +79,6 @@ namespace Mindfights.Services.TeamService
             teamDto.PlayersCount = currentTeam.Players.Count;
             teamDto.GamePoints = currentTeam.Players.Sum(player => player.Points);
             return teamDto;
-        }
-
-        public async Task<List<TeamDto>> GetAllTeams()
-        {
-            var teams = await _teamRepository.GetAll().ToListAsync();
-            var teamsDto = new List<TeamDto>();
-            teams.MapTo(teamsDto);
-            for (var i = 0; i < teams.Count; i++)
-                teamsDto[i].LeaderName = _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == teams[i].LeaderId).Result.Name;
-
-            return teamsDto;
         }
 
         public async Task UpdateTeam(TeamDto team, long teamId)
@@ -328,6 +321,27 @@ namespace Mindfights.Services.TeamService
                 currentUser.IsActiveInTeam = false;
                 await _teamRepository.UpdateAsync(currentTeam);
             }
+        }
+
+        public async Task<List<TeamDto>> GetAllTeams()
+        {
+            var teams = await _teamRepository
+                .GetAllIncluding(team => team.Players)
+                .ToListAsync();
+
+            var teamsDto = new List<TeamDto>();
+
+            foreach (var team in teams)
+            {
+                var teamDto = new TeamDto();
+                team.MapTo(teamDto);
+                teamDto.GamePoints = team.Players.Sum(player => player.Points);
+                teamDto.LeaderName = team.Players.FirstOrDefault(player => player.Id == team.LeaderId)?.Name;
+                teamsDto.Add(teamDto);
+            }
+            var sortedTeams = teamsDto.OrderByDescending(team => team.GamePoints).ToList();
+            
+            return sortedTeams;
         }
     }
 }

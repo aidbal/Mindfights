@@ -1,0 +1,27 @@
+<div [@routerTransition]>
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card main-content">
+                <div class="body table-responsive">
+                    <table id="playersTable" class="table table-hover" *ngIf="players.length > 0">
+                        <thead>
+                            <tr>
+                                <th>Vartotojo vardas</th>
+                                <th>Vartotojo komanda</th>
+                                <th>vartotojo taškų kiekis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of players; let i = index">
+                                <td><a [routerLink]="['/app/player/' + player.id]">{{player.userName}}</a></td>
+                                <td *ngIf="player.teamName"><a [routerLink]="['/app/team/' + player.teamId]">{{player.teamName}}</a></td>
+                                <td *ngIf="!player.teamName">-</td>
+                                <td>{{player.points}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
