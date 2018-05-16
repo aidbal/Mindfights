@@ -28,7 +28,6 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
     canEvaluate = false;
     canEdit = false;
     hasMindfightStarted = false;
-    showPlayButton = false;
     isActiveInTeam = false;
     isRegistrationActive = false;
 
@@ -57,24 +56,6 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         this.routeSubscriber.unsubscribe();
     }
 
-    checkShowPlayButton(): void {
-        let mindfightStartTime = moment(this.mindfight.startTime.format('YYYY-MM-DDTHH:mm:ss'));
-        let isMindfightPrestartTime = mindfightStartTime.diff(moment()) > 0
-            && mindfightStartTime.diff(moment(), 'minutes') < 10;
-
-        let mindfightPrepareTimeLeft = moment().diff(moment(this.mindfight.startTime), 'minutes');
-        let isMindfightPrepareTime = mindfightPrepareTimeLeft < this.mindfight.prepareTime
-                                    && mindfightPrepareTimeLeft > 0;
-        this.showPlayButton = false;
-        if (
-            !this.mindfight.isFinished
-            && (isMindfightPrestartTime
-                || isMindfightPrepareTime)
-        ) {
-            this.showPlayButton = true;
-        }
-    }
-
     checkMindfightStarted(): void {
         if (moment(this.mindfight.startTime).add(this.mindfight.prepareTime, 'minutes').diff(moment()) <= 0) {
             this.hasMindfightStarted = true;
@@ -90,7 +71,6 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
             if (currentRegistrationIndex >= 0) {
                 this.registrations.splice(currentRegistrationIndex, 1);
             }
-            this.checkShowPlayButton();
         }
     }
 
@@ -114,7 +94,6 @@ export class MindfightDetailsComponent extends AppComponentBase implements OnIni
         let that = this;
         this.registrationService.getMindfightRegistrations(mindfightId).subscribe((result) => {
             this.registrations = result;
-            this.checkShowPlayButton();
             const currentRegistrationIndex =
                 this.registrations.findIndex(registration => registration.teamId === that.playerInfo.teamId);
             if (currentRegistrationIndex >= 0) {

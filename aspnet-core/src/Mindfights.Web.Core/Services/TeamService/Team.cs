@@ -19,20 +19,17 @@ namespace Mindfights.Services.TeamService
     {
         private readonly IRepository<Models.Team, long> _teamRepository;
         private readonly IRepository<Registration, long> _registrationRepository;
-        private readonly IRepository<MindfightResult, long> _resultRepository;
         private readonly UserManager _userManager;
         private readonly IPermissionChecker _permissionChecker;
 
         public Team(
             IRepository<Models.Team, long> teamRepository, 
             IRepository<Registration, long> registrationRepository,
-            IRepository<MindfightResult, long> resultRepository,
         UserManager userManager, 
             IPermissionChecker permissionChecker)
         {
             _teamRepository = teamRepository;
             _registrationRepository = registrationRepository;
-            _resultRepository = resultRepository;
             _userManager = userManager;
             _permissionChecker = permissionChecker;
         }

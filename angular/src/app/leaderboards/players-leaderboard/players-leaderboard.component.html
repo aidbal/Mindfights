@@ -14,8 +14,8 @@
                         <tbody>
                             <tr *ngFor="let player of players; let i = index">
                                 <td><a [routerLink]="['/app/player/' + player.id]">{{player.userName}}</a></td>
-                                <td *ngIf="player.teamName"><a [routerLink]="['/app/team/' + player.teamId]">{{player.teamName}}</a></td>
-                                <td *ngIf="!player.teamName">-</td>
+                                <td *ngIf="player.teamId"><a [routerLink]="['/app/team/' + player.teamId]">{{player.teamName}}</a></td>
+                                <td *ngIf="!player.teamId">-</td>
                                 <td>{{player.points}}</td>
                             </tr>
                         </tbody>

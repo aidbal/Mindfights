@@ -47,7 +47,7 @@ export class CreateMindfightComponent extends AppComponentBase implements OnInit
         that.saving = true;
         this.mindfightService.createMindfight(this.mindfight).subscribe((createdMindfightId) => {
             that.notify.success("Protmūšis sėkmingai sukurtas!");
-            that.router.navigate(['../' + createdMindfightId + '/edit'], { relativeTo: that.route });
+            that.router.navigate(['../' + createdMindfightId + '/edit/tours'], { relativeTo: that.route });
             that.saving = false;
         });
     }

@@ -51,9 +51,9 @@
                             <td>{{answer.questionTitle}}</td>
                             <td>{{answer.enteredAnswer ? answer.enteredAnswer : '-'}}</td>
                             <td>{{answer.answer ? answer.answer : '-'}}</td>
-                            <td>{{answer.evaluator}}</td>
+                            <td>{{answer.evaluator ? answer.evaluator : '-'}}</td>
                             <td>{{answer.evaluatorComment ? answer.evaluatorComment : '-'}}</td>
-                            <td>{{answer.earnedPoints}}</td>
+                            <td>{{answer.evaluator ? answer.earnedPoints : '-'}}</td>
                         </tr>
                     </tbody>
                 </table>

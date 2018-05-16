@@ -58,8 +58,8 @@ namespace Mindfights
 
             Configuration.Modules.AbpAutoMapper().Configurators.Add(config =>
             {
-                config.CreateMap<MindfightCreateUpdateDto, Models.Mindfight>()
-                    .ForMember(u => u.Id, (AutoMapper.IMemberConfigurationExpression<MindfightCreateUpdateDto, Models.Mindfight, long> options) => options.Ignore());
+                config.CreateMap<MindfightCreateDto, Models.Mindfight>()
+                    .ForMember(u => u.Id, (AutoMapper.IMemberConfigurationExpression<MindfightCreateDto, Models.Mindfight, long> options) => options.Ignore());
             });
 
             // Use database for language management

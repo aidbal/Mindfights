@@ -8,7 +8,7 @@ namespace Mindfights.Services.MindfightService
     public interface IMindfightService : IApplicationService
     {
         Task<MindfightDto> GetMindfight(long mindfightId);
-        Task<long> CreateMindfight(MindfightCreateUpdateDto mindfight);
+        Task<long> CreateMindfight(MindfightCreateDto mindfight);
         Task UpdateMindfight(MindfightDto mindfight);
         Task DeleteMindfight(long mindfightId);
         Task<List<MindfightDto>> GetMyCreatedMindfights();

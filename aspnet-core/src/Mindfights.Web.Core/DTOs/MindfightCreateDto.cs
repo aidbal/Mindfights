@@ -8,7 +8,7 @@ namespace Mindfights.DTOs
 {
     [AutoMapTo(typeof(Mindfight))]
     [AutoMapFrom(typeof(Mindfight))]
-    public class MindfightCreateUpdateDto
+    public class MindfightCreateDto
     {
         public long Id { get; set; }
         [Required]

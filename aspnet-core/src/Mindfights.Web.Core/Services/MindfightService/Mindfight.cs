@@ -19,21 +19,18 @@ namespace Mindfights.Services.MindfightService
     {
         private readonly IRepository<Models.Mindfight, long> _mindfightRepository;
         private readonly IRepository<MindfightResult, long> _resultRepository;
-        private readonly IRepository<Team, long> _teamRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
-
+        
         public Mindfight(
             IRepository<Models.Mindfight, long> mindfightRepository,
             IRepository<MindfightResult, long> resultRepository,
-            IRepository<Team, long> teamRepository,
             IPermissionChecker permissionChecker,
             UserManager userManager
             )
         {
             _mindfightRepository = mindfightRepository;
             _resultRepository = resultRepository;
-            _teamRepository = teamRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
         }
@@ -92,7 +89,7 @@ namespace Mindfights.Services.MindfightService
             return mindfight;
         }
 
-        public async Task<long> CreateMindfight(MindfightCreateUpdateDto mindfight)
+        public async Task<long> CreateMindfight(MindfightCreateDto mindfight)
         {
             if (!(_permissionChecker.IsGranted("CreateMindfights") ||
                   !_permissionChecker.IsGranted("ManageMindfights")))

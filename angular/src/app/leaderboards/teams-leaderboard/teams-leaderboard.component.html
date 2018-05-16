@@ -13,7 +13,7 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let team of teams; let i = index">
-                                <td><a [routerLink]="['/app/team/ + team.id']">{{team.name}}</a></td>
+                                <td><a [routerLink]="['/app/team/' + team.id]">{{team.name}}</a></td>
                                 <td>{{team.playersCount}}</td>
                                 <td>{{team.gamePoints}}</td>
                             </tr>
