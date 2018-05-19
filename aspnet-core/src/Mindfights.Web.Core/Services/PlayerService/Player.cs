@@ -1,15 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Abp.AutoMapper;
+﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
+using Abp.ObjectMapping;
 using Abp.UI;
 using Microsoft.EntityFrameworkCore;
 using Mindfights.Authorization.Users;
 using Mindfights.DTOs;
-using System.Threading.Tasks;
-using Abp.Authorization;
-using Abp.Domain.Repositories;
-using Castle.Core.Internal;
 using Mindfights.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Mindfights.Services.PlayerService
 {
@@ -18,16 +17,19 @@ namespace Mindfights.Services.PlayerService
         private readonly UserManager _userManager;
         private readonly IPermissionChecker _permissionChecker;
         private readonly IRepository<City, long> _cityRepository;
+        private readonly IObjectMapper _objectMapper;
 
         public Player(
             UserManager userManager,
             IPermissionChecker permissionChecker,
-            IRepository<City, long> cityRepository
+            IRepository<City, long> cityRepository,
+            IObjectMapper objectMapper
             )
         {
             _userManager = userManager;
             _permissionChecker = permissionChecker;
             _cityRepository = cityRepository;
+            _objectMapper = objectMapper;
         }
 
         public async Task<PlayerDto> GetPlayerInfo(long userId)
@@ -43,7 +45,8 @@ namespace Mindfights.Services.PlayerService
             {
                 throw new UserFriendlyException("Vartotojas su nurodytu id neegzistuoja!");
             }
-            player.MapTo(playerDto);
+
+            _objectMapper.Map(player, playerDto);
 
             if (player.City != null)
             {
@@ -100,10 +103,6 @@ namespace Mindfights.Services.PlayerService
             }
 
             var city = await _cityRepository.FirstOrDefaultAsync(c => c.Id == playerInfo.CityId);
-            if (city == null)
-            {
-                throw new UserFriendlyException("Nurodytas miestas neegzistuoja!");
-            }
 
             player.Name = playerInfo.Name;
             player.Surname = playerInfo.Surname;
@@ -127,7 +126,7 @@ namespace Mindfights.Services.PlayerService
             foreach (var player in players)
             {
                 var playerDto = new PlayerDto();
-                player.MapTo(playerDto);
+                _objectMapper.Map(player, playerDto);
                 playerDto.TeamName = player.Team?.Name;
                 playersDto.Add(playerDto);
             }

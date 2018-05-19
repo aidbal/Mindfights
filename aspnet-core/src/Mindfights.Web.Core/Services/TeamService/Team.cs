@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
 
 namespace Mindfights.Services.TeamService
 {
@@ -21,17 +22,21 @@ namespace Mindfights.Services.TeamService
         private readonly IRepository<Registration, long> _registrationRepository;
         private readonly UserManager _userManager;
         private readonly IPermissionChecker _permissionChecker;
+        private readonly IObjectMapper _objectMapper;
 
         public Team(
             IRepository<Models.Team, long> teamRepository, 
             IRepository<Registration, long> registrationRepository,
-        UserManager userManager, 
-            IPermissionChecker permissionChecker)
+            UserManager userManager, 
+            IPermissionChecker permissionChecker,
+            IObjectMapper objectMapper
+            )
         {
             _teamRepository = teamRepository;
             _registrationRepository = registrationRepository;
             _userManager = userManager;
             _permissionChecker = permissionChecker;
+            _objectMapper = objectMapper;
         }
 
         public async Task<long> CreateTeam(TeamDto team)
@@ -70,7 +75,7 @@ namespace Mindfights.Services.TeamService
             }
 
             var teamDto = new TeamDto();
-            currentTeam.MapTo(teamDto);
+            _objectMapper.Map(currentTeam, teamDto);
             var leader = await _userManager.Users.IgnoreQueryFilters().FirstOrDefaultAsync(x => x.Id == currentTeam.LeaderId);
             teamDto.LeaderName = leader.Name;
             teamDto.PlayersCount = currentTeam.Players.Count;
@@ -331,7 +336,7 @@ namespace Mindfights.Services.TeamService
             foreach (var team in teams)
             {
                 var teamDto = new TeamDto();
-                team.MapTo(teamDto);
+                _objectMapper.Map(team, teamDto);
                 teamDto.GamePoints = team.Players.Sum(player => player.Points);
                 teamDto.LeaderName = team.Players.FirstOrDefault(player => player.Id == team.LeaderId)?.Name;
                 teamsDto.Add(teamDto);

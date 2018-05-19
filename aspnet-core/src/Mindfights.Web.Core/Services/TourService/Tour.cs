@@ -11,6 +11,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
 
 namespace Mindfights.Services.TourService
 {
@@ -23,6 +24,7 @@ namespace Mindfights.Services.TourService
         private readonly IRepository<Question, long> _questionRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
+        private readonly IObjectMapper _objectMapper;
         private const int BufferSeconds = 2;
 
         public Tour(
@@ -31,7 +33,9 @@ namespace Mindfights.Services.TourService
             IRepository<Team, long> teamRepository,
             IRepository<Question, long> questionRepository,
             IPermissionChecker permissionChecker,
-            UserManager userManager)
+            UserManager userManager,
+            IObjectMapper objectMapper
+            )
         {
             _mindfightRepository = mindfightRepository;
             _tourRepository = tourRepository;
@@ -39,6 +43,7 @@ namespace Mindfights.Services.TourService
             _questionRepository = questionRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
+            _objectMapper = objectMapper;
         }
 
         public async Task<List<TourDto>> GetAllMindfightTours(long mindfightId)
@@ -69,7 +74,7 @@ namespace Mindfights.Services.TourService
             foreach (var tour in tours)
             {
                 var tourDto = new TourDto();
-                tour.MapTo(tourDto);
+                _objectMapper.Map(tour, tourDto);
                 tourDto.QuestionsCount = tour.Questions.Count;
                 toursDto.Add(tourDto);
             }
@@ -102,7 +107,7 @@ namespace Mindfights.Services.TourService
                 throw new AbpAuthorizationException("Jūs neturite teisių gauti šiam turui!");
 
             var tourDto = new TourDto();
-            currentTour.MapTo(tourDto);
+            _objectMapper.Map(currentTour, tourDto);
             tourDto.QuestionsCount = currentTour.Questions.Count;
             tourDto.TotalPoints = currentTour.Questions.Sum(question => question.Points);
             return tourDto;
@@ -205,7 +210,7 @@ namespace Mindfights.Services.TourService
             }
 
             var tourDto = new TourDto();
-            tourToReturn.MapTo(tourDto);
+            _objectMapper.Map(tourToReturn, tourDto);
             tourDto.QuestionsCount = tourToReturn.Questions.Count;
 
             if (mindfightTours.Count == 1)
@@ -263,7 +268,7 @@ namespace Mindfights.Services.TourService
                 throw new AbpAuthorizationException("Jūs neturite turo redagavimo teisių!");
 
             tour.OrderNumber = currentTour.OrderNumber;
-            tour.MapTo(currentTour);
+            _objectMapper.Map(tour, currentTour);
             currentTour.Id = tourId;
             await _tourRepository.UpdateAsync(currentTour);
         }

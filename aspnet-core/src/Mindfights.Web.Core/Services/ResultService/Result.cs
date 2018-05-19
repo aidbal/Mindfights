@@ -10,6 +10,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
 
 namespace Mindfights.Services.ResultService
 {
@@ -25,6 +26,7 @@ namespace Mindfights.Services.ResultService
         private readonly IRepository<Registration, long> _registrationRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
+        private readonly IObjectMapper _objectMapper;
 
         public Result(
             IRepository<Mindfight, long> mindfightRepository,
@@ -35,7 +37,9 @@ namespace Mindfights.Services.ResultService
             IRepository<TeamAnswer, long> teamAnswerRepository,
             IRepository<Registration, long> registrationRepository,
             IPermissionChecker permissionChecker,
-            UserManager userManager)
+            UserManager userManager,
+            IObjectMapper objectMapper
+            )
         {
             _mindfightRepository = mindfightRepository;
             _teamRepository = teamRepository;
@@ -46,6 +50,7 @@ namespace Mindfights.Services.ResultService
             _registrationRepository = registrationRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
+            _objectMapper = objectMapper;
         }
 
         public async Task UpdateResult(long mindfightId, long teamId)
@@ -215,7 +220,7 @@ namespace Mindfights.Services.ResultService
             var totalPoints = mindfightQuestions.Sum(question => question.Points);
 
             var resultDto = new MindfightResultDto();
-            currentResult.MapTo(resultDto);
+            _objectMapper.Map(currentResult, resultDto);
             resultDto.MindfightStartTime = currentMindfight.StartTime;
             resultDto.MindfightName = currentMindfight.Title;
             resultDto.MindfightId = mindfightId;
@@ -255,7 +260,7 @@ namespace Mindfights.Services.ResultService
             foreach (var teamResult in registeredTeamResults)
             {
                 var resultDto = new MindfightResultDto();
-                teamResult.MapTo(resultDto);
+                _objectMapper.Map(teamResult, resultDto);
                 resultDto.MindfightStartTime = currentMindfight.StartTime;
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = mindfightId;
@@ -307,7 +312,7 @@ namespace Mindfights.Services.ResultService
                 var totalPoints = mindfightQuestions.Sum(question => question.Points);
 
                 var resultDto = new MindfightResultDto();
-                teamResult.MapTo(resultDto);
+                _objectMapper.Map(teamResult, resultDto);
                 resultDto.MindfightStartTime = currentMindfight.StartTime;
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = currentMindfight.Id;
@@ -353,7 +358,7 @@ namespace Mindfights.Services.ResultService
                 var totalPoints = mindfightQuestions.Sum(question => question.Points);
 
                 var resultDto = new MindfightResultDto();
-                result.MapTo(resultDto);
+                _objectMapper.Map(result, resultDto);
                 resultDto.MindfightStartTime = currentMindfight.StartTime;
                 resultDto.MindfightName = currentMindfight.Title;
                 resultDto.MindfightId = currentMindfight.Id;

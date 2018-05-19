@@ -11,6 +11,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
 
 namespace Mindfights.Services.RegistrationService
 {
@@ -21,6 +22,7 @@ namespace Mindfights.Services.RegistrationService
         private readonly IRepository<Team, long> _teamRepository;
         private readonly IRepository<Models.Registration, long> _registrationRepository;
         private readonly IPermissionChecker _permissionChecker;
+        private readonly IObjectMapper _objectMapper;
         private readonly UserManager _userManager;
 
         public Registration(
@@ -28,13 +30,16 @@ namespace Mindfights.Services.RegistrationService
             IRepository<Team, long> teamRepository,
             IRepository<Models.Registration, long> registrationRepository,
             IPermissionChecker permissionChecker,
-            UserManager userManager)
+            UserManager userManager,
+            IObjectMapper objectMapper
+            )
         {
             _mindfightRepository = mindfightRepository;
             _teamRepository = teamRepository;
             _registrationRepository = registrationRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
+            _objectMapper = objectMapper;
         }
 
         public async Task<long> CreateRegistration(long mindfightId, long teamId)
@@ -142,7 +147,7 @@ namespace Mindfights.Services.RegistrationService
             }
 
             var registrationDto = new RegistrationDto();
-            currentRegistration.MapTo(registrationDto);
+            _objectMapper.Map(currentRegistration, registrationDto);
             registrationDto.MindfightName = currentRegistration.Mindfight.Title;
 
             return registrationDto;
@@ -172,7 +177,7 @@ namespace Mindfights.Services.RegistrationService
 
             if (currentRegistration != null)
             {
-                currentRegistration.MapTo(registrationDto);
+                _objectMapper.Map(currentRegistration, registrationDto);
                 registrationDto.MindfightName = currentMindfight.Title;
             }
             return registrationDto;

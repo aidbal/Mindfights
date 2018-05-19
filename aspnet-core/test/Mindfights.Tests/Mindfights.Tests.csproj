@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>1.0.0.0</VersionPrefix>
     <TargetFramework>netcoreapp2.0</TargetFramework>
@@ -12,7 +12,10 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Mindfights.Application\Mindfights.Application.csproj" />
+    <ProjectReference Include="..\..\src\Mindfights.Core\Mindfights.Core.csproj" />
     <ProjectReference Include="..\..\src\Mindfights.EntityFrameworkCore\Mindfights.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Mindfights.Web.Core\Mindfights.Web.Core.csproj" />
+    <ProjectReference Include="..\..\src\Mindfights.Web.Host\Mindfights.Web.Host.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.1" />

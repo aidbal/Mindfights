@@ -11,6 +11,8 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
+using Castle.Core.Internal;
 
 namespace Mindfights.Services.MindfightService
 {
@@ -21,18 +23,21 @@ namespace Mindfights.Services.MindfightService
         private readonly IRepository<MindfightResult, long> _resultRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
-        
+        private readonly IObjectMapper _objectMapper;
+
         public Mindfight(
             IRepository<Models.Mindfight, long> mindfightRepository,
             IRepository<MindfightResult, long> resultRepository,
             IPermissionChecker permissionChecker,
-            UserManager userManager
+            UserManager userManager,
+            IObjectMapper objectMapper
             )
         {
             _mindfightRepository = mindfightRepository;
             _resultRepository = resultRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
+            _objectMapper = objectMapper;
         }
 
         public async Task<MindfightDto> GetMindfight(long mindfightId)
@@ -133,6 +138,7 @@ namespace Mindfights.Services.MindfightService
             currentMindfight.StartTime = mindfight.StartTime;
             currentMindfight.PrepareTime = mindfight.PrepareTime;
             currentMindfight.TeamsLimit = mindfight.TeamsLimit;
+            mindfight.UsersAllowedToEvaluate = mindfight.UsersAllowedToEvaluate ?? new List<string>();
             await UpdateEvaluators(currentMindfight.Id, mindfight.UsersAllowedToEvaluate);
             await _mindfightRepository.UpdateAsync(currentMindfight);
         }
@@ -177,7 +183,7 @@ namespace Mindfights.Services.MindfightService
                 .Where(x => isMindfightsManager || x.CreatorId == user.Id).ToListAsync();
 
             var mindfightsDto = new List<MindfightDto>();
-            mindfights.MapTo(mindfightsDto);
+            _objectMapper.Map(mindfights, mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
@@ -201,7 +207,7 @@ namespace Mindfights.Services.MindfightService
                 .Where(x => x.Evaluators.Any(y => y.UserId == user.Id) && x.CreatorId != user.Id && !x.IsFinished).ToListAsync();
 
             var mindfightsDto = new List<MindfightDto>();
-            mindfights.MapTo(mindfightsDto);
+            _objectMapper.Map(mindfights, mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
@@ -229,7 +235,8 @@ namespace Mindfights.Services.MindfightService
                 ).ToListAsync();
 
             var mindfightsDto = new List<MindfightDto>();
-            mindfights.MapTo(mindfightsDto);
+
+            _objectMapper.Map(mindfights, mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
                 mindfightsDto[i].RegisteredTeamsCount = mindfights[i].Registrations.Count;
@@ -252,7 +259,8 @@ namespace Mindfights.Services.MindfightService
                 .ToListAsync();
 
             var mindfightsDto = new List<MindfightPublicDto>();
-            mindfights.MapTo(mindfightsDto);
+
+            _objectMapper.Map(mindfights, mindfightsDto);
             for (var i = 0; i < mindfights.Count; i++)
             {
                 mindfightsDto[i].TeamsLimit = mindfights[i].TeamsLimit;

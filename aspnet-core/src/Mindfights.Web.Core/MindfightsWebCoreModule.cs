@@ -32,7 +32,8 @@ namespace Mindfights
     [DependsOn(
          typeof(MindfightsApplicationModule),
          typeof(MindfightsEntityFrameworkModule),
-         typeof(AbpAspNetCoreModule)
+         typeof(AbpAspNetCoreModule),
+         typeof(AbpAutoMapperModule)
 #if FEATURE_SIGNALR 
         ,typeof(AbpWebSignalRModule)
 #elif FEATURE_SIGNALR_ASPNETCORE

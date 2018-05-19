@@ -10,6 +10,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
 
 namespace Mindfights.Services.TeamAnswerService
 {
@@ -24,6 +25,7 @@ namespace Mindfights.Services.TeamAnswerService
         private readonly IRepository<MindfightResult, long> _resultRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
+        private readonly IObjectMapper _objectMapper;
 
         public TeamAnswer(
             IRepository<Question, long> questionRepository,
@@ -33,7 +35,9 @@ namespace Mindfights.Services.TeamAnswerService
             IRepository<Tour, long> tourRepository,
             IRepository<MindfightResult, long> resultRepository,
             IPermissionChecker permissionChecker,
-            UserManager userManager)
+            UserManager userManager,
+            IObjectMapper objectMapper
+            )
         {
             _questionRepository = questionRepository;
             _teamAnswerRepository = teamAnswerRepository;
@@ -43,6 +47,7 @@ namespace Mindfights.Services.TeamAnswerService
             _resultRepository = resultRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
+            _objectMapper = objectMapper;
         }
 
         public async Task<List<long>> CreateTeamAnswer(List<TeamAnswerDto> teamAnswers, long mindfightId)
@@ -188,7 +193,7 @@ namespace Mindfights.Services.TeamAnswerService
             }
 
             var teamAnswerDto = new TeamAnswerDto();
-            teamAnswer.MapTo(teamAnswerDto);
+            _objectMapper.Map(teamAnswer, teamAnswerDto);
             teamAnswerDto.Evaluator = teamAnswer.Evaluator?.EmailAddress.ToLower();
             teamAnswerDto.TourOrderNumber = teamAnswer.Question.Tour.OrderNumber;
             teamAnswerDto.Answer = currentQuestion.Answer;
@@ -259,7 +264,7 @@ namespace Mindfights.Services.TeamAnswerService
             foreach (var teamAnswer in teamAnswers)
             {
                 var teamAnswerDto = new TeamAnswerDto();
-                teamAnswer.MapTo(teamAnswerDto);
+                _objectMapper.Map(teamAnswer, teamAnswerDto);
                 teamAnswerDto.Evaluator = teamAnswer.Evaluator?.EmailAddress.ToLower();
                 teamAnswerDto.TourOrderNumber = teamAnswer.Question.Tour.OrderNumber;
                 teamAnswerDto.Answer = teamAnswer.Question.Answer;

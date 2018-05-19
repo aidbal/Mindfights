@@ -1,4 +1,5 @@
-﻿using Abp.Modules;
+﻿using System;
+using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Timing;
 using Abp.Zero;
@@ -18,6 +19,7 @@ namespace Mindfights
     {
         public override void PreInitialize()
         {
+            AppContext.SetSwitch("Microsoft.EntityFrameworkCore.Issue9825", true);
             Configuration.Auditing.IsEnabledForAnonymousUsers = true;
 
             // Declare entity types

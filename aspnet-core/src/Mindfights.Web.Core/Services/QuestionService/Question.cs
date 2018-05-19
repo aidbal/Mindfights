@@ -11,6 +11,7 @@ using Mindfights.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Abp.ObjectMapping;
 
 namespace Mindfights.Services.QuestionService
 {
@@ -23,6 +24,7 @@ namespace Mindfights.Services.QuestionService
         private readonly IRepository<Mindfight, long> _mindfightRepository;
         private readonly IPermissionChecker _permissionChecker;
         private readonly UserManager _userManager;
+        private readonly IObjectMapper _objectMapper;
         private const int BufferSeconds = 2;
 
         public Question(
@@ -31,7 +33,8 @@ namespace Mindfights.Services.QuestionService
             IRepository<Tour, long> tourRepository,
             IRepository<Mindfight, long> mindfightRepository,
             IPermissionChecker permissionChecker,
-            UserManager userManager
+            UserManager userManager,
+            IObjectMapper objectMapper
             )
         {
             _questionRepository = questionRepository;
@@ -40,6 +43,7 @@ namespace Mindfights.Services.QuestionService
             _mindfightRepository = mindfightRepository;
             _permissionChecker = permissionChecker;
             _userManager = userManager;
+            _objectMapper = objectMapper;
         }
 
         public async Task<List<QuestionDto>> GetAllTourQuestions(long tourId)
@@ -71,7 +75,7 @@ namespace Mindfights.Services.QuestionService
             foreach (var question in questions)
             {
                 var questionDto = new QuestionDto();
-                question.MapTo(questionDto);
+                _objectMapper.Map(question, questionDto);
                 questionsDto.Add(questionDto);
             }
             if (questionsDto.Count > 0)
@@ -103,7 +107,7 @@ namespace Mindfights.Services.QuestionService
             }
 
             var question = new QuestionDto();
-            currentQuestion.MapTo(question);
+            _objectMapper.Map(currentQuestion, question);
             return question;
         }
 
@@ -189,7 +193,7 @@ namespace Mindfights.Services.QuestionService
             }
 
             var questionDto = new QuestionDto();
-            questionToReturn.MapTo(questionDto);
+            _objectMapper.Map(questionToReturn, questionDto);
 
             if (mindfightQuestions.Count == 1)
             {
@@ -256,7 +260,7 @@ namespace Mindfights.Services.QuestionService
                 throw new AbpAuthorizationException("Jūs neturite teisės atnaujinti klausimus!");
             }
             question.OrderNumber = questionToUpdate.OrderNumber;
-            question.MapTo(questionToUpdate);
+            _objectMapper.Map(question, questionToUpdate);
             questionToUpdate.Id = questionId;
             await _questionRepository.UpdateAsync(questionToUpdate);
         }
