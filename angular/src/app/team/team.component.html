@@ -80,48 +80,17 @@
                         <table *ngIf="activeTeamPlayers" class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th class="text-row"></th>
                                     <th class="active-row">Aktyvus</th>
-                                    <th class="id-row">Id</th>
                                     <th class="username-row">Slapyvardis</th>
                                     <th class="points-row">Taškai</th>
+                                    <th class="captain-row"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td colspan="5">
-                                        <b>Komandos kapitonas</b>
-                                    </td>
-                                </tr>
-                                <tr *ngIf="teamLeader">
-                                    <td></td>
+                                <tr *ngFor="let teamPlayer of teamPlayers; let i = index">
                                     <td>
-                                        <input type="checkbox" id="teamLeaderActive" disabled checked>
-                                        <label [attr.for]="teamLeaderActive" title="Aktyvus komandoje"></label>
-                                    </td>
-                                    <td>
-                                        {{teamLeader.id}}
-                                    </td>
-                                    <td>
-                                        <a [routerLink]="['/app/player/' + teamLeader.id]">{{teamLeader.userName}}</a>
-                                    </td>
-                                    <td>
-                                        {{teamLeader.points}}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5">
-                                        <b>Aktyvi komandos ekipa</b>
-                                    </td>
-                                </tr>
-                                <tr *ngFor="let teamPlayer of activeTeamPlayers; let i = index">
-                                    <td></td>
-                                    <td>
-                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled [ngModel]="teamPlayer.isActiveInTeam" (click)="updateConfirmation(registration)">
+                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled [ngModel]="teamPlayer.isActiveInTeam">
                                         <label [attr.for]="'isActiveInTeam'+i" title="Aktyvus komandoje"></label>
-                                    </td>
-                                    <td>
-                                        {{teamPlayer.id}}
                                     </td>
                                     <td>
                                         <a [routerLink]="['/app/player/' + teamPlayer.id]">{{teamPlayer.userName}}</a>
@@ -129,30 +98,7 @@
                                     <td>
                                         {{teamPlayer.points}}
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5"></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="5">
-                                        <b>Pasyvi komandos ekipa</b>
-                                    </td>
-                                </tr>
-                                <tr *ngFor="let teamPlayer of passiveTeamPlayers; let i = index">
-                                    <td></td>
-                                    <td>
-                                        <input type="checkbox" id="isActiveInTeam{{i}}" disabled [ngModel]="teamPlayer.isActiveInTeam" (click)="updateConfirmation(registration)">
-                                        <label [attr.for]="'isActiveInTeam'+i" title="Aktyvus komandoje"></label>
-                                    </td>
-                                    <td>
-                                        {{teamPlayer.id}}
-                                    </td>
-                                    <td>
-                                        <a [routerLink]="['/app/player/' + teamPlayer.id]">{{teamPlayer.userName}}</a>
-                                    </td>
-                                    <td>
-                                        {{teamPlayer.points}}
-                                    </td>
+                                    <td><span *ngIf="teamPlayer.isTeamLeader"><i class="fa fa-star fa-2x" title="Komandos kapitonas"></i></span></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -22,7 +22,7 @@ namespace Mindfights.EntityFrameworkCore.Seed.Mindfights
         public void Create()
         {
             AddDefaultRoles();
-            AddDefaultCities();
+            //AddDefaultCities();
             CreateMindfight();
             CreateTour();
             CreateQuestion();

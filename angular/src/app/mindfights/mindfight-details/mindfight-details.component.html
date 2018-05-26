@@ -45,7 +45,7 @@
                     <br />
                     <div class="col-xs-12 paddingless">
                         <div class="col-xs-2">
-                            <button type="button"
+                            <button type="button" *ngIf="!hasMindfightStarted"
                                     class="btn bg-green waves-effect waves-light hover-zoom-effect"
                                     [routerLink]="['/app/mindfights/' + mindfightId + '/play']"
                                     [disabled]="!isRegistrationActive || !isActiveInTeam"

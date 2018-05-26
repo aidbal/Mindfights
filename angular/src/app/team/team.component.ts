@@ -108,23 +108,9 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.teamService.getAllTeamPlayers(teamId).subscribe(
             (result) => {
                 this.teamPlayers = result;
-                this.getActivePassiveTeamPlayers(this.teamPlayers);
+                console.log(result);
             }
         );
-    }
-
-    getActivePassiveTeamPlayers(teamPlayers): void {
-        teamPlayers.forEach(player => {
-            if (player.id === this.team.leaderId) {
-                if (this.teamLeader == null) {
-                    this.teamLeader = player;
-                }
-            } else if (player.isActiveInTeam) {
-                this.activeTeamPlayers.push(player);
-            } else {
-                this.passiveTeamPlayers.push(player);
-            }
-        });
     }
 
     goBack() {

@@ -68,7 +68,6 @@
                         <thead>
                             <tr>
                                 <th>Aktyvus</th>
-                                <th>Id</th>
                                 <th>Slapyvardis</th>
                                 <th>Taškai</th>
                                 <th></th>
@@ -82,7 +81,6 @@
                                            (click)="updateActiveStatus(player)">
                                     <label [attr.for]="'isActiveInTeam'+i" title="Keisti aktyvumo statusą"></label>
                                 </td>
-                                <td>{{player.id}}</td>
                                 <td><a [routerLink]="['/app/player/' + player.id]">{{player.userName}}</a></td>
                                 <td>{{player.points}}</td>
                                 <td *ngIf="!player.isTeamLeader" class="display-flex center">
