@@ -117,8 +117,8 @@ namespace Mindfights.Services.PlayerService
         public async Task<List<PlayerDto>> GetAllPlayers()
         {
             var players = await _userManager.Users
-                .IgnoreQueryFilters()
                 .Include(player => player.Team)
+                .Where(player => !(player.IsDeleted || !player.IsActive))
                 .ToListAsync();
 
             var playersDto = new List<PlayerDto>();

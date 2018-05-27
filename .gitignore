@@ -307,3 +307,4 @@ __pycache__/
 /Dokumentai/*
 **/Logs.txt
 aspnet-core/src/Mindfights.Web.Host/App_Data/Logs/
+/Connections.txt
