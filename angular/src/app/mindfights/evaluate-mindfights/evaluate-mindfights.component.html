@@ -22,6 +22,7 @@
             <div class="header">
                 <h2>
                     {{mindfight.title}}
+                    <small class="event-description description">{{mindfight.description}}</small>
                 </h2>
                 <ul class="header-dropdown m-r-0">
                     <li>
@@ -37,6 +38,8 @@
                         <small *ngIf="mindfightResults">
                             Įvertinta komandų {{evaluatedCount}} / {{mindfightResults.length}}
                         </small>
+                        <br>
+                        <small>Kūrėjas: {{mindfight.creatorEmail}}</small>
                     </div>
                     <div class="col-md-6">
                         <div class="text-right">
