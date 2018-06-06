@@ -108,7 +108,6 @@ export class TeamComponent extends AppComponentBase implements OnInit {
         this.teamService.getAllTeamPlayers(teamId).subscribe(
             (result) => {
                 this.teamPlayers = result;
-                console.log(result);
             }
         );
     }

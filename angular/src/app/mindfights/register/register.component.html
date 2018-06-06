@@ -1,4 +1,4 @@
-<div *ngIf="playerInfo || !registrationFull">
+<div *ngIf="playerInfo">
     <div *ngIf="registration">
         <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float register-button"
                 title="{{ playerInfo.isTeamLeader ? 'Atšaukti registraciją' : 'Registracijas gali valdyti tik komandos kapitonas'}}"
@@ -7,7 +7,7 @@
             {{registration.isConfirmed ? 'Užregistruota. Patvirtinta':'Užregistruota. Nepatvirtinta'}} <i class="fa fa-xs" [ngClass]="{'fa-clock-o': !registration.isConfirmed, 'fa-check': registration.isConfirmed}"></i>
         </button>
     </div>
-    <div *ngIf="!registration">
+    <div *ngIf="!registration && !registrationFull">
         <button type="button" data-toggle="modal" class="btn btn-link waves-effect waves-float register-button white"
                 title="{{ playerInfo.isTeamLeader ? 'Registruotis' : 'Registracijas gali valdyti tik komandos kapitonas'}}"
                 (click)="createRegistration()" [disabled]="!playerInfo.isTeamLeader || saving">

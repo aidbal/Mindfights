@@ -119,7 +119,6 @@ export class PlayMindfightComponent extends AppComponentBase implements OnInit {
     getNextQuestion(mindfightId, teamId): void {
         this.questionService.getNextQuestion(mindfightId, teamId).subscribe(
             (result) => {
-                console.log(result);
                 this.currentQuestion = result;
                 this.showTourLabel = false;
                 this.showQuestionLabel = true;
